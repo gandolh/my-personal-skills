@@ -1,0 +1,26 @@
+{
+  "name": "personal-skills-marketplace",
+  "owner": {
+    "name": "gandolh",
+    "url": "https://github.com/gandolh"
+  },
+  "metadata": {
+    "description": "A lean frontend design-and-ship skill library for Claude Code.",
+    "version": "0.11.0"
+  },
+  "plugins": [
+    {
+      "name": "personal-skills",
+      "source": "./",
+      "description": "Generic, repo-agnostic frontend design-and-ship skills: the-one-move, improve-platform and ui-check commands, the impeccable build engine, the taste suite, ui-ux-pro-max, audit primitives, corpus-flow, and bootstrap-vps-deploy. See ATTRIBUTION.md.",
+      "version": "0.11.0",
+      "keywords": [
+        "frontend",
+        "design",
+        "ui",
+        "ux",
+        "accessibility"
+      ]
+    }
+  ]
+}
