@@ -1,7 +1,7 @@
 {
   "name": "personal-skills",
   "description": "Generic, repo-agnostic skills: a lean frontend design-and-ship library. Three entry-point commands — /the-one-move (commit a non-generic STRUCTURE before building a new frontend, then hand off to impeccable), /improve-platform (audit + phased improvement of AI-generated platforms), and /ui-check (quick single-screen UI review with proposed changes). The build engine is impeccable (design fluency, 22 sub-commands; github.com/pbakaus/impeccable, Apache-2.0). Aesthetic direction comes from the taste suite (github.com/leonxlnx/taste-skill, MIT): design-taste-frontend plus the minimalist-ui, industrial-brutalist-ui, and high-end-visual-design style presets and redesign-existing-projects — each defers to impeccable's anti-slop bans on conflict. ui-ux-pro-max (github.com/nextlevelbuilder/ui-ux-pro-max-skill, MIT) is the searchable design-intelligence database. A small set of audit primitives from designer-skills (github.com/Owl-Listener/designer-skills, MIT) backs the commands: accessibility-audit, heuristic-evaluation, information-architecture, design-debt-audit, and the four critique-* single-screen reviews. Also includes corpus-flow (an LLM-maintained project wiki + todos→briefs→done work lifecycle), bootstrap-vps-deploy (a zero-dependency static-client + pm2-service deploy behind Caddy), and grill-me (interview-style plan/design stress-testing). See ATTRIBUTION.md.",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "homepage": "https://github.com/gandolh/my-personal-skills",
   "repository": "https://github.com/gandolh/my-personal-skills",
   "license": "SEE ATTRIBUTION.md (vendored skills retain their original MIT / Apache-2.0 licenses)",
