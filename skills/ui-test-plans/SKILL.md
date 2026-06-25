@@ -115,17 +115,28 @@ Prefer a **Playwright MCP/browser tool** for interactive, exploratory runs.
    (log in, create a record, toggle a control) — don't just look at static pages.
 3. **Screenshot** key states to `playwright/screenshots/<plan-id>-<step>.png`.
    View each shot and judge it against the design source, not just "it rendered".
-4. **Verify round-trips two ways** when it matters: confirm a UI action in the UI
+4. **Capture in-flight states, not just terminal ones.** For any async action
+   (a save, a fetch, an LLM call), screenshot *during* the call — not only before
+   and after. A shot taken after completion misses transient UI (spinners,
+   skeletons, disabled buttons), so you'll wrongly report a loading state as
+   "absent" when it merely already finished. Before filing a "no X state"
+   finding, confirm X isn't just transient — check the component source.
+5. **Wait on a signal for slow actions, never a fixed sleep.** When a click
+   triggers a long backend/LLM call (seconds, not ms), wait on an observable
+   completion signal — a server log line, a network response, or a DOM change —
+   with a generous timeout. Don't blind-poll the DOM or guess a sleep duration.
+6. **Verify round-trips two ways** when it matters: confirm a UI action in the UI
    **and** via a direct API/DB check (e.g. the created record exists, a
-   notification was written). This catches optimistic-UI lies.
-5. For the UI/UX audit plan: resize to mobile/tablet widths, trigger empty and
+   notification was written). This catches optimistic-UI lies — and UI that
+   *looks* populated but holds malformed data (garbled text, leaked markup).
+7. For the UI/UX audit plan: resize to mobile/tablet widths, trigger empty and
    loading states, check focus/Escape/backdrop on modals, and capture an
    accessibility snapshot if the tool offers one.
-6. **Tear down**: close the browser, stop the server, delete the throwaway DB,
-   remove any tool scratch dir (e.g. `.playwright-mcp/`).
-
-> Screenshots from MCP tools often land at the repo root — move them into
-> `playwright/screenshots/` (gitignored) at the end so they don't get committed.
+8. **Tear down**: close the browser, stop the server, delete the throwaway DB,
+   remove any tool scratch dir (e.g. `.playwright-mcp/`), and **move every
+   screenshot** from the repo root into `playwright/screenshots/` (gitignored).
+   MCP browser tools drop *every* shot at the repo root, so this move is a
+   required step, not an occasional cleanup — skip it and you'll commit PNGs.
 
 ## 4 — Record results + file findings
 
@@ -159,3 +170,14 @@ Resolved findings get closed in the tracker, not erased from history.
 - **Findings get filed**, not buried — the audit's value is the tracked follow-ups.
 - **Separate "what" from "how"**: behavior changes edit the plan; environment
   changes edit the Playwright hub.
+- **Prefer durable selectors over snapshot refs.** Target elements by CSS or role
+  (`input[placeholder="…"]`, `button:has-text("…")`, `getByRole`), not the
+  `[ref=…]` IDs from an accessibility snapshot — some MCP builds reject ref
+  targets outright (e.g. *"Unexpected token while parsing css selector"*), and
+  refs churn between snapshots. Use the snapshot to *find* elements, CSS/role to
+  *act* on them.
+- **Mind the cost of live integrations.** When a flow hits a metered external
+  service (an LLM, a paid API), each run spends real money/tokens. Note the
+  per-run cost in the hub README, prefer one representative call over exhaustive
+  repetition, and run the stack warm (do the live step once while everything's
+  up) rather than re-spinning it per case.
