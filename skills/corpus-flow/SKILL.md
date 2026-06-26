@@ -137,6 +137,12 @@ If they're missing, create:
 - **`corpus/index.md`** — the content catalog (what lives where), starting with
   links to CLAUDE.md, log.md, and the wiki pages. This is the front door.
 - **`corpus/log.md`** — a `# Log` heading and nothing else yet.
+- **`corpus/routing.md`** — the routing profile read by the `orchestrate` skill
+  (the front door): implement/review/PR skill choices, an intent table, and a
+  READ/SKIP/SKILLS table. Seed it with `Implement skill: plan-split-dispatch`
+  and stub the rest — see the template in the `orchestrate` skill. If
+  `orchestrate` does the bootstrap it enriches this by scanning the repo;
+  created here so the file always exists. Link it from `index.md`.
 - **The wiki spine** — at minimum seed `corpus/wiki/status.md` (the living
   dashboard). Also seed `overview.md`, `architecture.md`, `decisions.md`, and
   `open-questions.md` when you have enough to say — even a stub paragraph each is
@@ -276,9 +282,17 @@ if the harness supports it.
 
 ### 3c — Implement
 
-Build per the plan. Honor the brief's "Files you OWN / must NOT touch". Verify
-against the brief's **Acceptance** — run the project's typecheck/tests/build as
-applicable; report results faithfully (failing tests get said so, with output).
+Build per the plan. **If the brief decomposes into ≥3 independent chunks (several
+mechanical), dispatch it via `plan-split-dispatch`** — it splits the work,
+classifies each chunk hard/easy, and runs hard→opus / easy→sonnet as fresh
+subagents with curated context (cheap tokens on cheap work, lean controller).
+Pass the brief + the project's READ/SKIP/SKILLS rows from `corpus/routing.md`.
+For a 1–2 chunk or single-indivisible brief, implement inline — the dispatch tax
+isn't worth it.
+
+Either way: honor the brief's "Files you OWN / must NOT touch". Verify against the
+brief's **Acceptance** — run the project's typecheck/tests/build as applicable;
+report results faithfully (failing tests get said so, with output).
 
 ---
 

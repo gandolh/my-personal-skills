@@ -57,6 +57,7 @@ Each preset defers to `impeccable`'s anti-slop bans on conflict.
 - **`bootstrap-vps-deploy`** — a zero-dependency static-client + pm2-service deploy behind Caddy.
 - **`grill-me`** — interview-style plan/design stress-testing.
 - **`ui-test-plans`** — plain-text UI test plans + a Playwright run-hub, screenshots gitignored.
+- **`plan-split-dispatch`** — repo-agnostic implementation orchestrator: opus plans and splits a task into independent chunks, then dispatches hard chunks to a subagent on opus and easy chunks to a subagent on sonnet — routing cheap tokens to cheap work.
 
 ## Licensing & attribution
 

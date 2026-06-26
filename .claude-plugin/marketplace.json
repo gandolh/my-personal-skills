@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "A lean frontend design-and-ship skill library for Claude Code.",
-    "version": "0.12.0"
+    "version": "0.16.0"
   },
   "plugins": [
     {
       "name": "personal-skills",
       "source": "./",
-      "description": "Generic, repo-agnostic frontend design-and-ship skills: the-one-move, improve-platform and ui-check commands, the impeccable build engine, the taste suite, ui-ux-pro-max, audit primitives, corpus-flow, and bootstrap-vps-deploy. See ATTRIBUTION.md.",
-      "version": "0.12.0",
+      "description": "Generic, repo-agnostic skills: the-one-move, improve-platform and ui-check commands, the impeccable build engine, the taste suite, ui-ux-pro-max, audit primitives, bootstrap-vps-deploy, and a generic quality/token-efficiency/UX workflow — corpus-flow (LLM-maintained wiki + briefs lifecycle) + plan-split-dispatch (model-routed subagent dispatch: hard→opus/easy→sonnet) + orchestrate (/orchestrate — work-intake router that ensures a corpus/ workspace, reads corpus/routing.md, and routes capture→corpus-flow, build→plan-split-dispatch, query→wiki). See ATTRIBUTION.md.",
+      "version": "0.16.0",
       "keywords": [
         "frontend",
         "design",
