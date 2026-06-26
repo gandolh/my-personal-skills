@@ -39,7 +39,7 @@ The work lifecycle moves a single piece of work left-to-right; the wiki layer
 is the standing knowledge the work draws from and feeds back into:
 
 ```
-todos/<date>-<slug>.md      capture an idea/task as prose
+todos/<slug>.md             capture an idea/task as prose
       │  (promote)
       ▼
 briefs/todo/<NN>-<slug>.md   a numbered work spec, ready to build
@@ -165,8 +165,8 @@ formal spec yet.
 1. Get the todo text. If the user gave a bare "add a todo" with no content, ask
    what it is — one question, then proceed.
 2. Derive a kebab-case slug from the gist (e.g. "fix the scalloped shore mask" →
-   `fix-scalloped-shore-mask`). Filename: `corpus/todos/<YYYY-MM-DD>-<slug>.md`
-   using today's date from the environment context (never shell out to `date`).
+   `fix-scalloped-shore-mask`). Filename: `corpus/todos/<slug>.md` — do NOT
+   date-prefix the name; the date lives in the `created:` frontmatter below.
    On a name clash, append `-2`, `-3`, ….
 3. Write the file:
 

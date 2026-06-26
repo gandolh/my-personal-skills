@@ -176,6 +176,14 @@ Resolved findings get closed in the tracker, not erased from history.
   targets outright (e.g. *"Unexpected token while parsing css selector"*), and
   refs churn between snapshots. Use the snapshot to *find* elements, CSS/role to
   *act* on them.
+- **Real pointer events for overlay/modal/pointer-events bugs.** A synthetic
+  `.click()` dispatches straight to the resolved element and bypasses real pointer
+  hit-testing — so it can succeed while a `pointer-events`/`z-index`/backdrop
+  fall-through bug still breaks for real users (a modal that "closes" in the test
+  but not in the browser). When the thing under test is *whether a click lands on
+  the right layer* (modal dismissal, overlay blocking, sticky-bar overlap), drive
+  it through real pointer interaction in a real (authenticated) session and watch
+  the actual outcome, not just a green assertion.
 - **Mind the cost of live integrations.** When a flow hits a metered external
   service (an LLM, a paid API), each run spends real money/tokens. Note the
   per-run cost in the hub README, prefer one representative call over exhaustive
