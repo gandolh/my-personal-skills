@@ -247,6 +247,15 @@ cleanly.
 - **Parallel dispatch**: only within a parallel-safe group, and only for chunks
   that edit disjoint files. Never run two implementers against the same file in
   parallel.
+- **File lanes** (preferred over worktree when feasible): when two parallel chunks
+  would *otherwise* both touch a shared hub file (a central `main.ts`, a barrel, a
+  router), split the work so each owns a disjoint set of files and state the lane
+  **explicitly in each chunk prompt** ("you may edit ONLY X/Y; chunk N owns Z — do not
+  touch it; if you can't avoid Z, report BLOCKED"). This keeps them genuinely
+  disjoint → safe to run in one message, no worktree/merge overhead. Each chunk's
+  transient typecheck errors from the other's half-done hub edits are expected; verify
+  the *combined* gates after both land. Reach for worktree only when the edits can't be
+  cleanly laned apart.
 - **Worktree**: if chunks mutate files in parallel and could conflict, dispatch
   with `isolation: "worktree"`. On a protected branch (main/dev), refuse and ask
   the user to branch first.

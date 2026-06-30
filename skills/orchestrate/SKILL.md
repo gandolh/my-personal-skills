@@ -211,7 +211,9 @@ On `go` / `yes` / `proceed`:
    **build**, that means: file/select the brief (`corpus-flow` §2), then invoke
    `plan-split-dispatch` (or routing.md's implement skill), passing the brief +
    the Step-4 READ/SKIP/SKILLS. After the build lands, route **closeout** to
-   `corpus-flow` §4 so the work is logged and folded into the wiki.
+   `corpus-flow` §4 so the work is logged and folded into the wiki, **then commit
+   the completed brief** (see the commit principle below) — one commit for the
+   code, one for the corpus change, per the repo's convention. Do **not** push.
 3. Stop. The downstream skill owns the rest — don't narrate or re-classify.
 
 Adjustments (anything but approval) → update the plan, re-present, loop until `go`.
@@ -232,4 +234,10 @@ Adjustments (anything but approval) → update the plan, re-present, loop until 
 - **Answer questions, don't task them.** Honor any tool the user names.
 - **No chaining past the first hand-off** — except the build→closeout pair, which
   you own (dispatch, then route closeout to corpus-flow).
-- **Never commit or push** — that's always the user's call.
+- **Commit completed briefs at closeout; never push without the user's go.** When
+  a brief's build lands and closeout has recorded it, **commit** the work (one
+  commit per brief, plus a separate commit for the corpus/wiki change, per the
+  repo's "one commit per meaningful corpus change" convention) so git history and
+  the corpus stay in step — don't leave finished briefs sitting uncommitted across
+  a long multi-brief run. Pushing, PRs, tags, and force operations remain the
+  user's explicit call. If the work isn't on a feature branch yet, branch first.
