@@ -266,12 +266,20 @@ cleanly.
 
 ## Configuration
 
-- **Default model routing**: trivial = haiku, junior = sonnet, senior = opus,
+- **Default model routing**: trivial = haiku, junior = Sonnet, senior = opus,
   controller = opus. **Bias to the cheapest tier that can do the chunk** — opus is the
-  exception (hard/novel/risky), not the default. Review finders default to sonnet (Step 7).
-  Keep the controller's own turns lean (don't echo subagent diffs) so the one unavoidable
-  opus seat stays cheap. Override per-chunk when the user asks ("do all of these on sonnet
-  to save cost" / "promote chunk 3 to opus").
+  exception (novel/risky/security/data), not the default. Current-generation Sonnet is a
+  strong *executor* — reliable on well-specified, well-gated chunks **including medium-hard
+  ones** (not just mechanical copies), so **bias borderline chunks → junior** rather than
+  reflexively senioring them. Review finders default to Sonnet (Step 7). **Keep opus in the
+  controller/verify seat — do NOT promote Sonnet to it**: the controller's value is planning
+  the grounded briefs the executors succeed *inside*, plus being a *stronger second opinion*
+  at verify time and making the expensive-if-wrong calls (design/contract decisions,
+  real-bug-vs-stale-test adjudication). Hard objective gates (tests, determinism/
+  byte-identity checks) are the net that makes routing risky chunks down safe. Keep the
+  controller's own turns lean (don't echo subagent diffs) so the one unavoidable opus seat
+  stays cheap. Override per-chunk when the user asks ("do all of these on sonnet to save
+  cost" / "promote chunk 3 to opus").
 - **Parallel dispatch**: only within a parallel-safe group, and only for chunks
   that edit disjoint files. Never run two implementers against the same file in
   parallel.
