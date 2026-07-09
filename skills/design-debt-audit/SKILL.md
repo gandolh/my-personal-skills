@@ -20,7 +20,7 @@ Design debt is any gap between the current state of the product and the standard
 - Known WCAG violations that haven't been fixed
 - Components that work visually but fail with assistive technology
 - Missing keyboard navigation, focus management, or screen reader support
-- Surface these automatically on a web product with [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)'s `lighthouse_audit` (accessibility + performance scores) plus its accessibility snapshot — a fast first pass that flags the machine-detectable a11y/perf debt before manual review. Runs local, Chrome-only.
+- On a web product, catch the machine-detectable a11y debt first with [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp)'s `lighthouse_audit` (scored accessibility + performance) and its accessibility snapshot — a fast automated pass before the manual review below. Local, Chrome-only.
 ### Documentation Debt
 - Components in use that aren't in the design system
 - Specs that don't match implementation
@@ -31,7 +31,7 @@ Design debt is any gap between the current state of the product and the standard
 ## Audit Process
 ### 1. Scope and Inventory
 - Define audit scope: full product, one feature area, or one platform
-- Screenshot every screen/state in scope. For a web product, capture them with a local browser driver so the pass is repeatable and nothing leaves the machine — [agent-browser](https://github.com/vercel-labs/agent-browser) fits: `agent-browser open <url>`, then `agent-browser screenshot --annotate <path>` per state. The `--annotate` overlay numbers every interactive element, which makes duplicated treatments (three different button styles doing one job) jump out of the inventory. Drive the empty / loading / error states too, not just the happy path.
+- Screenshot every screen/state in scope — empty, loading, and error states too, not just the happy path. For a web product, capture them with a local driver so the pass is repeatable and nothing leaves the machine: [agent-browser](https://github.com/vercel-labs/agent-browser) — `agent-browser open <url>` then `agent-browser screenshot --annotate <path>` per state. Its `--annotate` overlay numbers every interactive element, so duplicated treatments (three button styles doing one job) surface in the inventory itself.
 - Catalog by screen type, component type, or user flow
 ### 2. Classify Debt
 For each screen or component, tag:

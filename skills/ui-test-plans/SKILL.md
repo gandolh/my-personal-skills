@@ -154,13 +154,13 @@ which exposes network/console/perf/Lighthouse and snapshots only on demand.
    loading states, check focus/Escape/backdrop on modals, and capture an
    accessibility snapshot if the tool offers one.
 8. **Tear down**: close the browser (`agent-browser close`), stop the server,
-   delete the throwaway DB, remove any tool scratch dir (e.g. `.playwright-mcp/`),
-   and **move every screenshot** from the repo root into `playwright/screenshots/`
-   (gitignored). Most MCP browser tools drop *every* shot at the repo root, so this
-   move is a required step, not an occasional cleanup — skip it and you'll commit
-   PNGs. (agent-browser takes the destination path directly —
-   `agent-browser screenshot "<selector>" playwright/screenshots/<plan-id>-<step>.png`
-   — so shots land in the gitignored dir and this move step isn't needed.)
+   delete the throwaway DB, and remove any tool scratch dir (e.g. `.playwright-mcp/`).
+   agent-browser writes each shot to the path you pass
+   (`agent-browser screenshot "<selector>" playwright/screenshots/<plan-id>-<step>.png`),
+   so it lands in the gitignored dir directly — no move needed. If you used a tool
+   that drops shots at the repo root instead (most MCP browsers do), **move every
+   screenshot** into `playwright/screenshots/` — a required step, not optional
+   cleanup: skip it and you'll commit PNGs.
 
 ## 4 — Record results + file findings
 
