@@ -59,6 +59,8 @@ Look for **`corpus/routing.md`**.
     (implement defaults to `plan-split-dispatch`).
   - `Issue tracker` / `Code host` — what to query in the context fan-out.
   - `Intent routing` table — Step 3.
+  - `Knowledge routing` table — which layer answers a given question (wiki /
+    code graph / grep / guard test). Obey it before fanning out with grep+read.
   - `READ / SKIP / SKILLS` table — passed to the implement skill so each chunk
     reads the right slice and skips the rest.
 - **Absent** → the workspace isn't set up. **Bootstrap it now** (don't ask for a
@@ -68,6 +70,12 @@ Look for **`corpus/routing.md`**.
   build commands, tracker/host from `git remote`) and seed `corpus/routing.md`
   from the template below. Announce it in one line ("Bootstrapped corpus/ +
   routing.md — tune routing.md anytime"), then continue. Never route without it.
+
+**Code-graph layer.** If `.claude/skills/codegraph/` is absent, mention once that
+`corpus-flow` §0b can bootstrap it (a benchmarked, repo-specific structural-query
+skill) — then continue. Don't stall the request on it, and never create a
+*personal* codegraph skill: the accuracy envelope is per-repo, so it belongs in
+the project.
 
 **Named-tool override (all modes):** if the user names a tool/MCP, use exactly
 that — never substitute `Agent`/`WebFetch` for a named tool.
@@ -93,6 +101,16 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | MR/PR open, not ready | review | <review skill> |
 | Branch ahead, ship intent | PR open | <PR skill> |
 | "what does the wiki say about X" | query | corpus-flow: query wiki |
+
+## Knowledge routing — which layer answers which question
+<!-- The corpus is the WHY; a code graph is the WHAT. Neither substitutes. -->
+| Question shape | Route to |
+|---|---|
+| "Why is it built this way?" / "what was decided?" | `corpus/wiki/` (start at `index.md`; budget: ≤3 pages) |
+| "Who calls X?" / "blast radius of X?" / "where does feature Y live?" | the `codegraph` **project** skill, if bootstrapped |
+| **"Did I get _every_ usage?"** (rename/refactor/delete) | **`grep -rnw`** — the graph undercounts |
+| A symbol name exported by two sibling packages | **`grep`**, scoped by path — the graph conflates them |
+| A correctness invariant (dependency rule, determinism, palette) | **run the guard test** |
 
 ## READ / SKIP / SKILLS
 | Task type | READ | SKIP | SKILLS |
@@ -211,7 +229,9 @@ On `go` / `yes` / `proceed`:
    **build**, that means: file/select the brief (`corpus-flow` §2), then invoke
    `plan-split-dispatch` (or routing.md's implement skill), passing the brief +
    the Step-4 READ/SKIP/SKILLS. After the build lands, route **closeout** to
-   `corpus-flow` §4 so the work is logged and folded into the wiki.
+   `corpus-flow` §4 so the work is logged and folded into the wiki, **then commit
+   the completed brief** (see the commit principle below) — one commit for the
+   code, one for the corpus change, per the repo's convention. Do **not** push.
 3. Stop. The downstream skill owns the rest — don't narrate or re-classify.
 
 Adjustments (anything but approval) → update the plan, re-present, loop until `go`.
@@ -232,4 +252,10 @@ Adjustments (anything but approval) → update the plan, re-present, loop until 
 - **Answer questions, don't task them.** Honor any tool the user names.
 - **No chaining past the first hand-off** — except the build→closeout pair, which
   you own (dispatch, then route closeout to corpus-flow).
-- **Never commit or push** — that's always the user's call.
+- **Commit completed briefs at closeout; never push without the user's go.** When
+  a brief's build lands and closeout has recorded it, **commit** the work (one
+  commit per brief, plus a separate commit for the corpus/wiki change, per the
+  repo's "one commit per meaningful corpus change" convention) so git history and
+  the corpus stay in step — don't leave finished briefs sitting uncommitted across
+  a long multi-brief run. Pushing, PRs, tags, and force operations remain the
+  user's explicit call. If the work isn't on a feature branch yet, branch first.

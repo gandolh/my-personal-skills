@@ -112,8 +112,24 @@ pattern to copy:
 - Formatting, lint fixes, dead-code removal.
 - Type propagation (add a field to an interface and thread it through).
 
-**When in doubt → senior.** Cheap to oversize; expensive to undersize (a stalled
-junior costs a re-dispatch on opus anyway).
+**Trivial (haiku)** — the cheapest slice of the above with *zero* judgement: pure
+copy/string additions, threading one named field through, deleting named dead code,
+formatting. Use it instead of sonnet when the chunk is essentially find-and-replace
+against an explicit spec.
+
+**The reference-pattern rule — the biggest cost lever.** The chunk that FIRST
+establishes a pattern, contract, or new subsystem is senior; **subsequent chunks that
+copy that now-existing in-repo reference are junior, even when they look substantial.**
+A "new panel just like the one we just built" is junior — the design risk was already
+spent on the first one. On a multi-chunk feature, expect the first chunk senior and most
+later chunks junior.
+
+**When in doubt → senior** *for genuine risk* (security/data/concurrency/novel design):
+cheap to oversize there, expensive to undersize. But do **not** reflexively senior
+pattern-following work — a clear reference implementation makes it junior, and
+escalate-on-block (Step 5) is the safety valve, so it's fine to start a borderline
+pattern-copy as junior. Opus should be the **exception** (the hard/novel/risky pieces),
+not the default; a healthy plan is mostly junior with a few senior chunks.
 
 ### Step 3 — Confirm with user (MANDATORY)
 
@@ -131,7 +147,8 @@ Output the plan + classification in this shape and **wait**:
 
 **Parallel-safe groups:** {1, 2} can run in parallel; 3 depends on 1.
 
-**Estimated dispatches:** N senior (opus), M junior (sonnet){, + 1 review}.
+**Estimated dispatches:** N senior (opus), M junior (sonnet), K trivial (haiku){, + review (sonnet finders)}.
+<!-- If N dominates, re-check the reference-pattern rule — pattern-copies should be junior. -->
 
 Proceed? (yes / re-classify / re-scope)
 ```
@@ -225,13 +242,21 @@ Save detail for the final summary.
 
 ### Step 7 — Optional review
 
-If the run was non-trivial (or the user asks), run a generic code-review over the
-cumulative diff (`git diff <base>...HEAD`) — either a review skill/command the
-repo provides, or a fresh `general-purpose` agent on opus prompted to review the
-diff for correctness, security, and convention violations. Pass it the chunk
-list for scope. Fix flagged blockers with the appropriate subagent (senior for
-security/data/concurrency; junior for naming/style), re-review once, then stop.
-Skip review on small runs — say so explicitly rather than silently dropping it.
+If the run was non-trivial (or the user asks), review the cumulative diff
+(`git diff <base>...HEAD` — also `git diff HEAD` if uncommitted). For a substantial
+multi-file build, **don't rely on one broad review agent** — dispatch **2–3 focused
+finder agents in parallel, scoped by area/risk** (e.g. one on cross-file integration +
+wiring correctness, one on the new module's own logic, one on reuse/cleanup/conventions),
+each returning concrete `{file, line, summary, failure_scenario}` findings. **Finders
+default to sonnet** — reading a diff and pattern-matching for bugs is mostly junior work;
+reserve **opus for at most one finder on the highest-risk integration/correctness lens**,
+or to adversarially verify an uncertain finding before acting. Then **consolidate + dedup**
+their findings yourself, and dispatch **one fix agent whose tier follows the fix**
+(haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
+correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
+generalist pass routinely misses (it has, every time). A repo review skill/command can
+stand in for a finder. Skip review on small runs — say so explicitly rather than silently
+dropping it.
 
 ### Step 8 — Deliver
 
@@ -301,12 +326,32 @@ dependents** section.
 
 ## Configuration
 
-- **Default model routing**: junior = sonnet, senior = opus, controller = opus.
-  Override per-chunk only when the user asks ("do all of these on sonnet to save
+- **Default model routing**: trivial = haiku, junior = Sonnet, senior = opus,
+  controller = opus. **Bias to the cheapest tier that can do the chunk** — opus is the
+  exception (novel/risky/security/data), not the default. Current-generation Sonnet is a
+  strong *executor* — reliable on well-specified, well-gated chunks **including medium-hard
+  ones** (not just mechanical copies), so **bias borderline chunks → junior** rather than
+  reflexively senioring them. Review finders default to Sonnet (Step 7). **Keep opus in the
+  controller/verify seat — do NOT promote Sonnet to it**: the controller's value is planning
+  the grounded briefs the executors succeed *inside*, plus being a *stronger second opinion*
+  at verify time and making the expensive-if-wrong calls (design/contract decisions,
+  real-bug-vs-stale-test adjudication). Hard objective gates (tests, determinism/
+  byte-identity checks) are the net that makes routing risky chunks down safe. Keep the
+  controller's own turns lean (don't echo subagent diffs) so the one unavoidable opus seat
+  stays cheap. Override per-chunk when the user asks ("do all of these on sonnet to save
   cost" / "promote chunk 3 to opus").
 - **Parallel dispatch**: only within a parallel-safe group, and only for chunks
   that edit disjoint files. Never run two implementers against the same file in
   parallel.
+- **File lanes** (preferred over worktree when feasible): when two parallel chunks
+  would *otherwise* both touch a shared hub file (a central `main.ts`, a barrel, a
+  router), split the work so each owns a disjoint set of files and state the lane
+  **explicitly in each chunk prompt** ("you may edit ONLY X/Y; chunk N owns Z — do not
+  touch it; if you can't avoid Z, report BLOCKED"). This keeps them genuinely
+  disjoint → safe to run in one message, no worktree/merge overhead. Each chunk's
+  transient typecheck errors from the other's half-done hub edits are expected; verify
+  the *combined* gates after both land. Reach for worktree only when the edits can't be
+  cleanly laned apart.
 - **Worktree**: if chunks mutate files in parallel and could conflict, dispatch
   with `isolation: "worktree"`. On a protected branch (main/dev), refuse and ask
   the user to branch first.

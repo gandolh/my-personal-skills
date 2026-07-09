@@ -17,7 +17,9 @@ left in conversation or personal memory.
 ```
 corpus/
   CLAUDE.md         schema + conventions for THIS corpus (written on bootstrap)
-  index.md          content catalog — what lives where; the front door
+  index.md          content catalog — generated from each page's `summary:` frontmatter
+  routing.md        which question goes to which layer (wiki / code graph / grep / tests)
+  lint.sh           health check: frontmatter, link resolution, page size, stale paths
   log.md            chronological record of every meaningful change
   todos/            captured ideas/tasks as prose (pre-spec)
   briefs/           raw, immutable task specs
@@ -117,6 +119,65 @@ the decisions specific to it, the open threads, and links into the code. Rules:
 
 ---
 
+## Frontmatter + the retrieval budget
+
+A corpus exists to make an agent **cheaper**, not just better-informed. A wiki you
+must *read* to discover is irrelevant has already cost you the tokens. So every
+wiki page opens with exactly two keys:
+
+```markdown
+---
+summary: <one line — what question this page answers. The triage signal.>
+updated: <YYYY-MM-DD>
+---
+```
+
+`summary:` is the load-bearing one. It is written **for an agent deciding whether
+to open the page**, not as a title. "Ranked optimization backlog, filtered against
+what the code actually does, and what is explicitly not worth doing at this scale"
+tells you whether to open it; "Performance notes" does not.
+
+This is the atomic-note idea (Zettelkasten / A-Mem) applied to a repo wiki: one
+concept per note, each carrying an LLM-written description, so retrieval lands in
+a small budget instead of pulling whole documents.
+
+**`index.md` is generated from those summaries** — one line per page,
+`bash corpus/lint.sh --index`. Never hand-maintain the catalog, and never let
+`index.md` duplicate a list that another page already owns (a brief catalog belongs
+in `status.md`; `index.md` links to it).
+
+**The budget, stated in `corpus/CLAUDE.md` so a fresh agent inherits it:**
+
+1. Read `index.md`. Then read **at most 2–3 wiki pages**.
+2. Needing more than three is a **signal**, not a licence to read more: a page is
+   straddling topics and must split, or the summaries aren't sharp enough. Fix the
+   cause.
+3. Never read `briefs/` or `todos/` wholesale. `status.md` holds every brief's
+   state in one line; open a brief only for the spec that directed specific work.
+4. Prefer the `summary:` line over opening the page. That is what it is for.
+
+---
+
+## The two-graph model — the corpus is the *why*, not the *what*
+
+The corpus answers **why the code is the way it is**: decisions, intent, history.
+It is authored, git-reviewed, and a source of truth.
+
+It is the wrong tool for **what the code is**: "who calls X", "what breaks if I
+change X", "where does feature Y live". Those belong to a **code graph** — a
+generated, disposable symbol index (tree-sitter → SQLite, served over MCP). It is
+regenerated from source, never hand-maintained, and **never a source of truth**.
+
+Keeping them separate is what protects the budget above. An agent that greps and
+reads twenty files to answer a structural question has blown its context before it
+reaches the wiki; an agent that asks the wiki a structural question gets a stale
+answer. Route each to its own layer (see the table in `routing.md`, §0).
+
+**Never let the code graph's output be written into the wiki as fact.** The graph
+is a lookup, not a finding.
+
+---
+
 ## 0 — Bootstrap (first use in a project)
 
 `corpus/` always lives at the **repo root** (`./corpus`). Before any operation,
@@ -138,22 +199,94 @@ If they're missing, create:
   links to CLAUDE.md, log.md, and the wiki pages. This is the front door.
 - **`corpus/log.md`** — a `# Log` heading and nothing else yet.
 - **`corpus/routing.md`** — the routing profile read by the `orchestrate` skill
-  (the front door): implement/review/PR skill choices, an intent table, and a
-  READ/SKIP/SKILLS table. Seed it with `Implement skill: plan-split-dispatch`
-  and stub the rest — see the template in the `orchestrate` skill. If
-  `orchestrate` does the bootstrap it enriches this by scanning the repo;
-  created here so the file always exists. Link it from `index.md`.
+  (the front door): implement/review/PR skill choices, an intent table, a
+  READ/SKIP/SKILLS table, and the **knowledge-routing table** (§0b). Seed it with
+  `Implement skill: plan-split-dispatch` and stub the rest — see the template in
+  the `orchestrate` skill. If `orchestrate` does the bootstrap it enriches this by
+  scanning the repo; created here so the file always exists. Link it from `index.md`.
+- **`corpus/lint.sh`** — the health check (§7). Write it at bootstrap so the
+  invariants are enforceable from day one, not aspirational prose. It must check:
+  every wiki page has `summary:` + `updated:` frontmatter; every relative link
+  resolves; no page exceeds ~200 **body** lines (frontmatter excluded); no page
+  references a directory layout the repo has since abandoned. `--index`
+  regenerates `index.md`'s catalog block from the summaries. Exit non-zero on
+  failure so it can gate a commit.
 - **The wiki spine** — at minimum seed `corpus/wiki/status.md` (the living
   dashboard). Also seed `overview.md`, `architecture.md`, `decisions.md`, and
   `open-questions.md` when you have enough to say — even a stub paragraph each is
   better than a missing page, because it gives ingest (§6) a home to grow into.
   See the wiki section above for what each page is for. Don't fabricate content
-  to fill them; a one-line "TODO: …" stub is fine.
+  to fill them; a one-line "TODO: …" stub is fine. **Every page gets frontmatter**,
+  stubs included.
 
 Keep index.md and log.md minimal — they are navigation aids, not content.
 Tell the user you bootstrapped the corpus; don't make it a ceremony. Do **not**
 commit anything in this skill unless the user explicitly asks — the user
 controls when corpus changes land in git.
+
+---
+
+## 0b — Bootstrap the project's `codegraph` skill (the *what* layer)
+
+A corpus without a code graph leaks tokens on structural questions. During
+bootstrap (or when the user asks to add it), stand up the code-understanding layer
+as a **project** skill at `.claude/skills/codegraph/SKILL.md`.
+
+It lives in the **project**, never in personal skills — its whole value is the
+repo-specific accuracy envelope, and that cannot be written once and reused.
+
+**Do not skip the benchmark.** The tool is `tree-sitter + a heuristic resolver`,
+not a compiler: it does not type-check and does not do real module resolution.
+Vendor token-savings claims are real for the queries it's good at and irrelevant
+where it is silently wrong. Establish the envelope on *this* repo before writing a
+rule that tells an agent to trust it.
+
+1. **Install, pinned, and index.** It is MIT but effectively single-maintainer —
+   pin the version; that is a supply-chain surface even offline.
+
+   ```bash
+   npm i -g @colbymchenry/codegraph@<pin>
+   codegraph init
+   codegraph telemetry off        # defaults ON
+   codegraph status               # MUST say native backend; WASM fallback is 5–10× slower
+   ```
+
+   Gitignore the index dir (`.codegraph/`). Register the MCP server in `.mcp.json`
+   (`{"mcpServers":{"codegraph":{"command":"codegraph","args":["serve"]}}}`).
+
+2. **Benchmark against ground truth.** Pick oracles from *this* repo and compare
+   codegraph's answer to `grep`:
+
+   - A **cross-package barrel** symbol (defined in package A, re-exported through
+     its `index.ts`, consumed in package B). Pure tree-sitter tools return 0 here;
+     codegraph's resolver usually gets it. Confirm.
+   - A **widely-called function** — count files with a real call site
+     (`grep -rl "name("`) vs `codegraph callers name`. Expect **substantial
+     undercount**; measure it.
+   - **Duplicate exported names.** In any monorepo with parallel packages,
+     codegraph *conflates same-named symbols* and returns callers of only one:
+
+     ```bash
+     grep -rhoE "^export (function|class|const|interface|type) [A-Za-z0-9_]+" <pkgA> --include=*.ts | awk '{print $3}' | sort -u > /tmp/a
+     grep -rhoE "^export (function|class|const|interface|type) [A-Za-z0-9_]+" <pkgB> --include=*.ts | awk '{print $3}' | sort -u > /tmp/b
+     comm -12 /tmp/a /tmp/b
+     ```
+
+     Put that list **in the skill**. Those names are unsafe to query bare.
+
+3. **Write `.claude/skills/codegraph/SKILL.md`** with the measured envelope, not
+   the pitch: a *use it for* table (callers, impact/blast radius, first map of an
+   unfamiliar area) and an explicit *do NOT use it for* list — rename/"every
+   usage" completeness (use `grep -rnw`), ambiguous duplicate names, and any
+   correctness invariant a guard test already covers.
+
+4. **Add the knowledge-routing table to `corpus/routing.md`** (question shape →
+   layer), and file the benchmark as a wiki page (`wiki/code-graph.md`) so the
+   numbers are durable rather than rediscovered.
+
+**The working rule, everywhere:** lead with the graph to *locate* and *scope*;
+verify with `grep` or a guard test before *acting* on completeness. A cheap wrong
+answer is worse than no answer.
 
 ---
 
@@ -341,12 +474,16 @@ When the work is done and verified.
 When the user asks "what does the corpus/wiki say about X" / "how does Y work
 here".
 
-1. **Read `index.md` first** to find the relevant pages.
+1. **Read `index.md` first**; triage on the `summary:` lines. Respect the
+   **retrieval budget** — index plus at most 2–3 pages.
 2. Drill into the **wiki pages**, not the codebase — unless the wiki points you
    at specific code, or you need to verify a claim (see §8).
-3. If the answer is non-trivial **and reusable**, file it back as a new or
+3. **Structural questions are not wiki questions.** "Who calls X", "what breaks if
+   I change X", "where does feature Y live" go to the code graph (§0b), and
+   "did I get *every* usage" goes to `grep`. Check `routing.md` first.
+4. If the answer is non-trivial **and reusable**, file it back as a new or
    updated wiki page rather than letting it disappear into chat. Then answer.
-4. Honor the **source-of-truth ordering** (see Conventions) when pages disagree.
+5. Honor the **source-of-truth ordering** (see Conventions) when pages disagree.
 
 ---
 
@@ -371,16 +508,27 @@ the end of §4.
 
 ## 7 — Lint the corpus (periodic health check)
 
-When the user says "lint the corpus" / "is the wiki stale". Sweep for:
+When the user says "lint the corpus" / "is the wiki stale".
+
+**Run `bash corpus/lint.sh` first** — it mechanically catches missing frontmatter,
+broken relative links, oversized pages, and abandoned path roots. Fix those, then
+sweep by hand for what a script can't see:
 
 - **Contradictions** between pages (e.g. `decisions.md` vs `status.md`).
 - **Stale claims** — verify by reading the actual code or running the relevant
-  command before trusting (see §8).
+  command before trusting (see §8). The nastiest kind is a page whose *top-ranked
+  finding* was silently obsoleted by later work; the links still resolve, so only
+  reading the code catches it.
 - **Orphan pages** — no inbound link from `index.md` or another wiki page.
 - **Named-but-pageless concepts** — mentioned repeatedly, no page of their own.
 - **Drifted briefs** — a `done/` brief whose work has since been undone or
   replaced → move to `superseded/` with a one-line note.
-- **Over-long pages** — past ~200 lines or straddling two topics → split.
+- **Straddling pages** — two topics in one file → split, even under the line cap.
+- **Duplicated catalogs** — a list `index.md` maintains that another page owns.
+
+A large repo reorganization invalidates paths *en masse*; when the lint reports
+many broken links, resolve them by basename against the real tree rather than
+one at a time. Mark obsolete findings **obsolete** — don't delete the reasoning.
 
 Report findings as a short list; fix the cheap ones inline, surface the rest for
 the user to decide. Append a `## [<YYYY-MM-DD>] lint | …` entry to `log.md`
@@ -407,13 +555,21 @@ specific code.
 ## Conventions (load-bearing)
 
 - **Numbers are stable.** Never renumber a brief when it moves between dirs.
+- **Every wiki page carries `summary:` + `updated:` frontmatter**, and `index.md`
+  is generated from it (`bash corpus/lint.sh --index`). The summary is the
+  retrieval signal — write it for an agent deciding whether to open the page.
+- **The retrieval budget is a rule, not advice.** `index.md` + at most 2–3 pages.
+  Needing more means a page must split.
 - **Standard markdown links, relative to the file's own location** — not Obsidian
   `[[wikilinks]]`. Repos render in VSCode/GitHub, where standard links are
   clickable. (Code refs from `wiki/` are `../../src/...`; from
   `briefs/<area>/<state>/` they're one level deeper.)
 - **Absolute dates** (`2026-06-15`), never "yesterday".
-- **One concept per file.** Split a page that grows past ~200 lines or straddles
-  two topics.
+- **One concept per file.** Split a page that grows past ~200 body lines or
+  straddles two topics.
+- **The corpus is the *why*; a code graph is the *what*.** Never answer a
+  structural question from the wiki, and never write a code graph's output into
+  the wiki as fact (§0b).
 - **Source-of-truth ordering** when pages or beliefs disagree:
   1. The **actual code** wins over any wiki claim.
   2. A brief in **`done/`** wins over `wiki/` if the wiki hasn't caught up.
