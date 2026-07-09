@@ -107,7 +107,28 @@ Write an `index.md` cataloging the plans and describing how a run works
 
 ## 3 — Run the audit (browser-driven)
 
-Prefer a **Playwright MCP/browser tool** for interactive, exploratory runs.
+Prefer a **local, agent-native browser tool** for interactive, exploratory runs.
+**[agent-browser](https://github.com/vercel-labs/agent-browser)** (Vercel) is the
+recommended driver: it runs fully local over a persistent Rust/CDP daemon (warm,
+isolated, nothing leaves the machine), its accessibility snapshots are 2–4× leaner
+than other MCP browsers (`snapshot -i` for interactive-only), and its `click`
+accepts CSS/role/XPath selectors *and* hit-tests the target — it reports the
+covering element instead of clicking the wrong layer, which is exactly what an
+overlay/modal audit needs. Register it once so any harness picks it up:
+
+```bash
+claude mcp add agent-browser -- agent-browser mcp --tools core,network
+# …or drive it straight from a shell:
+#   agent-browser open <url> && agent-browser snapshot -i
+```
+
+This is the **exploratory / audit** lifecycle. Committed regression tests stay in
+**Playwright** (its own repo, `npx playwright test`) — different lifecycle, don't
+mix them. When a case is about *behavior under the hood* rather than the DOM —
+network calls, console errors, performance, or an accessibility/Lighthouse score
+(steps 6–7 below) — switch to
+[Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp),
+which exposes network/console/perf/Lighthouse and snapshots only on demand.
 
 1. **Bring up the seeded test server** per the hub README. Verify health before
    driving the UI.
@@ -132,11 +153,14 @@ Prefer a **Playwright MCP/browser tool** for interactive, exploratory runs.
 7. For the UI/UX audit plan: resize to mobile/tablet widths, trigger empty and
    loading states, check focus/Escape/backdrop on modals, and capture an
    accessibility snapshot if the tool offers one.
-8. **Tear down**: close the browser, stop the server, delete the throwaway DB,
-   remove any tool scratch dir (e.g. `.playwright-mcp/`), and **move every
-   screenshot** from the repo root into `playwright/screenshots/` (gitignored).
-   MCP browser tools drop *every* shot at the repo root, so this move is a
-   required step, not an occasional cleanup — skip it and you'll commit PNGs.
+8. **Tear down**: close the browser (`agent-browser close`), stop the server,
+   delete the throwaway DB, remove any tool scratch dir (e.g. `.playwright-mcp/`),
+   and **move every screenshot** from the repo root into `playwright/screenshots/`
+   (gitignored). Most MCP browser tools drop *every* shot at the repo root, so this
+   move is a required step, not an occasional cleanup — skip it and you'll commit
+   PNGs. (agent-browser takes the destination path directly —
+   `agent-browser screenshot "<selector>" playwright/screenshots/<plan-id>-<step>.png`
+   — so shots land in the gitignored dir and this move step isn't needed.)
 
 ## 4 — Record results + file findings
 
@@ -175,7 +199,9 @@ Resolved findings get closed in the tracker, not erased from history.
   `[ref=…]` IDs from an accessibility snapshot — some MCP builds reject ref
   targets outright (e.g. *"Unexpected token while parsing css selector"*), and
   refs churn between snapshots. Use the snapshot to *find* elements, CSS/role to
-  *act* on them.
+  *act* on them. agent-browser's `click`/`fill` take a CSS/XPath selector directly
+  (with `@e` refs as a fallback) and hit-test the click, so the selector form is
+  both the durable choice and the natural one here.
 - **Real pointer events for overlay/modal/pointer-events bugs.** A synthetic
   `.click()` dispatches straight to the resolved element and bypasses real pointer
   hit-testing — so it can succeed while a `pointer-events`/`z-index`/backdrop

@@ -1,6 +1,6 @@
 ---
 name: plan-split-dispatch
-description: Repo-agnostic implementation orchestrator. The controller (opus) plans a coding task, splits it into independent chunks, classifies each as hard or easy, then dispatches hard chunks to a subagent on opus ("senior") and easy chunks to a subagent on sonnet ("junior") — each a fresh subagent with curated context. Routes cheap tokens to cheap work. Use when the user says "split this into chunks", "implement with subagents", "plan with opus and do the easy parts on sonnet", "route by difficulty", "/plan-split-dispatch", or asks to carry out a multi-step coding task that decomposes into several independent pieces. NOT for one- or two-file changes — the orchestration tax outweighs the work; just edit those inline.
+description: Repo-agnostic implementation orchestrator. The controller (opus) plans a coding task, splits it into independent chunks, classifies each as hard or easy, then dispatches hard chunks to a subagent on opus ("senior") and easy chunks to a subagent on sonnet ("junior") — each a fresh subagent with curated context. Routes cheap tokens to cheap work. Use when the user says "split this into chunks", "implement with subagents", "plan with opus and do the easy parts on sonnet", "route by difficulty", "/plan-split-dispatch", or asks to carry out a multi-step coding task that decomposes into several independent pieces. Also runs a backlog of pre-written briefs in dependency waves with a verify+checkpoint gate between waves — say "build all the briefs", "run the backlog in waves", "be the master orchestrator". NOT for one- or two-file changes — the orchestration tax outweighs the work; just edit those inline.
 ---
 
 # Plan, Split, Dispatch — model-routed subagent implementation
@@ -35,6 +35,9 @@ if it exists; otherwise infer per-chunk context as usual.
   propagation, formatting).
 - The user invokes `/plan-split-dispatch`, or asks to "split this up", "do the
   easy parts on sonnet", "route by difficulty", or "implement with subagents".
+- A **backlog of pre-written briefs** (e.g. `corpus/briefs/todo/*`) with
+  dependencies between them needs building — run them in dependency waves. See
+  **Backlog / wave mode** below.
 
 ## When NOT to use
 
@@ -174,6 +177,9 @@ than working around it.
 - Concerns (if DONE_WITH_CONCERNS)
 - Blocker (if BLOCKED — be specific)
 - Missing info (if NEEDS_CONTEXT — name exactly what)
+- **Handoff for dependents** (backlog/wave mode): the exact signatures, paths, and
+  data shapes this chunk/brief produced that downstream work must consume. This is
+  the connective tissue — the controller pastes it into dependent prompts.
 
 Do not commit, push, or open a PR. The controller handles integration.
 ```
@@ -207,7 +213,9 @@ must change between attempts.
 
 After Step 3 approval, **execute the whole plan** without checking in between
 chunks. Valid stops: an unresolvable `BLOCKED`, genuinely blocking ambiguity, or
-all chunks done.
+all chunks done. (**Exception — backlog/wave mode:** stop at each wave boundary to
+run the **Verify gate** and checkpoint, then continue. Within a wave, still run
+straight through.)
 
 You coordinate; subagents produce the heavy text. Keep your between-chunk
 messages to a few status lines ("Chunk 3 dispatched (senior)…", "Chunk 3 DONE,
@@ -238,6 +246,58 @@ Skip review on small runs — say so explicitly rather than silently dropping it
 
 Do not commit, push, or open a PR yourself unless the user asked — hand off
 cleanly.
+
+## Verify gate (between waves, and before final delivery)
+
+A subagent reporting "tests pass" is **not** sufficient — verify it yourself, from
+the controller, against the integrated tree. Run, in order, and do **not** proceed
+past a failure:
+
+1. **Typecheck** the whole workspace (the repo's typecheck cmd, e.g. `npm run typecheck`).
+2. **Build** every package that emits artifacts dependents consume (a downstream
+   wave often resolves a dependency from its built `dist/`, not source).
+3. **Tests** for the packages touched this wave — and confirm prior waves still pass.
+4. **Tracked, not just on-disk** (the silent-ignore check): `git status --porcelain`
+   must list the expected new files, and `git check-ignore <new-source-dir>` must be
+   empty for any new source directory. A chunk can build and test green entirely from
+   files git is **ignoring** (e.g. an over-broad `store/` rule that also hides
+   `src/store/`); this step catches that before it ships as "done".
+
+On failure: fix in place — re-dispatch the owning chunk with the specific error —
+before the next wave. Never let unverified breakage flow into a dependent wave; that
+cascade is the whole reason this gate exists.
+
+## Backlog / wave mode
+
+Use this when the unit of work is a **set of pre-written briefs** with dependencies
+between them (e.g. `corpus/briefs/todo/*`), not chunks of one fresh task. The briefs
+already are the chunks; your job is to order, dispatch, verify, and integrate them.
+
+1. **Build the dependency DAG.** Read each brief's *depends-on*, *Files you OWN*, and
+   *Files you must NOT touch*. An edge = brief B consumes a file or contract brief A
+   owns. (If briefs don't declare ownership, infer it — and prefer adding it.)
+2. **Group into waves.** A wave = every brief whose dependencies are all already done.
+   Two briefs are **parallel-safe in the same wave iff their OWN sets are disjoint** —
+   this, not worktrees, is the cheap parallelism lever (see Configuration → Parallel
+   dispatch). Dispatch a wave as multiple `Agent` calls in **one** message.
+3. **Carry contracts forward.** Harvest each completed brief's **Handoff for dependents**
+   and paste the relevant pieces into the prompts of briefs that depend on it. Dependent
+   briefs are only as accurate as the contracts you thread in — don't make them re-derive
+   an interface a prior brief already pinned down.
+4. **Verify gate + checkpoint between waves.** After each wave, run the **Verify gate**.
+   Then, if the user asked for per-brief / per-wave commits, commit each completed brief
+   separately on the current branch (never a protected branch without asking). Only then
+   dispatch the next wave. Present a one-line wave plan up front so the user sees the
+   shape (`01 → 02‖08 → 03 → 04‖06 → 05 → 07`).
+5. **Standing authorization.** If the user pre-authorized the whole build ("build all the
+   briefs", "be the master orchestrator", "just go"), present the wave plan **once** and
+   execute through it — don't re-gate every wave. Reserve the Step-3 confirm gate for
+   genuinely ambiguous scope. Closeout (move briefs to done, log, fold findings —
+   including any deviations/discovered-gaps the agents reported — into the wiki) is the
+   controller's, via `corpus-flow` §4.
+
+Each brief is dispatched with the Step-4 template and must return a **Handoff for
+dependents** section.
 
 ## Configuration
 

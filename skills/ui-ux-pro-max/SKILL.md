@@ -118,6 +118,7 @@ This Skill is not needed in the following situations:
 - `main-thread-budget` - Keep per-frame work under ~16ms for 60fps; move heavy tasks off main thread (HIG, MD)
 - `progressive-loading` - Use skeleton screens / shimmer instead of long blocking spinners for >1s operations (Apple HIG)
 - `input-latency` - Keep input latency under ~100ms for taps/scrolls (Material responsiveness standard)
+- `verify-perf-live` - For web, don't guess at these — measure. Run [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp) locally: `performance_start_trace` around a navigation, or `lighthouse_audit` for a scored pass on Core Web Vitals (LCP/CLS/INP), plus `list_network_requests` to catch unoptimized/oversized assets. Chrome-only, runs offline.
 - `tap-feedback-speed` - Provide visual feedback within 100ms of tap (Apple HIG)
 - `debounce-throttle` - Use debounce/throttle for high-frequency events (scroll, resize, input)
 - `offline-support` - Provide offline state messaging and basic fallback (PWA / mobile)
@@ -144,6 +145,7 @@ This Skill is not needed in the following situations:
 - `viewport-meta` - width=device-width initial-scale=1 (never disable zoom)
 - `mobile-first` - Design mobile-first, then scale up to tablet and desktop
 - `breakpoint-consistency` - Use systematic breakpoints (e.g. 375 / 768 / 1024 / 1440)
+- `verify-breakpoints-live` - For web, confirm each breakpoint in a real browser, not only in code. Drive it locally with [agent-browser](https://github.com/vercel-labs/agent-browser): open the page, set the viewport to each width (375 / 768 / 1024 / 1440), and `agent-browser screenshot --full` per width to catch horizontal scroll, clipped content, and reflow bugs. Runs offline over a warm CDP daemon — private and repeatable. (Exact viewport/device flags: `agent-browser skills get core`.)
 - `readable-font-size` - Minimum 16px body text on mobile (avoids iOS auto-zoom)
 - `line-length-control` - Mobile 35–60 chars per line; desktop 60–75 chars
 - `horizontal-scroll` - No horizontal scroll on mobile; ensure content fits viewport width

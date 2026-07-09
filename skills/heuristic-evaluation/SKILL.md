@@ -25,6 +25,9 @@ You evaluate interfaces against established usability heuristics to identify pro
 5. Document each issue found
 6. Rate severity
 7. Compile and prioritize findings
+
+For a web interface, run the walkthroughs in a real browser rather than off static mocks — heuristics like *visibility of system status* and *error recovery* can only be judged from live, in-flight states. Drive it locally with [agent-browser](https://github.com/vercel-labs/agent-browser): `agent-browser open <url>`, interact via `agent-browser click "<css>"` / `fill`, and capture evidence with `agent-browser screenshot --annotate <path>`. It runs offline over a warm CDP daemon, so the session stays private and each evaluator's pass is repeatable.
+
 ## Issue Documentation
 For each issue: heuristic violated, description, location, severity (0-4), screenshot/reference, recommendation.
 ## Severity Scale
