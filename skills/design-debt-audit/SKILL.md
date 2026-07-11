@@ -31,7 +31,7 @@ Design debt is any gap between the current state of the product and the standard
 ## Audit Process
 ### 1. Scope and Inventory
 - Define audit scope: full product, one feature area, or one platform
-- Screenshot every screen/state in scope — empty, loading, and error states too, not just the happy path. For a web product, capture them with a local driver so the pass is repeatable and nothing leaves the machine: [agent-browser](https://github.com/vercel-labs/agent-browser) — `agent-browser open <url>` then `agent-browser screenshot --annotate <path>` per state. Its `--annotate` overlay numbers every interactive element, so duplicated treatments (three button styles doing one job) surface in the inventory itself.
+- Screenshot every screen/state in scope — empty, loading, and error states too, not just the happy path. For a web product, capture them with a local driver so the pass is repeatable and nothing leaves the machine: [agent-browser](https://github.com/vercel-labs/agent-browser) — `agent-browser open <url>` then `agent-browser screenshot --annotate <path>` per state. Its `--annotate` overlay numbers every interactive element, so duplicated treatments (three button styles doing one job) surface in the inventory itself. For screens behind a login: agent-browser does *not* persist auth automatically, so `agent_browser_state_save` to an absolute path outside the repo (a bare name writes the auth-state JSON into the repo root) and `open --restore <key>` on later runs; open `--headed` for a supervised MFA login.
 - Catalog by screen type, component type, or user flow
 ### 2. Classify Debt
 For each screen or component, tag:

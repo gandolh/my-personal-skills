@@ -130,6 +130,17 @@ network calls, console errors, performance, or an accessibility/Lighthouse score
 [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-devtools-mcp),
 which exposes network/console/perf/Lighthouse and snapshots only on demand.
 
+**Authenticated runs and session state.** agent-browser does *not* persist auth
+automatically. For a flow that needs a login, save the session explicitly after
+signing in: `agent_browser_state_save` (CLI: `agent-browser state save`) to an
+**absolute path outside the repo** (a bare name writes the auth-state JSON into
+the repo root, where it gets committed by accident), then reuse it next run with
+`open --restore <key>`. Both agent-browser and Chrome DevTools MCP run **headless
+by default**; for a *supervised* login where you type a password or MFA code by
+hand, open a visible window (`agent-browser open <url> --headed`). Chrome DevTools
+MCP runs `--isolated` (fresh profile every run, nothing persists by design), so
+re-auth there each run or use agent-browser for anything stateful.
+
 1. **Bring up the seeded test server** per the hub README. Verify health before
    driving the UI.
 2. Walk each plan's cases in order. For interactive flows, actually perform them

@@ -1,6 +1,6 @@
 ---
 name: bootstrap-vps-deploy
-description: Scaffold a repeatable, zero-dependency deploy into any repo for a Caddy VPS — a single deploy.ts (Node ≥22.6 type-stripping, no tsx/compile) with pre-deploy | deploy | server | all phases that ships a static client under a Caddy sub-path AND/OR a long-lived Node service under pm2, without disturbing other projects on a shared VPS. Use when the user says "bootstrap the deploy", "set up deploy for this repo", "add the deploy scaffold", "deploy like the game project", "/bootstrap-vps-deploy", or wants the proven deploy/deploy.ts + Caddy-snippet + pm2 pattern dropped into a new project.
+description: Scaffold a repeatable, zero-dependency deploy into any repo for a Caddy VPS — a single deploy.ts (Node ≥22.6 type-stripping, no tsx/compile) with pre-deploy | deploy | server | all phases that ships a static client under a Caddy sub-path AND/OR a long-lived Node service under pm2, without disturbing other projects on a shared VPS. Use when the user says "bootstrap the deploy", "set up deploy for this repo", "add the deploy scaffold", "/bootstrap-vps-deploy", or wants a self-contained deploy/deploy.ts + Caddy-snippet + pm2 pattern dropped into a new project.
 ---
 
 # Bootstrap a VPS Deploy (Caddy sub-path static + pm2 service)

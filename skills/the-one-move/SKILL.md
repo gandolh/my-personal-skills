@@ -3,7 +3,7 @@ name: the-one-move
 description: Use BEFORE building a new frontend (landing page, marketing site, hero, campaign, portfolio) to commit a non-generic STRUCTURE first — the one bold structural move, the composition skeleton, the concrete subject, the hierarchy — so the build doesn't default to the AI template (centered hero stack, equal-box grids, eyebrow-on-every-section). Generative and upfront, not an audit. Produces a short structural brief, then hands off to the `impeccable` skill to build it. Reach for it when a design "looks AI-generated", "too generic", "like a template", or when starting a brand/marketing surface from scratch. Narrow by design — it decides STRUCTURE, not palette/type/copy polish (that's impeccable). Not for app/dashboard/product UI where the layout is constrained by the task, and not for backend work.
 version: 0.1.0
 user-invocable: true
-argument-hint: "[target — what you're about to build, e.g. 'the towing site hero', 'a landing page for X']"
+argument-hint: "[target — what you're about to build, e.g. 'a product landing hero', 'a landing page for X']"
 license: Apache 2.0
 ---
 

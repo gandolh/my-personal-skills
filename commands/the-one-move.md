@@ -1,6 +1,6 @@
 ---
 description: Commit a non-generic STRUCTURE before building a frontend — the one bold structural move, composition skeleton, subject, and hierarchy — so the build doesn't default to the AI template. Hands off to impeccable to build it.
-argument-hint: "[what you're about to build — e.g. 'the towing site hero', 'a landing page for X']"
+argument-hint: "[what you're about to build — e.g. 'a product landing hero', 'a landing page for X']"
 ---
 # /the-one-move
 

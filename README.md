@@ -59,6 +59,12 @@ Each preset defers to `impeccable`'s anti-slop bans on conflict.
 - **`ui-test-plans`** — plain-text UI test plans + a Playwright run-hub, screenshots gitignored.
 - **`plan-split-dispatch`** — repo-agnostic implementation orchestrator: opus plans and splits a task into independent chunks, then dispatches hard chunks to a subagent on opus and easy chunks to a subagent on sonnet — routing cheap tokens to cheap work.
 
+### Research, performance & code understanding
+
+- **`web-research`** — sourced, fact-checked research reports: web searches run inline (token-efficient), subagents only for codebase exploration (with a gate before fanning out beyond 5), model-routed (Opus for synthesis/verification, Sonnet for lookups). Ships a comprehensive Markdown report plus a concise, results-first HTML digest.
+- **`performance-analysis`** — measure a live web page with Chrome DevTools MCP (Core Web Vitals, performance traces, Lighthouse, network/console), then rank fixes by measured impact. Local, Chrome-only.
+- **`codegraph`** — understand and safely change unfamiliar code: lead with a code knowledge graph to scope (impact/blast radius, callers), verify with grep+read where correctness matters. Repo-agnostic method; pairs with `corpus-flow`'s per-repo code-graph layer.
+
 ## Licensing & attribution
 
 This plugin vendors third-party skills, each retaining its original license (MIT / Apache-2.0).

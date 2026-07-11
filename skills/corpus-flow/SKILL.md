@@ -226,63 +226,42 @@ controls when corpus changes land in git.
 
 ---
 
-## 0b — Bootstrap the project's `codegraph` skill (the *what* layer)
+## 0b — Add the code-graph layer (the *what*)
 
-A corpus without a code graph leaks tokens on structural questions. During
-bootstrap (or when the user asks to add it), stand up the code-understanding layer
-as a **project** skill at `.claude/skills/codegraph/SKILL.md`.
+The corpus is the **why** layer (synthesis, decisions, status). A generated code
+graph is the complementary **what** layer — call graph and impact/blast radius
+for change-planning. A corpus without it leaks tokens on structural questions
+("who calls X", "what breaks if I change Y"). During bootstrap, or when the user
+asks to add it, stand this layer up.
 
-It lives in the **project**, never in personal skills — its whole value is the
-repo-specific accuracy envelope, and that cannot be written once and reused.
+**The method lives in the personal [`codegraph`](../codegraph/SKILL.md) skill** —
+the graph-first / grep-verify loop, the pinned install, the accuracy-envelope
+benchmark, and the when-to-trust-vs-verify triggers. Follow it; do **not**
+re-derive it here. This section is only how the result plugs into the corpus:
 
-**Do not skip the benchmark.** The tool is `tree-sitter + a heuristic resolver`,
-not a compiler: it does not type-check and does not do real module resolution.
-Vendor token-savings claims are real for the queries it's good at and irrelevant
-where it is silently wrong. Establish the envelope on *this* repo before writing a
-rule that tells an agent to trust it.
+1. **Bootstrap per the `codegraph` skill.** Install pinned (`@colbymchenry/codegraph@<pin>`
+   — MIT but effectively single-maintainer, a supply-chain surface even offline),
+   `codegraph init`, telemetry off, confirm the native backend, gitignore
+   `.codegraph/`, and register the MCP in `.mcp.json`. **Do not skip its
+   benchmark** — the tool is `tree-sitter + a heuristic resolver`, not a compiler,
+   so token-savings claims hold only for the queries it is good at and it is
+   silently wrong elsewhere. The envelope is per-repo.
 
-1. **Install, pinned, and index.** It is MIT but effectively single-maintainer —
-   pin the version; that is a supply-chain surface even offline.
+2. **Write the per-repo project skill** at `.claude/skills/codegraph/SKILL.md`
+   carrying the *measured* envelope: a *use it for* table (callers, impact/blast
+   radius, first map of an unfamiliar area) and an explicit *do NOT use it for*
+   list — rename/"every usage" completeness (use `grep -rnw`), the conflated
+   duplicate-name list from the benchmark, and any correctness invariant a guard
+   test already covers. It lives in the **project**, never in personal skills:
+   its whole value is the repo-specific accuracy numbers, which cannot be written
+   once and reused. (The personal `codegraph` skill supplies the method; the
+   project skill records what the method measured *here*.)
 
-   ```bash
-   npm i -g @colbymchenry/codegraph@<pin>
-   codegraph init
-   codegraph telemetry off        # defaults ON
-   codegraph status               # MUST say native backend; WASM fallback is 5–10× slower
-   ```
-
-   Gitignore the index dir (`.codegraph/`). Register the MCP server in `.mcp.json`
-   (`{"mcpServers":{"codegraph":{"command":"codegraph","args":["serve"]}}}`).
-
-2. **Benchmark against ground truth.** Pick oracles from *this* repo and compare
-   codegraph's answer to `grep`:
-
-   - A **cross-package barrel** symbol (defined in package A, re-exported through
-     its `index.ts`, consumed in package B). Pure tree-sitter tools return 0 here;
-     codegraph's resolver usually gets it. Confirm.
-   - A **widely-called function** — count files with a real call site
-     (`grep -rl "name("`) vs `codegraph callers name`. Expect **substantial
-     undercount**; measure it.
-   - **Duplicate exported names.** In any monorepo with parallel packages,
-     codegraph *conflates same-named symbols* and returns callers of only one:
-
-     ```bash
-     grep -rhoE "^export (function|class|const|interface|type) [A-Za-z0-9_]+" <pkgA> --include=*.ts | awk '{print $3}' | sort -u > /tmp/a
-     grep -rhoE "^export (function|class|const|interface|type) [A-Za-z0-9_]+" <pkgB> --include=*.ts | awk '{print $3}' | sort -u > /tmp/b
-     comm -12 /tmp/a /tmp/b
-     ```
-
-     Put that list **in the skill**. Those names are unsafe to query bare.
-
-3. **Write `.claude/skills/codegraph/SKILL.md`** with the measured envelope, not
-   the pitch: a *use it for* table (callers, impact/blast radius, first map of an
-   unfamiliar area) and an explicit *do NOT use it for* list — rename/"every
-   usage" completeness (use `grep -rnw`), ambiguous duplicate names, and any
-   correctness invariant a guard test already covers.
-
-4. **Add the knowledge-routing table to `corpus/routing.md`** (question shape →
-   layer), and file the benchmark as a wiki page (`wiki/code-graph.md`) so the
-   numbers are durable rather than rediscovered.
+3. **Make the numbers durable in the corpus.** File the benchmark as a
+   `wiki/code-graph.md` page, and add the knowledge-routing table to
+   `corpus/routing.md` (question shape → layer: wiki / code graph / grep / tests)
+   so the graph becomes a first-class member of this project's structure, not a
+   rediscovered afterthought.
 
 **The working rule, everywhere:** lead with the graph to *locate* and *scope*;
 verify with `grep` or a guard test before *acting* on completeness. A cheap wrong

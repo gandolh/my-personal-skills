@@ -26,7 +26,7 @@ You evaluate interfaces against established usability heuristics to identify pro
 6. Rate severity
 7. Compile and prioritize findings
 
-For a web interface, run the walkthroughs in a real browser rather than off static mocks — heuristics like *visibility of system status* and *error recovery* can only be judged from live, in-flight states. Drive it locally with [agent-browser](https://github.com/vercel-labs/agent-browser): `agent-browser open <url>`, interact via `agent-browser click "<css>"` / `fill`, and capture evidence with `agent-browser screenshot --annotate <path>`. It runs offline over a warm CDP daemon, so the session stays private and each evaluator's pass is repeatable.
+For a web interface, run the walkthroughs in a real browser rather than off static mocks — heuristics like *visibility of system status* and *error recovery* can only be judged from live, in-flight states. Drive it locally with [agent-browser](https://github.com/vercel-labs/agent-browser): `agent-browser open <url>`, interact via `agent-browser click "<css>"` / `fill`, and capture evidence with `agent-browser screenshot --annotate <path>`. It runs offline over a warm CDP daemon, so the session stays private and each evaluator's pass is repeatable. If the app needs a login, agent-browser does *not* persist auth automatically: save the session with `agent_browser_state_save` to an absolute path outside the repo (a bare name lands the auth-state JSON in the repo root) and reuse it via `open --restore <key>`; open `--headed` when you have to type an MFA code by hand.
 
 ## Issue Documentation
 For each issue: heuristic violated, description, location, severity (0-4), screenshot/reference, recommendation.
