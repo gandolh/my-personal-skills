@@ -98,6 +98,8 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | New idea/task to capture | capture | corpus-flow: add todo |
 | Ready to build, ≥3 chunks | build | brief → plan-split-dispatch |
 | Ready to build, 1–2 files | build (small) | brief → implement inline |
+| Research a topic / compare options / sourced report | research | web-research |
+| Measure live web performance | perf | performance-analysis |
 | MR/PR open, not ready | review | <review skill> |
 | Branch ahead, ship intent | PR open | <PR skill> |
 | "what does the wiki say about X" | query | corpus-flow: query wiki |
@@ -170,6 +172,8 @@ generic spine:
 | New idea/task to keep | **capture** | `corpus-flow` §1 — add a todo |
 | Ready to build, decomposes into ≥3 chunks | **build (dispatched)** | ensure a brief (`corpus-flow` §2), then `plan-split-dispatch` |
 | Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
+| Research a topic / compare options / sourced report | **research** | `web-research` — inline searches, twin MD report + HTML digest |
+| Measure a live page's performance | **perf** | `performance-analysis` — Chrome DevTools MCP, ranked by measured impact |
 | MR/PR open, not "ready to merge" | **review** | routing.md review skill, else a `general-purpose` agent over the diff |
 | Branch ahead of base, ship intent | **PR open** | routing.md PR skill, else propose git commands |
 | "what does the wiki say about X" | **query** | `corpus-flow` §5 — query the wiki |

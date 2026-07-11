@@ -58,6 +58,7 @@ Each preset defers to `impeccable`'s anti-slop bans on conflict.
 - **`grill-me`** — interview-style plan/design stress-testing.
 - **`ui-test-plans`** — plain-text UI test plans + a Playwright run-hub, screenshots gitignored.
 - **`plan-split-dispatch`** — repo-agnostic implementation orchestrator: opus plans and splits a task into independent chunks, then dispatches hard chunks to a subagent on opus and easy chunks to a subagent on sonnet — routing cheap tokens to cheap work.
+- **`init-personal-repo`** — wire a repo into this workflow: idempotently adds a delimited managed block to the repo-root `CLAUDE.md` (start with `/orchestrate`; intent→skill map), bootstraps the `corpus/` workspace, and offers the codegraph layer. Only ever adds/updates its own block — never rewrites your `CLAUDE.md`.
 
 ### Research, performance & code understanding
 
