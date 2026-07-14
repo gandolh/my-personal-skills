@@ -26,7 +26,18 @@ corpus/
     todo/  done/  superseded/
   wiki/             LLM-curated synthesis pages — the actual knowledge base
     overview.md, architecture.md, decisions.md, status.md, open-questions.md, …
+  test-plans/       (optional) plain-text browser test plans + latest RESULTS
+    index.md  TP-NN-<slug>.md …  RESULTS.md
 ```
+
+`test-plans/` is an **optional adjacent layer** — present only in projects with a
+UI worth walking in a real browser. It holds plain-text, human-or-agent-runnable
+plans (one `TP-NN-<slug>.md` per area, an `index.md` catalog, a `RESULTS.md`
+snapshot of the latest run); the actual browser bring-up/fixtures live outside
+the corpus (e.g. a gitignored `playwright/` hub). It is **authored by the
+[`ui-test-plans`](../ui-test-plans/SKILL.md) skill**, not this one — corpus-flow
+just gives it a home so runs feed findings back as todos/briefs and a `log.md`
+line. Skip it entirely for backend/CLI/library projects.
 
 1. **briefs/** — raw, **immutable**. Each file is a task spec used to direct a
    slice of work (often by a subagent). Once in `done/` or `superseded/`, do
