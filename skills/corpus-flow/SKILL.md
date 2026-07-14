@@ -239,13 +239,24 @@ the graph-first / grep-verify loop, the pinned install, the accuracy-envelope
 benchmark, and the when-to-trust-vs-verify triggers. Follow it; do **not**
 re-derive it here. This section is only how the result plugs into the corpus:
 
-1. **Bootstrap per the `codegraph` skill.** Install pinned (`@colbymchenry/codegraph@<pin>`
-   — MIT but effectively single-maintainer, a supply-chain surface even offline),
-   `codegraph init`, telemetry off, confirm the native backend, gitignore
-   `.codegraph/`, and register the MCP in `.mcp.json`. **Do not skip its
-   benchmark** — the tool is `tree-sitter + a heuristic resolver`, not a compiler,
-   so token-savings claims hold only for the queries it is good at and it is
-   silently wrong elsewhere. The envelope is per-repo.
+1. **Bootstrap per the `codegraph` skill, and commit the wiring.** Install pinned
+   (`@colbymchenry/codegraph@<pin>`, MIT but effectively single-maintainer, a
+   supply-chain surface even offline), `codegraph init`, telemetry off, confirm
+   the native backend, gitignore `.codegraph/`. **Commit the MCP registration into
+   the repo `.mcp.json`** rather than leaning on a per-dev `codegraph install`: a
+   manual per-dev step reliably never gets run, so the graph tool silently stays
+   absent from most sessions and the whole layer goes dead (the failure mode this
+   skill exists to prevent). Point the server at the index with an
+   env-overridable path so **one canonical index is shared read-only across
+   worktrees** instead of re-`init`ed per throwaway tree:
+   `serve --mcp --no-watch --path ${CODEGRAPH_INDEX_PATH:-<index-dir>}` (Claude
+   Code expands `${VAR:-default}` in `.mcp.json`, so the committed default works
+   for a single checkout while worktree users export the absolute path once). Wrap
+   the build in a one-command task-runner script (e.g. `npm run codegraph:init` /
+   `codegraph:sync`) so onboarding is one line, not a hunt through the docs.
+   **Do not skip its benchmark**: the tool is `tree-sitter + a heuristic
+   resolver`, not a compiler, so token-savings claims hold only for the queries it
+   is good at and it is silently wrong elsewhere. The envelope is per-repo.
 
 2. **Write the per-repo project skill** at `.claude/skills/codegraph/SKILL.md`
    carrying the *measured* envelope: a *use it for* table (callers, impact/blast
