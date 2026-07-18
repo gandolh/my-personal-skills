@@ -181,6 +181,8 @@ generic spine:
 
 If two match, prefer the later phase. If still ambiguous, present alternatives in Step 5.
 
+**Research and design are gated, not auto-built.** `research` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** (see `web-research`), not fanned out to a subagent, unless the user asks otherwise.
+
 ---
 
 ## Step 4 — Scope (for build intents)

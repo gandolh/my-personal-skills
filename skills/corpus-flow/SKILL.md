@@ -455,7 +455,16 @@ When the work is done and verified.
    ```
 
    Other entry kinds: `todo` (brief filed), `maintenance`, `incident`,
-   `decision`, `ingest`, `lint`.
+   `decision`, `ingest`, `lint`, `resume`.
+
+   A **`resume`** entry is the checkpoint written when a long run is paused (e.g.
+   the user hits a quota/usage limit and asks to stop for a fresh session). It
+   captures enough for a **cold start next session**: what is done (with the
+   contracts dependents need), what is in-flight or next, the branch + last
+   commit, and any open decisions. `plan-split-dispatch` wave-mode writes one at a
+   wave boundary; keep it at the bottom of `log.md` (or a dedicated
+   `corpus/resume-<YYYY-MM-DD>.md` when the state is large) so the next session
+   reads it first.
 3. **Fold durable findings into `wiki/`** (this is the step that makes it a
    wiki, not a task tracker). If the work changed how the system behaves or
    revealed something reusable, update the affected synthesis page(s) —

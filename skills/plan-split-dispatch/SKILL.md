@@ -321,6 +321,15 @@ already are the chunks; your job is to order, dispatch, verify, and integrate th
    including any deviations/discovered-gaps the agents reported — into the wiki) is the
    controller's, via `corpus-flow` §4.
 
+6. **Pause & checkpoint on demand (quota / session boundary).** If the user says they are
+   near a quota/usage limit or asks to pause, **stop at the next wave boundary** (never
+   mid-wave with subagents in flight) and write a durable resume point to the corpus before
+   ending: which waves/briefs are **done** (with their Handoff-for-dependents contracts),
+   which are **in-flight or next**, the current branch + last commit, and any open decisions.
+   Put it at `corpus/log.md` (or a `corpus/resume-<date>.md` brief) so a **fresh session can
+   pick up cold** without re-deriving state. Confirm what was written and stop — do not start
+   another wave. This is a first-class action, not a failure mode.
+
 Each brief is dispatched with the Step-4 template and must return a **Handoff for
 dependents** section.
 
