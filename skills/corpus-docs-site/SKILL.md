@@ -260,3 +260,19 @@ and `/reference/core` load. Confirm the root `npm run docs` is green too.
 - [ ] Landing + architecture + reference pages authored, short and graphic.
 - [ ] `npm run docs` green from root; verified in a browser (white, tiles
       correct, reference loads).
+
+
+## Diagrams and prose quality
+
+Two companion skills finish the docs rather than duplicate them:
+
+- **`diagram-design`** — the narrative half of a docs site is where a diagram earns
+  its place: architecture, data flow, lifecycle, decision trees. Generate them as
+  self-contained HTML+SVG and commit the output next to the page that uses it.
+  Prefer one diagram that shows the real mechanism over three that restate the
+  headings. Regenerate when `corpus/wiki/architecture.md` changes — a diagram that
+  disagrees with the page it sits on is worse than no diagram.
+- **`writing-guidelines`** — run over `docs/src/content/` before a docs release.
+  Because the narrative is *generated from* `corpus/wiki/`, findings usually belong
+  upstream: fix the wiki page, re-run the sync, don't patch the rendered output.
+  Terminology findings in particular are a `corpus/wiki/glossary.md` problem.
