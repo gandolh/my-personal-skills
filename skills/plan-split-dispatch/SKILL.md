@@ -240,7 +240,7 @@ messages to a few status lines ("Chunk 3 dispatched (senior)…", "Chunk 3 DONE,
 plan each turn — one giant turn risks the output-token cap and can lose the run.
 Save detail for the final summary.
 
-### Step 7 — Optional review
+### Step 7 — Review gate
 
 If the run was non-trivial (or the user asks), review the cumulative diff
 (`git diff <base>...HEAD` — also `git diff HEAD` if uncommitted). For a substantial
@@ -255,8 +255,24 @@ their findings yourself, and dispatch **one fix agent whose tier follows the fix
 (haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
 correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
 generalist pass routinely misses (it has, every time). A repo review skill/command can
-stand in for a finder. Skip review on small runs — say so explicitly rather than silently
-dropping it.
+stand in for a finder.
+
+**This gate is mandatory for any multi-file run.** Skip it only on a genuinely small
+run (1–2 files, one chunk), and say so explicitly rather than silently dropping it.
+
+**Fix loop — bounded, and it escalates.** Consolidated findings are worked in rounds,
+not in one pass:
+
+| Round | Who fixes | Rule |
+|---|---|---|
+| 1–3 | tier follows the fix (haiku/sonnet mechanical, opus subtle) | re-verify the gates after each round |
+| 4–5 | **escalate one tier above the original implementer** | the chunk's owner has now failed twice — a fresh pair of eyes on a stronger model is cheaper than a sixth round |
+| >5 | **stop and surface it** | five rounds means the chunk was mis-specified or the design is wrong. Report it as `needs-discussion`, do not keep grinding. |
+
+Only **Critical** and **Important** findings gate the run. Log the rest into the
+delivery report as known-and-accepted rather than fixing them silently — an
+unrequested "while I was in there" fix is how a clean run turns into an unreviewable
+diff.
 
 ### Step 8 — Deliver
 
@@ -266,17 +282,50 @@ dropping it.
 **Chunks:** N senior + M junior, all DONE
 **Files changed:** <count / list>
 **Review verdict:** ship | fix-required | needs-discussion | skipped (small run)
+**Fix rounds:** <n> (escalated: yes/no)
+**Accepted, not fixed:** <minor findings logged but left>
 **Suggested next:** <commit / open a PR / run the repo's PR skill>
 ```
 
 Do not commit, push, or open a PR yourself unless the user asked — hand off
 cleanly.
 
+## The ruling ledger (survives compaction)
+
+A long dispatch run outlives its own context. When the controller's window compacts,
+the *decisions* are what get lost first — why a chunk was split this way, why a
+finding was rejected, why a chunk was re-dispatched — and a controller that has
+forgotten its own rulings will happily re-litigate them or contradict them.
+
+So **append one line to a running ledger every time you decide something a future
+controller would otherwise have to guess at**:
+
+```
+## Rulings
+- [chunk 3] split from chunk 2 — shared store, cannot run in parallel
+- [chunk 5] re-dispatched on opus — sonnet missed the async boundary twice
+- [finding 11] rejected — by-design, corpus/wiki/decisions.md "no .js suffixes"
+- [wave 2] gate failed on build, not tests — dist/ was stale, not a code bug
+```
+
+Keep it in the run's working notes, and **restate it in the Step 8 delivery**. If the
+run is brief-backed, fold the durable ones into `log.md` at closeout via `corpus-flow` §4.
+Rulings are decisions, not narration — do not log "started chunk 4."
+
 ## Verify gate (between waves, and before final delivery)
 
 A subagent reporting "tests pass" is **not** sufficient — verify it yourself, from
-the controller, against the integrated tree. Run, in order, and do **not** proceed
-past a failure:
+the controller, against the integrated tree.
+
+> **The iron law: no completion claim without fresh verification evidence.**
+> If you have not run the command *in this turn*, you cannot say it passes. Not
+> "should pass", not "passed earlier", not "the agent said it passes". Before
+> claiming any status: name the command that proves it, run it in full, read the
+> exit code and the failure count, and only then make the claim — **with** the
+> evidence. A green claim on stale evidence is the single most expensive thing
+> that happens in a long run, because every later wave is built on it.
+
+Run, in order, and do **not** proceed past a failure:
 
 1. **Typecheck** the whole workspace (the repo's typecheck cmd, e.g. `npm run typecheck`).
 2. **Build** every package that emits artifacts dependents consume (a downstream
