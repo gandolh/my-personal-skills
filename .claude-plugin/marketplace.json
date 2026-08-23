@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "A workflow-and-design skill library for Claude Code: one front door, a project wiki, model-routed dispatch, and a full design/docs layer.",
-    "version": "0.28.0"
+    "version": "0.29.0"
   },
   "plugins": [
     {
       "name": "personal-skills",
       "source": "./",
       "description": "One front door for work in any repo. /orchestrate ensures a corpus/ workspace and routes capture to corpus-flow (wiki + glossary + briefs), build to plan-split-dispatch (hard chunks to opus, easy to sonnet, with a mandatory review gate and bounded fix loop), audit to improve, questions to the wiki. Design layer: impeccable, the taste presets, design-md-library (74 brand DESIGN.md references), diagram-design, and Vercel web/writing guideline wrappers. Plus unslop, thermo-nuclear-review, codegraph, corpus-docs-site, ui-test-plans and bootstrap-vps-deploy. Plus the Vercel suite (web + writing guideline reviews, React best-practices, view transitions, composition patterns). Corpus \u00a79 adds domain modeling: an opinionated glossary with displaced synonyms, a decisions format, and multi-context glossary maps. See ATTRIBUTION.md.",
-      "version": "0.28.0",
+      "version": "0.29.0",
       "keywords": [
         "workflow",
         "orchestration",
