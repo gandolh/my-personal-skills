@@ -98,10 +98,15 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | New idea/task to capture | capture | corpus-flow: add todo |
 | Ready to build, ≥3 chunks | build | brief → plan-split-dispatch |
 | Ready to build, 1–2 files | build (small) | brief → implement inline |
-| Research a topic / compare options / sourced report | research | web-research |
-| Measure live web performance | perf | performance-analysis |
+| Research a topic / compare options / sourced report | research | inline web search (gated — see below) |
+| "what should we work on" / audit the repo / find the debt | audit | improve (gated — returns a ranked list) |
+| Design or redesign a frontend / UI polish | design | impeccable (+ design-md-library for direction) |
+| Accessibility / UI-compliance check on code | design (check) | web-design-guidelines |
+| Docs or prose need a style pass | docs | writing-guidelines (+ unslop if AI-drafted) |
+| Need a diagram for docs or a design | docs | diagram-design |
 | MR/PR open, not ready | review | <review skill> |
 | Branch ahead, ship intent | PR open | <PR skill> |
+| "what do we call this" / define a term / record a decision | domain | corpus-flow §9 |
 | "what does the wiki say about X" | query | corpus-flow: query wiki |
 
 ## Knowledge routing — which layer answers which question
@@ -172,16 +177,30 @@ generic spine:
 | New idea/task to keep | **capture** | `corpus-flow` §1 — add a todo |
 | Ready to build, decomposes into ≥3 chunks | **build (dispatched)** | ensure a brief (`corpus-flow` §2), then `plan-split-dispatch` |
 | Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
-| Research a topic / compare options / sourced report | **research** | `web-research` — inline searches, twin MD report + HTML digest |
-| Measure a live page's performance | **perf** | `performance-analysis` — Chrome DevTools MCP, ranked by measured impact |
+| Research a topic / compare options / sourced report | **research** | inline web search, then propose options — never auto-build |
+| "what should we work on next" / audit / find the tech debt | **audit** | `improve` — survey, vet, rank; promoted findings become briefs |
+| Design or redesign a frontend, UI polish, design audit | **design** | `impeccable` — the build engine; `design-md-library` first if the visual direction is unset |
+| "is this accessible" / UI compliance on source | **design (check)** | `web-design-guidelines` — static, rules fetched fresh |
+| Review docs/prose voice, tone, terminology | **docs** | `writing-guidelines`; run `unslop` first if the text was AI-drafted |
+| A diagram would explain it better than prose | **docs** | `diagram-design` |
+| Strict maintainability review of a diff | **review** | `thermo-nuclear-review` — very opinionated; use deliberately |
 | MR/PR open, not "ready to merge" | **review** | routing.md review skill, else a `general-purpose` agent over the diff |
 | Branch ahead of base, ship intent | **PR open** | routing.md PR skill, else propose git commands |
+| Name a concept, settle a term, or record a locked decision | **domain** | `corpus-flow` §9 — glossary + decisions; `grill-me` if the term is still contested |
 | "what does the wiki say about X" | **query** | `corpus-flow` §5 — query the wiki |
 | Work finished, needs recording | **closeout** | `corpus-flow` §4 — done + log + fold into wiki |
 
 If two match, prefer the later phase. If still ambiguous, present alternatives in Step 5.
 
-**Research and design are gated, not auto-built.** `research` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** (see `web-research`), not fanned out to a subagent, unless the user asks otherwise.
+**The ceremony scales with the task; the approval gate never does.** A one-line fix
+gets one sentence of plan and a two-word confirmation; a twelve-brief backlog gets a
+full Route Plan. What does *not* change is that the user says go before anything is
+written, dispatched, or committed. Do not invoke an implementation skill, scaffold,
+or edit source until you have said what you intend and the user has agreed — on
+*every* path above, including the ones that look too small to bother with. "It was
+obviously what they wanted" is how a router turns into an unreviewed agent.
+
+**Research, audit and design are gated, not auto-built.** `research`, `audit` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result or an `improve` audit straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** in the main thread, not fanned out to a subagent, unless the user asks otherwise.
 
 ---
 
