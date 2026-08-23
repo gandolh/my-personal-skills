@@ -1,6 +1,6 @@
 ---
 name: init-personal-repo
-description: Wire a repo into the personal-skills workflow so any future Claude session auto-routes through the right skills. Writes (or idempotently updates) a delimited managed block in the repo-root CLAUDE.md that tells sessions to start with /orchestrate and maps each intent to its skill (research to web-research, code understanding to codegraph, capture to corpus-flow, build to plan-split-dispatch, design to impeccable), then bootstraps the corpus/ workspace and offers the codegraph layer. Use when the user says "init personal repo", "set up this repo for my skills", "wire this repo to personal-skills", "personalize this repo", "integrate this repo", or "/init-personal-repo".
+description: Wire a repo into the personal-skills workflow so any future Claude session auto-routes through the right skills. Writes (or idempotently updates) a delimited managed block in the repo-root CLAUDE.md that tells sessions to start with /orchestrate and maps each intent to its skill (research to web-research, code understanding to codegraph, capture to corpus-flow, build to plan-split-dispatch, docs to corpus-docs-site), then bootstraps the corpus/ workspace and offers the codegraph layer. Use when the user says "init personal repo", "set up this repo for my skills", "wire this repo to personal-skills", "personalize this repo", "integrate this repo", or "/init-personal-repo".
 when_to_use: The user wants a repo to integrate with the personal-skills plugin so fresh sessions know to route work through orchestrate, web-research, codegraph, corpus-flow, and the rest, instead of picking skills ad hoc. Run once per repo (re-run any time to refresh the managed block). Not for a one-off task in a repo you will not reuse, and it never rewrites the user's existing CLAUDE.md content - it only adds or updates its own delimited block.
 ---
 
@@ -87,8 +87,8 @@ names it):
 | Research a topic, compare options, produce a sourced report | `web-research` |
 | Understand code: impact / blast radius, who-calls, explore, rename safety | `codegraph` |
 | Build or implement a multi-step change | `plan-split-dispatch` |
-| Design or redesign a frontend, UI polish, design audit | `impeccable` (+ `the-one-move` for a brand-new surface) |
-| Quick single-screen UI check | `ui-check` |
+| Write or refresh the project's docs site | `corpus-docs-site` |
+| Test or audit the UI in a browser | `ui-test-plans` |
 | Stress-test a plan or design before building | `grill-me` |
 | Measure live web performance | `performance-analysis` |
 | Scaffold a Caddy VPS deploy | `bootstrap-vps-deploy` |

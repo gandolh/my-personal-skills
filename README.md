@@ -1,10 +1,12 @@
 # personal-skills
 
-A lean, repo-agnostic **frontend design-and-ship** skill library for [Claude Code](https://claude.com/claude-code).
+A repo-agnostic **workflow** skill library for [Claude Code](https://claude.com/claude-code),
+built around one front door.
 
-It bundles three entry-point commands, a design build engine, a taste/style suite, a
-searchable design-intelligence database, and a small set of audit primitives — so you can
-go from idea to a polished, shipped frontend without leaving Claude Code.
+`/orchestrate` is the entry point. It ensures the repo has a `corpus/` workspace, reads
+`corpus/routing.md` to learn how this project routes work, classifies your request, proposes
+a plan, and hands off — capture to `corpus-flow`, build to `plan-split-dispatch`, questions
+to the wiki. It routes; it never does the work itself.
 
 ## Install
 
@@ -15,7 +17,7 @@ This repository is a Claude Code plugin marketplace. Install it directly from Gi
 /plugin install personal-skills@personal-skills-marketplace
 ```
 
-Then restart Claude Code (or reload) so the commands, skills, and agent are picked up.
+Then restart Claude Code (or reload) so the command and skills are picked up.
 
 To update later:
 
@@ -25,48 +27,57 @@ To update later:
 
 ## What's inside
 
-### Commands
+### The front door
 
-- **`/the-one-move`** — commit a non-generic *structure* before building a new frontend, then hand off to `impeccable`.
-- **`/improve-platform`** — audit + phased improvement of AI-generated platforms.
-- **`/ui-check`** — quick single-screen UI review with proposed changes.
+- **`/orchestrate`** — work-intake router. Bootstraps `corpus/` if missing, reads
+  `corpus/routing.md`, classifies intent, presents a Route Plan, hands off after approval.
+- **`init-personal-repo`** — wire a repo into this workflow. Idempotently adds a delimited
+  managed block to the repo-root `CLAUDE.md` (start with `/orchestrate`; intent→skill map),
+  bootstraps `corpus/`, and offers the codegraph layer. Only ever adds or updates its own
+  block — it never rewrites your `CLAUDE.md`.
 
-### Build engine
+### The core loop
 
-- **`impeccable`** — design fluency with 22 sub-commands. (Apache-2.0)
+- **`corpus-flow`** — an LLM-maintained project wiki plus a todos→briefs→done+log work
+  lifecycle. The LLM owns synthesis; you curate sources and ask questions.
+- **`plan-split-dispatch`** — implementation orchestrator. Opus plans a task, splits it into
+  independent chunks and verifies the result; Sonnet executes chunks by default (including
+  medium-hard ones), Opus takes only the novel or risky ones. Routes cheap tokens to cheap work.
+- **`grill-me`** — interview-style stress-testing of a plan or design, before briefs get written.
 
-### Taste / style suite
+### Documentation
 
-- **`design-taste-frontend`** — flagship anti-slop frontend skill.
-- **`minimalist-ui`**, **`industrial-brutalist-ui`**, **`high-end-visual-design`** — style presets.
-- **`redesign-existing-projects`** — audit-and-upgrade an existing site to premium quality.
-
-Each preset defers to `impeccable`'s anti-slop bans on conflict.
-
-### Design intelligence
-
-- **`ui-ux-pro-max`** — searchable design-intelligence database.
-
-### Audit primitives
-
-- **`accessibility-audit`** (WCAG 2.2), **`heuristic-evaluation`** (Nielsen), **`information-architecture`**, **`design-debt-audit`**, and the four `critique-*` single-screen reviews.
-
-### Workflow extras
-
-- **`corpus-flow`** — an LLM-maintained project wiki + todos→briefs→done work lifecycle.
-- **`bootstrap-vps-deploy`** — a zero-dependency static-client + pm2-service deploy behind Caddy.
-- **`grill-me`** — interview-style plan/design stress-testing.
-- **`ui-test-plans`** — plain-text UI test plans + a Playwright run-hub, screenshots gitignored.
-- **`plan-split-dispatch`** — repo-agnostic implementation orchestrator: opus plans and splits a task into independent chunks, then dispatches hard chunks to a subagent on opus and easy chunks to a subagent on sonnet — routing cheap tokens to cheap work.
-- **`init-personal-repo`** — wire a repo into this workflow: idempotently adds a delimited managed block to the repo-root `CLAUDE.md` (start with `/orchestrate`; intent→skill map), bootstraps the `corpus/` workspace, and offers the codegraph layer. Only ever adds/updates its own block — never rewrites your `CLAUDE.md`.
+- **`corpus-docs-site`** — scaffold a light-themed Starlight docs site over a corpus-flow
+  project: the *narrative* (architecture, decisions, status, roadmap) rendered from the
+  `corpus/` wiki, and the *API reference* generated from the TypeScript (Compodoc for a
+  NestJS backend, TypeDoc for a package barrel), wired as one monorepo task so both stay current.
 
 ### Research, performance & code understanding
 
-- **`web-research`** — sourced, fact-checked research reports: web searches run inline (token-efficient), subagents only for codebase exploration (with a gate before fanning out beyond 5), model-routed (Opus for synthesis/verification, Sonnet for lookups). Ships a comprehensive Markdown report plus a concise, results-first HTML digest.
-- **`performance-analysis`** — measure a live web page with Chrome DevTools MCP (Core Web Vitals, performance traces, Lighthouse, network/console), then rank fixes by measured impact. Local, Chrome-only.
-- **`codegraph`** — understand and safely change unfamiliar code: lead with a code knowledge graph to scope (impact/blast radius, callers), verify with grep+read where correctness matters. Repo-agnostic method; pairs with `corpus-flow`'s per-repo code-graph layer.
+- **`web-research`** — sourced, fact-checked research reports. Web searches run inline
+  (token-efficient); subagents are used only for codebase exploration, gated before fanning
+  out beyond 5. Ships a comprehensive Markdown report plus a concise, results-first HTML digest.
+- **`codegraph`** — understand and safely change unfamiliar code: lead with a code knowledge
+  graph to scope (impact, blast radius, callers), verify with grep+read where correctness
+  matters. Pairs with `corpus-flow`'s per-repo code-graph layer.
+- **`performance-analysis`** — measure a live page with Chrome DevTools MCP (Core Web Vitals,
+  traces, Lighthouse, network), then rank fixes by measured impact. Local, Chrome-only.
 
-## Licensing & attribution
+### Shipping
 
-This plugin vendors third-party skills, each retaining its original license (MIT / Apache-2.0).
-See [ATTRIBUTION.md](ATTRIBUTION.md) for the full breakdown.
+- **`ui-test-plans`** — plain-text UI test plans paired with a Playwright run-hub, screenshots
+  kept out of git.
+- **`bootstrap-vps-deploy`** — a zero-dependency static-client + pm2-service deploy behind Caddy.
+
+## Why this shape
+
+Grilled, immutable briefs and a curated wiki for **quality**; model-routed dispatch and scoped
+context for **token efficiency**; one front door for **UX**.
+
+## History
+
+Through v0.23.0 this plugin also vendored a frontend design-and-ship suite (`impeccable`,
+`ui-ux-pro-max`, the taste-skill style presets, and a set of designer-skills audit primitives),
+along with the `/the-one-move`, `/improve-platform`, and `/ui-check` commands that drove them.
+v0.24.0 removed all of it to leave a focused, first-party workflow library. Those skills are
+still available from their upstream sources, and the removal is recoverable from git history.

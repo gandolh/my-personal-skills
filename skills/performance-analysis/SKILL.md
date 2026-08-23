@@ -16,7 +16,7 @@ The driver is [Chrome DevTools MCP](https://github.com/ChromeDevTools/chrome-dev
 persists), and Claude reads the trace. Nothing leaves the machine. It is the
 right tool whenever the question is *behavioral or timing* rather than *does the
 DOM look right* - for the latter, or for a visual/interaction audit, use
-`agent-browser` via the `ui-test-plans` / `ui-ux-pro-max` skills instead.
+`agent-browser` via the `ui-test-plans` skill instead.
 
 ## Table of contents
 
