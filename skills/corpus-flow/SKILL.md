@@ -94,6 +94,17 @@ that grow as the project does.
   pnpm"; "pinned versions"; "no `.js` import suffixes"). Changing one requires an
   **explicit revisit + a `log.md` note** — you don't quietly flip a decision.
   This page *wins* over `status.md` for choices not formally revisited.
+
+  **Record a decision only when all three hold** — otherwise the page fills with
+  obvious choices and stops being read:
+
+  1. **Hard to reverse** — changing your mind later has real cost.
+  2. **Surprising without context** — a future reader will ask "why this way?"
+  3. **A genuine trade-off** — there were real alternatives and one was picked.
+
+  Format per entry: the call, the date, the alternatives rejected, and the reason.
+  The reason is the load-bearing part — a decision with no *why* cannot be
+  revisited intelligently, only obeyed or broken.
 - **`status.md`** — a **dated snapshot** of current state: a terse one-liner per
   brief/area and a short "where things stand" paragraph. **Detail is pushed
   down**, not duplicated — the brief file owns the full spec, `log.md` owns the
@@ -103,6 +114,23 @@ that grow as the project does.
   question is answered or shipped, **delete it from here** — its history lives in
   `status.md` + `log.md`. This page must never accumulate resolved cruft, or it
   stops being trustworthy as "what's actually open."
+- **`glossary.md`** — the project's **vocabulary**: one canonical definition per
+  term the project uses in a specific way, each with the synonyms it displaces.
+  This is the page that stops three people (and three agents) calling the same
+  thing three names. Format and the multi-context variant: **§9**.
+
+  Rules that keep it useful:
+
+  - **Definitions only.** No implementation detail, no spec, no scratch notes. If
+    an entry starts explaining *how* something works, that belongs on a concept
+    page and the glossary should link to it.
+  - **Only terms with a project-specific meaning.** "Cache" does not need an entry;
+    "a *run*" does, if this project means something particular by it.
+  - **Write it the moment a term is settled**, usually mid-`grill-me` — not in a
+    batch later, when the precise wording that made it click is gone.
+  - **Conflicts are findings.** If code or docs use a term against its definition,
+    that is a real inconsistency: fix one side, don't quietly add a second sense.
+    A term with two live meanings is two terms, and needs two names.
 
 ### Entity / concept pages (grow with the project)
 
@@ -209,6 +237,10 @@ If they're missing, create:
 - **`corpus/index.md`** — the content catalog (what lives where), starting with
   links to CLAUDE.md, log.md, and the wiki pages. This is the front door.
 - **`corpus/log.md`** — a `# Log` heading and nothing else yet.
+- **`corpus/wiki/glossary.md`** — created **lazily**: the moment the first term is
+  settled (usually mid-`grill-me`), not as an empty stub at bootstrap. An empty
+  glossary teaches a fresh agent nothing; a missing one at least prompts the
+  question. Same for `decisions.md`.
 - **`corpus/routing.md`** — the routing profile read by the `orchestrate` skill
   (the front door): implement/review/PR skill choices, an intent table, a
   READ/SKIP/SKILLS table, and the **knowledge-routing table** (§0b). Seed it with
@@ -382,7 +414,7 @@ When the user is ready to actually build a todo (or files a brief directly).
 When the user says "work on brief NN" / "let's build this". Three phases, **in
 order**. Do not write implementation code before the plan is acknowledged.
 
-### 3a — Grill the design (inline)
+### 3a — Grill the design (inline, or via the `grill-me` skill)
 
 Interrogate the brief until the design is unambiguous. Ask the user pointed
 questions — one tight batch, not a stream — covering whichever of these actually
@@ -535,6 +567,12 @@ sweep by hand for what a script can't see:
   replaced → move to `superseded/` with a one-line note.
 - **Straddling pages** — two topics in one file → split, even under the line cap.
 - **Duplicated catalogs** — a list `index.md` maintains that another page owns.
+- **Vocabulary drift** — a concept the wiki calls two names, or a `glossary.md`
+  term the code and docs no longer use that way. Two live meanings for one term is
+  two terms; give the second one its own name rather than widening the definition.
+- **Undefended decisions** — a `decisions.md` entry with no *why* recorded. It
+  cannot be revisited intelligently, only obeyed or broken; reconstruct the reason
+  from `log.md` or mark it for a revisit.
 
 A large repo reorganization invalidates paths *en masse*; when the lint reports
 many broken links, resolve them by basename against the real tree rather than
@@ -559,6 +597,135 @@ code. Before acting on a wiki claim:
 If a claim is stale, fix the page (it's the LLM's to curate) and note it in
 `log.md`. Never recommend an action based on an unverified wiki claim about
 specific code.
+
+---
+
+## 9 — Domain modeling (the project's vocabulary + its locked calls)
+
+The wiki records *how things work*. This section is about the **language** used to
+say it, and the **decisions** that language encodes. Both live in the wiki spine —
+`glossary.md` and `decisions.md` — and both are maintained **actively, mid-session**,
+not swept up afterwards.
+
+Vague language is not a documentation problem, it is a design problem wearing a
+disguise. A team that has not decided whether an *account* is a Customer or a User
+has not finished the design, and every brief written on top of that ambiguity
+inherits it.
+
+### 9a — The active discipline (during any grill, brief, or review)
+
+Four moves, run continuously — most belong inside `grill-me`, but they apply
+whenever the project is being discussed:
+
+- **Challenge conflicts.** A term used against its glossary definition is a finding,
+  not a typo. *"`glossary.md` defines cancellation as X; you're describing Y —
+  which is it?"*
+- **Sharpen fuzzy terms.** When a word is overloaded, propose the precise one.
+  *"You said 'account' — Customer or User? Those are different things."*
+- **Stress-test with concrete scenarios.** Invent the awkward case and force the
+  boundary. *"What happens if they cancel after partial fulfilment?"* Boundaries
+  discovered this way are the ones worth writing down.
+- **Cross-reference with code.** If the user states how something works and the
+  source disagrees, surface it. That contradiction is either a stale mental model
+  or a real bug, and both are worth the interruption.
+
+### 9b — `glossary.md` entry format
+
+Be **opinionated**: when several words exist for one concept, pick one and list the
+losers so they stop coming back.
+
+```markdown
+# Glossary
+
+**Order**:
+A customer's committed request for goods, after payment authorisation.
+_Avoid_: purchase, transaction
+
+**Invoice**:
+A request for payment sent after delivery.
+_Avoid_: bill, payment request
+```
+
+Rules:
+
+- **Definitions, not behavior.** Say what it *is*, not what it does. The moment an
+  entry explains mechanism, that belongs on a concept page — link to it instead.
+- **One or two sentences.** A long definition means the term is doing two jobs.
+- **Only project-specific terms.** "Cache", "retry", "timeout" do not belong here
+  however much the project uses them. Ask: *is this concept peculiar to this
+  project, or general programming?* Only the former earns an entry.
+- **`_Avoid_` is the load-bearing half.** Listing the rejected synonyms is what
+  actually stops drift; a glossary without them just documents one more option.
+- **Group under subheadings** once natural clusters appear; a flat list is fine
+  while it stays short.
+
+### 9c — Multi-context repos
+
+Most repos have one vocabulary. A monorepo spanning genuinely separate domains
+(ordering vs billing vs fulfilment) often has several, and forcing them into one
+glossary is how you get a term with three meanings.
+
+When that happens, keep a **glossary map** at `corpus/wiki/glossary.md` that points
+at per-context pages rather than defining everything itself:
+
+```markdown
+# Glossary map
+
+## Contexts
+- [Ordering](./glossary-ordering.md) — receives and tracks customer orders
+- [Billing](./glossary-billing.md) — invoices and payments
+
+## Relationships
+- **Ordering → Billing**: Ordering emits `OrderPlaced`; Billing consumes it to invoice
+- **Shared**: `CustomerId`, `Money` — same meaning in both, defined here
+```
+
+The **relationships** block is the valuable part: it is where the same word having
+two meanings becomes visible, and where integration decisions get their names.
+Split only when a real second vocabulary exists — a map over one context is
+ceremony.
+
+### 9d — `decisions.md` entry format
+
+The three-part test (hard to reverse · surprising without context · a real
+trade-off) governs what gets in. Format:
+
+```markdown
+## Postgres for the read model
+_2026-08-14_ — Projections land in Postgres, not the event store.
+Rejected: querying the event log directly (too slow past ~10k events),
+Elasticsearch (a second operational dependency for no gain yet).
+```
+
+One to three sentences is a complete entry. The value is recording **that** the call
+was made and **why** — not filling in sections. Add `Status: superseded by <entry>`
+only when a decision is actually revisited.
+
+**What qualifies**, concretely:
+
+- **Architectural shape** — "monorepo with npm workspaces"; "event-sourced writes".
+- **Integration patterns** — "Ordering and Billing talk via events, never HTTP".
+- **Technology with lock-in** — database, queue, auth, deploy target. Not every
+  library; the ones that would take a quarter to swap.
+- **Boundary and scope calls** — "Customer data is owned by Customer; others hold
+  an ID only". The explicit *no*s are as valuable as the yeses.
+- **Deliberate deviations** — "manual SQL, not an ORM, because X". Anything a
+  reasonable reader would assume the opposite of. These stop the next agent from
+  "fixing" something intentional.
+- **Constraints invisible in code** — compliance, a partner's latency contract.
+- **Non-obvious rejections** — picked REST over GraphQL for subtle reasons? Record
+  it, or someone proposes GraphQL again in six months.
+
+### 9e — Where this shows up elsewhere
+
+- **`grill-me`** does most of the capturing, mid-interview.
+- **`improve`** reads `decisions.md` before vetting, so locked calls are never
+  reported as tech debt.
+- **`plan-split-dispatch`** carries the relevant terms into each chunk's context —
+  a subagent that does not know the vocabulary invents its own.
+- **`writing-guidelines`** flags terminology drift in docs; the fix belongs here,
+  not in the three pages that drifted.
+- **`corpus-docs-site`** can render `glossary.md` as a reference page directly.
 
 ---
 
