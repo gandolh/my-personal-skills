@@ -3,7 +3,7 @@
 This plugin vendors third-party skills. Each retains its original license.
 
 **Original to this plugin** (no third-party code): `orchestrate`, `corpus-flow`,
-`corpus-docs-site`, `plan-split-dispatch`, `improve`, `grill-me`, `codegraph`,
+`corpus-docs-site`, `readme-docs`, `plan-split-dispatch`, `improve`, `grill-me`, `codegraph`,
 `ui-test-plans`, `bootstrap-vps-deploy`, and `design-md-library` (the *skill*; its data is
 vendored — see below).
 
@@ -95,6 +95,17 @@ Adopted as method into first-party skills, with no code copied:
   interview method and "find facts yourself, ask only for decisions" rule in `grill-me`,
   plus the glossary/ADR discipline (`domain-modeling`, `grill-with-docs`) now expressed
   as `corpus/wiki/glossary.md` and the three-part decision test in `corpus-flow`.
+
+- **[samber/developer-relations-skills](https://github.com/samber/developer-relations-skills)**
+  (`readme-optimization`, MIT), **noffle's *Art of README***,
+  **[oil-oil/beautify-github-readme](https://github.com/oil-oil/beautify-github-readme)**,
+  **[livlign/claude-skills](https://github.com/livlign/claude-skills)** (`repo-visuals`,
+  `readme-doctor`), **[coder/xum](https://github.com/coder/xum)** (regenerable README
+  screenshots), **[github/awesome-copilot](https://github.com/github/awesome-copilot)**
+  (`ui-screenshots`) and **[softaworks/agent-toolkit](https://github.com/softaworks/agent-toolkit)**
+  (`crafting-effective-readmes`) — the decision-funnel order, claim checks, honest status,
+  badge discipline, value → proof → mechanism sequence and re-runnable captures behind
+  `readme-docs`.
 
 ## History
 
