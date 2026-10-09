@@ -21,6 +21,7 @@ docs/
 - **One home per fact.** If the project already has a wiki (`corpus/wiki/`) or a docs site, `architecture.md` is a one-screen overview that links to those pages; it does not copy them.
 - **Move, don't delete.** Content cut from the old README lands in a docs file with a pointer left behind.
 - **No empty files.** Do not create `deploy.md` or `configuration.md` just to fill the shape.
+- **A seed or capture script may sit beside `shots.md`** (for example `docs/images/demo-seed.mjs`) when the images need made-up data that the app can't produce through its UI. Keep it small, make it pass the repo's lint, write its output outside the repo (`/tmp`), and say in `shots.md` how to run it.
 
 ## When `docs/` is already a docs-site workspace
 

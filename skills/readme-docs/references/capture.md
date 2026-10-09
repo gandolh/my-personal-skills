@@ -51,26 +51,34 @@ Known traps:
 
 Use a GIF when the value is a process (drag, generate, play) rather than a screen. GitHub plays GIFs inline; it does not play video files committed to the repo.
 
-1. Plan the beats: 3–6 actions, 6–12 seconds in total, ending on the result. Do a dry run without recording first, so you know the selectors and timings work.
-2. Record:
+1. Plan the beats: 3–6 actions, 6–12 seconds in total, ending on the result. Do a dry run first, so you know the selectors and timings work.
+2. Capture frames by **stepping and screenshotting**. This is the method that worked in practice. Take a screenshot after each action, plus extra shots during anything animated, and number the files:
 
    ```bash
-   agent-browser --session readme set viewport 1280 800
-   agent-browser --session readme open http://localhost:5173/app/
-   agent-browser --session readme record start /abs/path/tmp/flow.webm
-   # ... actions, with `wait 600`–`wait 1200` between them so a viewer can follow
-   agent-browser --session readme record stop
+   AB="agent-browser --session readme"; F=/abs/path/tmp/frames; mkdir -p $F
+   $AB set viewport 1280 800; $AB open http://localhost:5173/app/; $AB wait 1500
+   $AB screenshot $F/001.png
+   $AB click @e5; $AB wait 600; $AB screenshot $F/002.png
+   # ... one numbered shot per beat; for motion (a timer, a sun path, a slider),
+   #     step the state and shoot each step
    ```
 
-3. Convert with a two-pass palette:
+   Then join them, giving each frame its own on-screen time with a concat list. Hold the final frame longest:
 
    ```bash
-   ffmpeg -y -loglevel error -i flow.webm \
+   cd $F && for f in *.png; do echo "file '$f'"; echo "duration 1.2"; done > list.txt
+   echo "file '$(ls *.png | tail -1)'" >> list.txt
+   ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt \
      -vf "fps=12,scale=960:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=128:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
-     -loop 0 docs/images/flow.gif
+     -loop 0 /abs/path/docs/images/flow.gif
    ```
 
-   Trim the start and end with `-ss <start> -t <duration>` before `-i` if there are dead frames.
+   This also works for WebGL and canvas scenes, which headless Chrome renders in software at a few frames per second. That is too slow for any live recording.
+3. Alternatives, if stepping can't show the motion:
+   - **Playwright CDP screencast** (`Page.startScreencast`) keeps real timing. Use the project's existing `playwright-core` from a scratch script.
+   - **`agent-browser record start/stop`** produces WebM, then the same ffmpeg palette filter with `-i flow.webm` converts it. Known problems: it drops idle time, so pauses vanish and the GIF plays too fast, and it can start a fresh browser context without your sign-in.
+
+   Trim dead frames with `-ss <start> -t <duration>` before `-i`.
 
 4. Budget: under 5 MB and 15 seconds. If it is bigger, lower `fps` to 10, scale to 800 px, or shorten the flow.
 5. Inspect frames for personal data (first, last, one per second): `ffmpeg -i flow.gif -vf fps=1 /tmp/frames/f%02d.png`.
