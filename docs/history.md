@@ -39,3 +39,5 @@ glossary maps, and the active challenge/sharpen/scenario/cross-reference discipl
 Vercel-platform deploy skills were left out in favour of `bootstrap-vps-deploy`).
 
 v0.30.0 added `readme-docs`: one standard for a project's README and `docs/` folder (a short landing-page README, a docs folder for everything it links to, and screenshots, GIFs or diagrams captured without personal data). It adopts ideas from samber's `readme-optimization`, noffle's *Art of README*, `beautify-github-readme`, `repo-visuals` and coder/xum's regenerable screenshots; no text was copied. 25 skills → 26.
+
+v0.31.0 moved `corpus-docs-site` from Starlight to Docusaurus 3.10. The skill now scaffolds React components (hero, stat tiles, cards, archify diagram frame) and a sync script that discovers corpus pages instead of listing them, resolves links against the source page, and maps cross-repo links. It also ships `references/migrating-from-starlight.md`, a migration recipe verified by porting a deployed site and building ten real corpora, with the ten gotchas that run hit.

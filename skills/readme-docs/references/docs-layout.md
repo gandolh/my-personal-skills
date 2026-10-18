@@ -25,12 +25,12 @@ docs/
 
 ## When `docs/` is already a docs-site workspace
 
-Some repos use `docs/` as the package that builds a documentation website (Starlight, Docusaurus, VitePress: a `package.json`, `astro.config.*` and `src/` inside `docs/`). Do not move or rename it; the build and the deploy depend on that path.
+Some repos use `docs/` as the package that builds a documentation website (Starlight, Docusaurus, VitePress: a `package.json`, an `astro.config.*` or `docusaurus.config.*`, and `src/` inside `docs/`). Do not move or rename it; the build and the deploy depend on that path.
 
 In that case:
 
 - Add `docs/README.md` and `docs/images/` beside the site files. The site build ignores both.
-- The guides stay in the site's content folder (`docs/src/content/docs/` for Starlight). The README links to the deployed site page and, for readers on GitHub, the source file.
+- The guides stay in the site's content folder (`docs/src/content/docs/` for Starlight, `docs/docs/` for Docusaurus). The README links to the deployed site page and, for readers on GitHub, the source file.
 - Existing `docs/diagrams/` sources keep feeding the site. For the README, export a static SVG or PNG of the diagram into `docs/images/`; interactive HTML diagrams do not render on GitHub.
 - Do not add `getting-started.md` or `architecture.md` at the `docs/` root if the site already has those pages. Link the site pages instead.
 

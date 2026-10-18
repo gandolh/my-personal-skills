@@ -51,7 +51,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 | Skill | What it does |
 |---|---|
 | `readme-docs` | One standard for README + `docs/`: a short landing page, a docs folder, real screenshots and GIFs without personal data |
-| `corpus-docs-site` | A Starlight docs site: the narrative rendered from `corpus/`, the API reference generated from the TypeScript |
+| `corpus-docs-site` | A Docusaurus docs site: the narrative rendered from `corpus/`, the API reference generated from the TypeScript; also migrates a Starlight site without changing its URLs |
 | `diagram-design` | 39 editorial diagram types as self-contained HTML+SVG (MIT) |
 | `writing-guidelines` | Prose review against Vercel's Writing Guidelines, fetched fresh each run (MIT) |
 | `unslop` | Cuts AI tells from writing (MIT) |
