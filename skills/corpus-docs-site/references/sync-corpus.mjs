@@ -198,7 +198,10 @@ async function main() {
       'toc_max_heading_level: 3',
       '---',
       '',
-      `:::note[Rendered from \`corpus/${src}\`${updated}]`,
+      // Plain text only in the title: in a .md page, inline code in an
+      // admonition title pushes the title into the body and the heading reads
+      // "note".
+      `:::note[Rendered from corpus/${src}${updated}]`,
       'This page is generated from the project corpus and rewritten on every docs build. Edit the source in `corpus/`, not here.',
       ':::',
       '',

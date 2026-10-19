@@ -48,7 +48,10 @@ function findArchify() {
 async function main() {
   await mkdir(outDir, { recursive: true })
 
-  const sources = (await readdir(srcDir)).filter((f) => f.endsWith('.json')).sort()
+  // git keeps no empty folders, so a fresh clone may have no diagrams/ at all.
+  const sources = existsSync(srcDir)
+    ? (await readdir(srcDir)).filter((f) => f.endsWith('.json')).sort()
+    : []
   if (sources.length === 0) {
     console.log('build-diagrams: no diagram sources — nothing to do')
     return

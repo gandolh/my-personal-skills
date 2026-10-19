@@ -28,7 +28,7 @@ the opposite direction), so this file is the reference.
 
 | | Starlight | Docusaurus |
 |---|---|---|
-| Hashed assets | `<base>_astro/` | `<base>assets/{js,css,fonts}/` — vps-deploy's `assetDir` must follow |
+| Hashed assets | `<base>_astro/` | `<base>assets/{js,css,fonts}/` — vps-deploy's `generator` must follow |
 | Search | Pagefind, built in | `@easyops-cn/docusaurus-search-local` (offline, no service) |
 | Code blocks | Expressive Code (frames, terminal chrome) | Prism; `title="…"` and `{2,4}` line highlights still work, frames do not |
 | Root-absolute links in MDX | **not** prefixed with `base` (they 404 under a sub-path) | prefixed with `baseUrl` automatically |
@@ -93,7 +93,8 @@ toggle renders, and a stored `theme=dark` is ignored.
 | `hero.actions[].variant` primary / secondary / minimal | `Hero` maps them to `button--primary` / `button--secondary` / a plain link |
 
 **Admonitions.** `:::note[Title]`, `:::tip`, `:::caution`, `:::danger` are the same
-syntax in both, including inline code in the title. Nothing to change.
+syntax in both. Inline code in the title carries over only in `.mdx` pages; see
+gotcha 11.
 
 **Starlight components** (`@astrojs/starlight/components`):
 
@@ -229,12 +230,33 @@ A repo that pins exact versions keeps pinning them (drop the `^`).
 10. **Doc ids drop numeric prefixes.** A file named `01-intro.md` becomes the id
     and URL `intro`. No corpus here uses them; a site that does needs `slug:`.
 
+Found in the estate-wide migration (2026-10-19):
+
+11. **Inline code in a `.md` admonition title breaks the title.** Under
+    `format: 'detect'`, `:::note[Rendered from \`corpus/x.md\`]` renders a
+    heading that reads "note" with the title pushed into the body. Keep
+    titles in synced pages plain text; the reference sync does.
+12. **A page named `readme.md` takes its folder's URL.** Docusaurus serves
+    `wiki/readme.md` at `/wiki/`, not `/wiki/readme/`. A sync that publishes a
+    README must write `slug:` into its front matter to keep the old URL.
+13. **TypeScript 6 rejects `@docusaurus/tsconfig`'s `baseUrl`** (TS5101). Set
+    `"ignoreDeprecations": "6.0"` in the docs `tsconfig.json`, as the
+    template in SKILL.md does.
+14. **Build through the workspace script.** `npx docusaurus build docs` from the
+    repo root skips the docs package's `browserslist`, and the site comes out
+    in Docusaurus blue (gotcha 2). Use `npm run docs -w <docs package>`.
+15. **Prism sets each code block's background inline.** A themed code
+    background in `custom.css` needs `!important` to win.
+16. **Compodoc's `--coverageTest` stops before writing HTML.** Run the gate as
+    its own script, then generate; SKILL.md's scripts show the split.
+
 ## Deploy (vps-deploy)
 
-`DocsSite` asserts that `index.html` references `<base><assetDir>/`. Starlight's is
-`_astro`; Docusaurus's is `assets`. The stack for a migrated site must pass
-`assetDir: "assets"` before its next deploy, or the deploy fails by name with
-"wrong build base" even though the base is right.
+`DocsSite` asserts that `index.html` references `<base>_astro/` for Starlight or
+`<base>assets/` for Docusaurus. A migrated site's `DocsStack` in `app.ts` must
+set `generator: "docusaurus"` before its next deploy (the default is still
+`"starlight"`), or the deploy fails with `(a Starlight build) — wrong build
+base` even though the base is right.
 
 ## Verify (acceptance for any migrated site)
 

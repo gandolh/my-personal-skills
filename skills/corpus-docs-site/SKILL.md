@@ -106,7 +106,8 @@ that apply. The full template, with the reasons, is in the migration guide's
   "sync-corpus": "node scripts/sync-corpus.mjs",
   "diagrams": "node scripts/build-diagrams.mjs",
   "ref:core": "typedoc",
-  "ref:backend": "compodoc -p ../backend/tsconfig.json -d static/reference/backend -n \"Backend API\" --hideGenerator --coverageTest 35 --theme material",
+  "ref:backend:gate": "compodoc -p ../backend/tsconfig.json -d static/reference/backend --coverageTest 35",
+  "ref:backend": "npm run ref:backend:gate && compodoc -p ../backend/tsconfig.json -d static/reference/backend -n \"Backend API\" --hideGenerator --theme material",
   "ref": "npm run ref:core && npm run ref:backend",
   "prestart": "npm run sync-corpus && npm run diagrams",
   "start": "docusaurus start",
@@ -149,7 +150,7 @@ components as `@site/src/components/X`:
   the regenerate command, and one admonition on the coverage gate.
 
 Built in, no new deps: admonitions (`:::note[Title]`, `:::tip`, `:::caution`,
-`:::danger`), `@theme/Tabs` + `@theme/TabItem`, code blocks with `title="…"` and
+`:::danger`; in `.md` pages keep the title plain text, no inline code), `@theme/Tabs` + `@theme/TabItem`, code blocks with `title="…"` and
 `{2,4}` line highlights, Infima's `badge` and `button` classes. Root-absolute
 links (`/wiki/status/`) get the base added automatically.
 
@@ -215,7 +216,10 @@ tiles legible, diagram loads, a search query returns results, and
    404s. `pathname:///reference/core/` keeps the base and opens a new tab.
 9. **Compodoc has no `--disableCoverage=false` flag.** Coverage is on by
    default; set `--coverageTest <n>` **just below the current coverage** (run
-   once, read the %, set a hair under it). Ratchet it up over time.
+   once, read the %, set a hair under it). Ratchet it up over time. Keep the
+   gate a **separate run** (`ref:backend:gate`): with `--coverageTest`, Compodoc
+   exits as soon as the test passes, before it writes any HTML, so a
+   single combined command publishes a reference link that 404s.
 10. **TypeDoc rejects unknown config keys** (no notes field in `typedoc.json` —
     put rationale in the README). Its coverage is **warnings** by default
     (`validation.notDocumented`); flip `treatWarningsAsErrors: true` only once
@@ -232,7 +236,8 @@ tiles legible, diagram loads, a search query returns results, and
     here" on `.menu__link[aria-current='page']`, not `.menu__link--active` (Infima
     also puts that on the parent category).
 14. **Deploying with vps-deploy:** hashed assets live under `<base>assets/`, so
-    the `DocsSite` stack takes `assetDir: "assets"` (Starlight's was `_astro`).
+    the site's `DocsStack` in `app.ts` takes `generator: "docusaurus"` (the
+    default is still Starlight, which checks `_astro/`).
 
 ## Deliverables checklist
 
