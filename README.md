@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.30.0, 26 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.31.1, 26 skills.
 
 ## What it does
 
