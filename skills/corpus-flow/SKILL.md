@@ -742,6 +742,11 @@ only when a decision is actually revisited.
   clickable. (Code refs from `wiki/` are `../../src/...`; from
   `briefs/<area>/<state>/` they're one level deeper.)
 - **Absolute dates** (`2026-06-15`), never "yesterday".
+- **Other projects are named, never pathed.** Write `auth-service` or
+  `auth-service/corpus/wiki/overview.md`, not `../auth-service/...` or a link
+  into its checkout, and no machine paths (`/home/<user>/...`, `~/projects/...`)
+  or account names. Where checkouts live on this machine belongs in the agent's
+  memory, not the repo; paths inside the repo itself are fine.
 - **One concept per file.** Split a page that grows past ~200 body lines or
   straddles two topics.
 - **The corpus is the *why*; a code graph is the *what*.** Never answer a

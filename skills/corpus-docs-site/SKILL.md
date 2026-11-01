@@ -58,8 +58,10 @@ repo's TypeScript major), `npm view @compodoc/compodoc engines`.
 Inspect and decide:
 - **Corpus pages:** list `corpus/wiki/*.md` + whether `status.md`/`log.md`
   exist. These become the narrative pages (the sync script auto-discovers them).
-  Grep the corpus for links that leave the repo (`](../../../`) — each sibling
-  needs an `OTHER_REPOS` entry or is reduced to text. List any page that should
+  Grep the corpus for links that leave the repo (`](../../../`). A corpus names
+  other repos rather than linking into their checkouts, so rewrite each one as
+  the repo's name plus an in-repo path in backticks; `OTHER_REPOS` stays empty
+  and the sync reduces any link it misses to text. List any page that should
   stay unpublished (working notes, backlogs, history snapshots) for `DENY`.
 - **Backend reference?** Is there a NestJS app (a `nest-cli.json`, `@nestjs/*`
   deps, a `tsconfig.json`)? → Compodoc applies. Note its path + tsconfig.
@@ -208,9 +210,11 @@ tiles legible, diagram loads, a search query returns results, and
    Don't point the docs plugin at `corpus/` directly.
 6. **`markdown.format: 'detect'`, always.** As MDX, most real corpora fail on a
    bare `<` or `{` in prose.
-7. **Cross-repo corpus links fail the build** (`onBrokenMarkdownLinks: 'throw'`).
-   Map each sibling checkout in `OTHER_REPOS`; anything unmapped becomes plain
-   text with a warning. That is the sync working, not a bug to silence.
+7. **Cross-repo corpus links fail the build** (`onBrokenMarkdownLinks: 'throw'`),
+   so the sync reduces each one to its text with a warning. The fix is in the
+   corpus: name the other repo instead of linking into its checkout. Leave
+   `OTHER_REPOS` empty; a sibling mapped there ties the repo to the layout of
+   the machine it was written on.
 8. **Static HTML needs `pathname://`.** TypeDoc/Compodoc/archify output is not a
    Docusaurus route; a plain `/reference/core/` link goes through the router and
    404s. `pathname:///reference/core/` keeps the base and opens a new tab.
