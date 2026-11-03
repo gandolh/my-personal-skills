@@ -379,6 +379,12 @@ When the user is ready to actually build a todo (or files a brief directly).
    ```
 
    Use 2-digit padding (`07`, `42`) unless existing briefs use more.
+
+   **Numbering never restarts.** New briefs continue the repo's current
+   numbering, even after old briefs are folded into the wiki and deleted. A
+   tracker that keys tickets by project and number (brief-board does) would
+   otherwise match a new brief 01 to an old ticket 01. An empty brief tree
+   starts at 01.
 2. **Write `corpus/briefs/todo/<NN>-<slug>.md`** as a self-contained work spec a
    fresh agent could execute without other context:
 
@@ -731,7 +737,7 @@ only when a decision is actually revisited.
 
 ## Conventions (load-bearing)
 
-- **Numbers are stable.** Never renumber a brief when it moves between dirs.
+- **Numbers are stable.** Never renumber a brief when it moves between dirs, and never restart the numbering (§2).
 - **Every wiki page carries `summary:` + `updated:` frontmatter**, and `index.md`
   is generated from it (`bash corpus/lint.sh --index`). The summary is the
   retrieval signal — write it for an agent deciding whether to open the page.
