@@ -170,3 +170,27 @@ this brief builds:
 - Commit locally on main, one commit per the repo's style
   (`feat(corpus-flow): blocked briefs and todos -> v0.34.0`). The owner
   pushes.
+
+## Outcome
+
+Built 2026-11-06 as v0.34.0, with every owner decision at its default: this
+repo got its own corpus, existing corpora adopt the folders when something
+there is first blocked (vps-deploy goes first), `status.md` doesn't list
+blocked items, minor version bump.
+
+- `corpus-flow` has the folders in its layout, lifecycle, bootstrap `mkdir`
+  and four-folder numbering, a new §2b (block and unblock), the §3 and §4
+  rules, the §7 lint rules and the Conventions line. The skill has no
+  separate Workflows section, so the rule went into the retrieval budget and
+  Conventions, which the per-repo `CLAUDE.md` is written from.
+- `plan-split-dispatch`, `orchestrate` (skill, command, routing template),
+  `improve` and `grill-me` are updated as the brief lists.
+- Checks: the acceptance grep finds nothing; `bash corpus/lint.sh` is clean;
+  a lint of the same shape run on a scratch corpus passed with a blocked brief
+  and todo that carried their condition, and failed on a brief and a todo
+  without it, a condition outside `blocked/`, and a duplicate number across
+  `todo/` and `blocked/`.
+- Deferred: vps-deploy's move of its four hardware todos (a follow-up there).
+- Decided on my own: `lint.sh` reads only the first 12 lines of a brief for
+  the `Blocked by:` line, so prose that quotes the format isn't mistaken for
+  one.
