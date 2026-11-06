@@ -8,6 +8,6 @@ Invoke the `orchestrate` skill — the **front door** for project work. It condu
 
 - **No `corpus/` workspace yet?** It bootstraps one (via corpus-flow) and seeds `corpus/routing.md` by scanning the repo, then routes. Workspace-required by design.
 - **Build work** → file/pick a brief, hand to `plan-split-dispatch` (hard→opus / easy→sonnet) with the routing file's READ/SKIP/SKILLS, then close out via corpus-flow (log + fold into the wiki).
-- **Capture / query** → corpus-flow (add a todo / query the wiki). **A 1–2 file change** → inline.
+- **Capture / query** → corpus-flow (add a todo / block or unblock work that waits on something outside / query the wiki). **A 1–2 file change** → inline.
 
 Pass the work item as the argument (`/orchestrate PROJ-42`, `/orchestrate add a todo`, `/orchestrate work on brief 7`), or invoke bare to be asked what we're working on.

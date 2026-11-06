@@ -87,6 +87,7 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 <!-- Read by the orchestrate skill. Tune freely; keep it short. -->
 
 **Implement skill:** plan-split-dispatch      <!-- or a repo-specific implement skill -->
+**Brief folders:** corpus/briefs/{todo,blocked,done,superseded}   <!-- only todo/ is open work -->
 **Review skill:** <repo review cmd, or "a general-purpose agent over the diff">
 **PR skill:** <repo PR cmd, or "propose git commands">
 **Issue tracker:** <none | Jira/Linear/GitHub Issues + how to query>
@@ -96,6 +97,7 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | Signal | Intent | Route to |
 |--------|--------|----------|
 | New idea/task to capture | capture | corpus-flow: add todo |
+| Park work until something outside happens / unblock / what's blocked | capture | corpus-flow §2b: block and unblock |
 | Ready to build, ≥3 chunks | build | brief → plan-split-dispatch |
 | Ready to build, 1–2 files | build (small) | brief → implement inline |
 | Research a topic / compare options / sourced report | research | inline web search (gated — see below) |
@@ -151,7 +153,8 @@ Do not ask a second question — context gathering answers the rest.
 Dispatch relevant probes **in a single message**; wait for all before classifying.
 
 **Always:** read `corpus/index.md` (the workspace front door) + `corpus/wiki/status.md`;
-list open briefs (`corpus/briefs/todo/`); `git status` + `git branch --show-current`.
+list open briefs (`corpus/briefs/todo/`) and each brief and todo in `corpus/briefs/blocked/`
+and `corpus/todos/blocked/` with its condition (`Blocked by:` / `blocked-by:`); `git status` + `git branch --show-current`.
 
 **Conditional (driven by routing.md):**
 
@@ -175,6 +178,7 @@ generic spine:
 | Signal | Intent | Hand off to |
 |---|---|---|
 | New idea/task to keep | **capture** | `corpus-flow` §1 — add a todo |
+| "park this until", "this is blocked on", "unblock", "what's blocked" | **capture** | `corpus-flow` §2b — block or unblock |
 | Ready to build, decomposes into ≥3 chunks | **build (dispatched)** | ensure a brief (`corpus-flow` §2), then `plan-split-dispatch` |
 | Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
 | Research a topic / compare options / sourced report | **research** | inline web search, then propose options — never auto-build |
@@ -226,6 +230,7 @@ Output in **this exact format** and stop. Trim aggressively.
 **Workspace:** corpus/ present <new this session? yes/no>
 **Context loaded:**
 - Open briefs: <N> (next: <NN-slug>)                 [or "none"]
+- Blocked: <N briefs, N todos> (<condition>, ...)     [or "none"]
 - Ticket: <ID — status — summary>                     [or "none"]
 - MR/PR: <id — state — N files>                        [or "none"]
 - Candidate files: <N> (top: <p1>, <p2>)

@@ -42,8 +42,9 @@ as soon as you can state what the project *is*:
    — it tells you what is deliberate, so you do not "find" a locked decision as a
    problem. Respect the retrieval budget (≤3 pages unless the trail demands more).
 2. `README`, root config, workspace layout, the build/test/lint commands.
-3. `corpus/briefs/todo/` and `log.md` — what is already known and already queued.
-   **Anything already in `todo/` is not a finding.**
+3. `corpus/briefs/todo/`, `corpus/briefs/blocked/`, `corpus/todos/blocked/` and `log.md` —
+   what is already known and already queued. **Anything already in `todo/` or in a
+   `blocked/` folder is not a finding.**
 
 Then state the **scope contract** before auditing:
 
@@ -91,7 +92,7 @@ yourself** before believing it. Drop:
   an `open-questions.md` entry, not a finding.
 - Pre-existing patterns the codebase applies deliberately and consistently.
 - Style nits a linter or formatter already owns.
-- Anything already sitting in `corpus/briefs/todo/`.
+- Anything already sitting in `corpus/briefs/todo/`, `corpus/briefs/blocked/` or `corpus/todos/blocked/`.
 
 State the drop count honestly in the report — "31 raw findings, 9 survived" is a
 signal about the codebase *and* about the audit.
@@ -131,7 +132,7 @@ we're here." Wait for the pick.
 ### Step 6 — Write the picked findings as briefs
 
 For each finding the user promotes, write a brief via **`corpus-flow` §2** — same
-numbering rule (max across `todo/`, `done/`, `superseded/`, plus 1) and the exact
+numbering rule (max across `todo/`, `blocked/`, `done/`, `superseded/`, plus 1) and the exact
 same template, so `plan-split-dispatch` can consume it unchanged:
 
 ```markdown
@@ -145,6 +146,10 @@ same template, so `plan-split-dispatch` can consume it unchanged:
 ## What to do
 ## Acceptance
 ```
+
+A picked finding that waits on an outside condition (a stronger machine, a date) is written
+straight to `corpus/briefs/blocked/` with its `**Blocked by:** <condition>` line under the H1
+(`corpus-flow` §2b), not to `todo/`.
 
 Two rules specific to audit-born briefs:
 

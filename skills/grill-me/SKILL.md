@@ -124,6 +124,9 @@ Ready to write briefs?
 Do not act on the design until the user confirms shared understanding. Then hand
 off to `corpus-flow` §2 to write the briefs, and `plan-split-dispatch` to build them.
 
+An answer like "later, once X" is not an open question. Hand it to `corpus-flow` §2b
+as a blocked todo or brief, with X as the condition.
+
 ## Failure modes
 
 - **Asking one question at a time.** Turns a design session into an interrogation

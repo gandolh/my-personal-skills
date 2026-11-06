@@ -1,6 +1,6 @@
 ---
 name: corpus-flow
-description: Run a project's knowledge and work as an LLM-maintained wiki ("corpus") at the repo root — a curated wiki/ synthesis layer plus a todos→briefs→done+log work lifecycle. The LLM owns synthesis; the human curates sources and asks questions. Use when the user says "add a todo", "promote to a brief", "work on <brief>", "mark this done + log it", "what does the wiki say about X", "ingest this finding", "lint the corpus", "/corpus-flow", or wants durable, wiki-style project knowledge + task tracking (not the ephemeral in-session TodoWrite list). Bootstraps ./corpus on first use.
+description: Run a project's knowledge and work as an LLM-maintained wiki ("corpus") at the repo root — a curated wiki/ synthesis layer plus a todos→briefs→done+log work lifecycle. The LLM owns synthesis; the human curates sources and asks questions. Use when the user says "add a todo", "promote to a brief", "work on <brief>", "mark this done + log it", "what does the wiki say about X", "ingest this finding", "park this until", "this is blocked on", "unblock", "what's blocked", "lint the corpus", "/corpus-flow", or wants durable, wiki-style project knowledge + task tracking (not the ephemeral in-session TodoWrite list). Bootstraps ./corpus on first use.
 ---
 
 # Corpus Flow — a project's knowledge + work as an LLM-maintained wiki
@@ -22,8 +22,9 @@ corpus/
   lint.sh           health check: frontmatter, link resolution, page size, stale paths
   log.md            chronological record of every meaningful change
   todos/            captured ideas/tasks as prose (pre-spec)
+    blocked/        todos that wait on an outside condition
   briefs/           raw, immutable task specs
-    todo/  done/  superseded/
+    todo/  blocked/  done/  superseded/
   wiki/             LLM-curated synthesis pages — the actual knowledge base
     overview.md, architecture.md, decisions.md, status.md, open-questions.md, …
   test-plans/       (optional) plain-text browser test plans + latest RESULTS
@@ -41,7 +42,8 @@ line. Skip it entirely for backend/CLI/library projects.
 
 1. **briefs/** — raw, **immutable**. Each file is a task spec used to direct a
    slice of work (often by a subagent). Once in `done/` or `superseded/`, do
-   **not** edit it. New work gets a new brief in `todo/`.
+   **not** edit it. A brief in `blocked/` is not immutable yet: it waits on an
+   outside condition (§2b). New work gets a new brief in `todo/`.
 2. **wiki/** — the LLM **owns** this. Synthesis, entity pages, concept pages,
    current status. Edited freely as understanding evolves. This is where
    durable knowledge accrues.
@@ -59,6 +61,9 @@ briefs/todo/<NN>-<slug>.md   a numbered work spec, ready to build
       │  (grill → plan → implement)
       ▼
 briefs/done/<NN>-<slug>.md   moved verbatim (number kept) + outcome note
+      │
+      ├─► blocked/           a todo or a brief waits on an outside condition,
+      │                      and goes back with `git mv` when it clears (§2b)
       │
       ├─► log.md             one chronological entry per meaningful change
       └─► wiki/              fold durable findings into the synthesis pages
@@ -193,6 +198,9 @@ in `status.md`; `index.md` links to it).
    cause.
 3. Never read `briefs/` or `todos/` wholesale. `status.md` holds every brief's
    state in one line; open a brief only for the spec that directed specific work.
+   Four brief folders and two todo folders exist (`blocked/` holds work that
+   waits on an outside condition, §2b); to answer "what's blocked", list the
+   `blocked/` folders and `grep -rh "Blocked by\|blocked-by" corpus/`.
 4. Prefer the `summary:` line over opening the page. That is what it is for.
 
 ---
@@ -223,8 +231,8 @@ is a lookup, not a finding.
 ensure the skeleton exists:
 
 ```bash
-mkdir -p corpus/todos corpus/briefs/todo corpus/briefs/done \
-         corpus/briefs/superseded corpus/wiki
+mkdir -p corpus/todos/blocked corpus/briefs/todo corpus/briefs/blocked \
+         corpus/briefs/done corpus/briefs/superseded corpus/wiki
 ```
 
 If they're missing, create:
@@ -370,11 +378,12 @@ formal spec yet.
 When the user is ready to actually build a todo (or files a brief directly).
 
 1. **Pick the next number.** Briefs are numbered with a zero-padded prefix that
-   is **stable for the life of the file**. Find the current max across
-   `corpus/briefs/{todo,done,superseded}/` and add 1:
+   is **stable for the life of the file**. Find the current max across all four
+   folders, `corpus/briefs/{todo,blocked,done,superseded}/`, and add 1:
 
    ```bash
-   ls corpus/briefs/todo corpus/briefs/done corpus/briefs/superseded 2>/dev/null \
+   ls corpus/briefs/todo corpus/briefs/blocked corpus/briefs/done \
+      corpus/briefs/superseded 2>/dev/null \
      | grep -oE '^[0-9]+' | sort -n | tail -1
    ```
 
@@ -415,10 +424,72 @@ When the user is ready to actually build a todo (or files a brief directly).
 
 ---
 
+## 2b — Block and unblock (park work that waits on something outside)
+
+Some work can't go ahead until something outside it happens: a stronger
+machine, a home media machine, a date, another team's release. Parked in
+`todos/` or `briefs/todo/` it looks like open work, and `plan-split-dispatch`
+puts a waiting brief in a wave. Give it its own folder instead.
+
+Triggers: "park this until", "this is blocked on", "unblock", "what's blocked".
+
+**This is not brief-board's Blocked status.** That status is for a step the
+owner agrees to take before the next session. A `blocked/` folder is for an
+outside condition with no date in sight. The two terms stay apart: **Blocked**
+(the board's status) and **Blocked by** (the condition here).
+
+**Block a brief:**
+
+```bash
+git mv corpus/briefs/todo/<NN>-<slug>.md corpus/briefs/blocked/<NN>-<slug>.md
+```
+
+It keeps its number. Right under its H1, add one line:
+
+```markdown
+**Blocked by:** <condition>
+```
+
+**Block a todo:**
+
+```bash
+git mv corpus/todos/<slug>.md corpus/todos/blocked/<slug>.md
+```
+
+Add a `blocked-by: <condition>` key to its frontmatter.
+
+**Word the condition** as one short line that someone can check, worded so that
+items waiting on the same thing match: "a stronger machine", "the home media
+machine", "2026-11-18". Reuse a condition already in the repo when it fits:
+
+```bash
+grep -rh "Blocked by\|blocked-by" corpus/
+```
+
+**Unblock** when the owner says so, or when an agent checks a date that has
+passed. `git mv` the file back (to `briefs/todo/`, or to `todos/`) and delete
+its condition line. Never unblock on a guess.
+
+**Afterwards:**
+
+- Fix links to the moved file. `lint.sh` reports them (§7).
+- Append a `log.md` entry, kind `blocked` or `unblocked`, with the condition.
+- A todo that was marked `status: promoted` keeps pointing at its brief; fix
+  the link if the brief moved.
+
+**A blocked brief isn't immutable yet.** Edit it freely while it waits. It can
+go straight to `superseded/` if the work is dropped. It reaches `done/` only by
+way of `todo/`.
+
+---
+
 ## 3 — Work a brief: grill → plan → implement
 
 When the user says "work on brief NN" / "let's build this". Three phases, **in
 order**. Do not write implementation code before the plan is acknowledged.
+
+If the brief is in `briefs/blocked/`, say what it waits on (its `Blocked by:`
+line) and don't start it. Moving it out is the owner's call (§2b).
 
 ### 3a — Grill the design (inline, or via the `grill-me` skill)
 
@@ -472,7 +543,8 @@ report results faithfully (failing tests get said so, with output).
 
 When the work is done and verified.
 
-1. **Move the brief, keep its number:**
+1. **Move the brief, keep its number.** The move to `done/` is from `todo/`
+   only; a blocked brief goes through `todo/` first (§2b).
 
    ```bash
    git mv corpus/briefs/todo/<NN>-<slug>.md corpus/briefs/done/<NN>-<slug>.md \
@@ -492,8 +564,8 @@ When the work is done and verified.
    verified. Link the brief and any wiki page. Absolute dates only.>
    ```
 
-   Other entry kinds: `todo` (brief filed), `maintenance`, `incident`,
-   `decision`, `ingest`, `lint`, `resume`.
+   Other entry kinds: `todo` (brief filed), `blocked`, `unblocked`,
+   `maintenance`, `incident`, `decision`, `ingest`, `lint`, `resume`.
 
    A **`resume`** entry is the checkpoint written when a long run is paused (e.g.
    the user hits a quota/usage limit and asks to stop for a fresh session). It
@@ -559,7 +631,8 @@ the end of §4.
 When the user says "lint the corpus" / "is the wiki stale".
 
 **Run `bash corpus/lint.sh` first** — it mechanically catches missing frontmatter,
-broken relative links, oversized pages, and abandoned path roots. Fix those, then
+broken relative links, oversized pages, abandoned path roots, and the
+`blocked/` rules below. Fix those, then
 sweep by hand for what a script can't see:
 
 - **Contradictions** between pages (e.g. `decisions.md` vs `status.md`).
@@ -579,6 +652,17 @@ sweep by hand for what a script can't see:
 - **Undefended decisions** — a `decisions.md` entry with no *why* recorded. It
   cannot be revisited intelligently, only obeyed or broken; reconstruct the reason
   from `log.md` or mark it for a revisit.
+
+The `blocked/` rules (§2b) are mechanical, so `lint.sh` carries them:
+
+- Every file in `briefs/blocked/` has a `**Blocked by:**` line with a
+  condition, and every file in `todos/blocked/` has a `blocked-by:` key with
+  one.
+- No file outside a `blocked/` folder has one.
+- No brief number appears twice across `todo/`, `blocked/`, `done/` and
+  `superseded/`.
+- Links to blocked files are checked like any other link, so a move that
+  breaks one is reported.
 
 A large repo reorganization invalidates paths *en masse*; when the lint reports
 many broken links, resolve them by basename against the real tree rather than
@@ -737,7 +821,8 @@ only when a decision is actually revisited.
 
 ## Conventions (load-bearing)
 
-- **Numbers are stable.** Never renumber a brief when it moves between dirs, and never restart the numbering (§2).
+- **Numbers are stable.** Never renumber a brief when it moves between dirs, and never restart the numbering (§2). Numbering counts four folders: `todo/`, `blocked/`, `done/`, `superseded/`.
+- **Work that waits on something outside lives in a `blocked/` folder** (`briefs/blocked/` with a `**Blocked by:**` line under the H1, `todos/blocked/` with a `blocked-by:` key), moves back with `git mv`, and never starts until the owner unblocks it (§2b).
 - **Every wiki page carries `summary:` + `updated:` frontmatter**, and `index.md`
   is generated from it (`bash corpus/lint.sh --index`). The summary is the
   retrieval signal — write it for an agent deciding whether to open the page.

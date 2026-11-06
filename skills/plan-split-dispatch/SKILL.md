@@ -347,6 +347,11 @@ Use this when the unit of work is a **set of pre-written briefs** with dependenc
 between them (e.g. `corpus/briefs/todo/*`), not chunks of one fresh task. The briefs
 already are the chunks; your job is to order, dispatch, verify, and integrate them.
 
+**Only `corpus/briefs/todo/` is the backlog.** A brief in `corpus/briefs/blocked/` waits on
+an outside condition (its `**Blocked by:**` line) and is in no wave. A brief that depends on
+a blocked brief goes in no wave either: report it with that condition. Never move a file out
+of `blocked/` without the owner (`corpus-flow` §2b).
+
 1. **Build the dependency DAG.** Read each brief's *depends-on*, *Files you OWN*, and
    *Files you must NOT touch*. An edge = brief B consumes a file or contract brief A
    owns. (If briefs don't declare ownership, infer it — and prefer adding it.)

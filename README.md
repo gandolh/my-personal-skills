@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.33.0, 26 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.34.0, 26 skills.
 
 ## What it does
 
@@ -41,7 +41,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 | Skill | What it does |
 |---|---|
 | `/orchestrate` | Work-intake router: bootstraps `corpus/`, classifies the request, presents a Route Plan, hands off after approval |
-| `corpus-flow` | The project wiki (glossary, decisions, domain modeling in §9) plus the todos → briefs → done + log lifecycle |
+| `corpus-flow` | The project wiki (glossary, decisions, domain modeling in §9) plus the todos → briefs → done + log lifecycle, with `blocked/` folders for work that waits on something outside |
 | `plan-split-dispatch` | Plans a task, splits it into chunks, routes them by difficulty, verifies the result through a review gate |
 | `grill-me` | Stress-tests a plan in dependency-ordered rounds, finds facts itself, records settled terms and decisions |
 | `improve` | Read-only survey of a codebase: vetted, ranked findings, with the ones you pick written up as briefs |
