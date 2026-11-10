@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.34.0, 26 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.35.0, 26 skills.
 
 ## What it does
 
@@ -92,6 +92,10 @@ Restart Claude Code (or reload) so the command and skills are picked up. To upda
 ```
 /plugin marketplace update personal-skills-marketplace
 ```
+
+### Other agents
+
+The skills follow the Agent Skills format (`SKILL.md` with `name` and `description`), so another agent that reads it can use them. In opencode and similar agents, copy or link `skills/` into `~/.agents/skills/` (or a project's `.agents/skills/`). The slash commands and the plugin's agents are Claude Code only. A few skills use Claude Code frontmatter keys (`when_to_use` and others), which other agents ignore. `node scripts/check-skills.mjs` checks every skill against the portable limits.
 
 ## Docs
 

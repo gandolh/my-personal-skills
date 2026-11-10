@@ -7,7 +7,7 @@
 # FAIL checks: wiki frontmatter (summary, updated), body length, relative
 # links, orphan wiki pages, the blocked/ rules (every file in a blocked/
 # folder has its condition, no file outside has one, no brief number twice
-# across the four folders).
+# across the four folders), and scripts/check-skills.mjs over skills/.
 set -uo pipefail
 
 CORPUS="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -93,6 +93,13 @@ done
 dups="$(ls "$CORPUS"/briefs/{todo,blocked,done,superseded}/ 2>/dev/null \
   | grep -oE '^[0-9]+' | sort | uniq -d)"
 for n in $dups; do problem "brief number $n appears more than once across todo/, blocked/, done/, superseded/"; done
+
+# Skill frontmatter: first-party failures fail the lint, vendored ones warn.
+if command -v node >/dev/null 2>&1; then
+  node "$ROOT/scripts/check-skills.mjs" || fail=1
+else
+  problem "node is not installed, so scripts/check-skills.mjs could not run"
+fi
 
 echo
 if (( fail )); then echo "corpus lint: FAILED"; exit 1; fi
