@@ -182,3 +182,44 @@ From public-resource-map:
   JSON and any stylesheet still in `layer(legacy)`.
 - **An unlayered `:focus-visible`** with a `border-radius` overrides every
   `rounded-*` utility.
+
+From sports-app, ro-housing and 3D-sandbox:
+
+- **Rule 3 can pass for nothing.** When the whole UI tree is a `ui/` folder
+  (sports-app's `client/src/ui/`), "Base UI only under `ui/`" checks nothing.
+  The checker tests for `components/ui/`.
+- **A TypeBox contract.** sports-app's `shared/api.ts` is TypeBox, not zod;
+  the server brief keeps it. The zod rule needs a "or the repo's existing
+  schema library" clause.
+- **A repo can gitignore `.claude`** (ro-housing), which would leave
+  `.claude/rules/` untracked.
+- **Node's type stripping needs `.ts` import suffixes.** The house's `.js`
+  suffixes don't resolve against `.ts` files without a build. ro-housing's
+  `.ts` suffixes are the form that runs.
+- **Two npm projects with no root `package.json`** (ro-housing's `api/` and
+  `web/`) give the `Stop` hook no `check:fast` to find. They get a
+  scripts-only root.
+- **TypeScript 6.0.3 stops auto-including `@types/*`.** A package needs
+  `"types": ["node"]` (3D-sandbox's `packages/geometry`).
+- **`@vitest/eslint-plugin` 1.6.28 wants TypeScript 6** as an optional peer,
+  so `npm` refuses on 5.x until the TypeScript bump.
+- **Leaving Biome loses `organizeImports`.** `simple-import-sort` would
+  reorder 105 files in 3D-sandbox. Biome's `useButtonType`,
+  `noDangerouslySetInnerHtml` and `noAutofocus` carry over as
+  `no-restricted-syntax` selectors and `jsx-a11y`.
+- **`consistent-type-imports`** needs `disallowTypeAnnotations: false` for
+  `typeof import("./X")` lazy-chunk types.
+- **A default export can be a runtime contract** (3D-sandbox's scene modules
+  read `mod.default`), so `no-default-export` takes a glob exception.
+- **React compiler rules** in `react-hooks` 7.1.1 fire on "mirror state into
+  a ref during render" (18 times in 3D-sandbox). The house has no rule for
+  that pattern yet.
+- **`logger: false` turns `app.log.error` into a no-op**, so a server that
+  says it logs 500s may log nothing.
+- **Config that fails silently:** an empty list variable gives `[]` (CORS
+  silently off), and `PORT=abc` gives `NaN`. `config.ts` parses with zod.
+- **Proving a response schema changes nothing:** serialise every fixture
+  through the zod type provider and compare bytes with `JSON.stringify`
+  (byte-identical for 3D-sandbox's three scenes).
+- **Biome's width is the least-churn width** for a Biome repo (110 in
+  3D-sandbox: 36 lines, against 783 at 120). The estate width stays 120.
