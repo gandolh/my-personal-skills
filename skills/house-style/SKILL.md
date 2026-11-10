@@ -36,7 +36,7 @@ rule's entry in the shipped config carries its reason as a comment.
 | # | Rule | Why | Enforced by |
 |---|---|---|---|
 | 1 | Every package extends one `tsconfig.base.json`: `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `isolatedModules`, `noUnusedLocals`, `noFallthroughCasesInSwitch`, `NodeNext` | The compiler catches the most for the least config | `tsc`, from `vendor/house-style/tsconfig.base.json` |
-| 2 | Only erasable TypeScript: no `enum` (a string-literal union or an `as const` object), no `namespace`, no parameter properties (declare the field) | Every file runs under Node's type stripping; unions narrow | `tsc` (`erasableSyntaxOnly`), `no-restricted-syntax` (`TSEnumDeclaration`) |
+| 2 | Only erasable TypeScript: no `enum` (a string-literal union or an `as const` object), no `namespace`, no parameter properties (declare the field) | Every file can run under Node's type stripping; unions narrow | `tsc` (`erasableSyntaxOnly`), `no-restricted-syntax` (`TSEnumDeclaration`) |
 | 3 | Type-only imports say `type`; relative imports carry their real suffix | Erased imports must be visible to the reader and the bundler | `tsc` (`verbatimModuleSyntax`), `@typescript-eslint/consistent-type-imports` |
 | 4 | Prettier at 120 columns, trailing commas everywhere, double quotes, semicolons. Markdown stays out | The house already writes this; a formatter makes it free | `prettier --check` (`format:check`), the formatter hook |
 | 5 | `_`-prefixed names are deliberately unused; nothing else is | Says "unused on purpose" without a comment | `@typescript-eslint/no-unused-vars` |

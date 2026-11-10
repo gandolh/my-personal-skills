@@ -23,9 +23,8 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 ## 2. Vendor
 
 - From the repo root: `npm run house-style:sync -- house-style-v1.0.0`. The
-  script finds the `my-personal-skills` checkout by name (under
-  `$PROJECTS_DIR`, default `~/projects`, directly or one group folder down)
-  and copies its `house-style/` folder from git objects at that ref. The
+  script finds the `my-personal-skills` checkout by name (in the projects
+  folder `$PROJECTS_DIR` names, directly or one group folder down) and copies its `house-style/` folder from git objects at that ref. The
   first time, `vendor/house-style/bin/sync.mjs` doesn't exist yet, so run the
   library checkout's `house-style/bin/sync.mjs` once from the repo root.
 - Add `"house-style:sync": "node vendor/house-style/bin/sync.mjs"`.
@@ -110,9 +109,10 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 - **Don't delete a call with a side effect.** An "unused"
   `const x = rng.next()` shifts every later random draw: keep the call as a
   bare statement.
-- Node's type stripping needs `.ts` import suffixes, so a repo that runs
-  sources directly (sports-app, imbatranim-apps, just-a-bot) keeps `bundler`
-  resolution and its `.ts` suffixes, with a comment saying why.
+- Node's type stripping and tsx need the real `.ts` suffix, so a repo whose
+  relative imports carry `.ts` (sports-app, imbatranim-apps, just-a-bot,
+  ro-housing) keeps them, with `allowImportingTsExtensions` and a comment
+  saying why.
 - A missing `strict` is added (comercial-website's frontend: 0 errors).
 - Where `noUncheckedIndexedAccess` is off, it stays off with a dated comment
   naming the later brief, which records its count. With it off,
