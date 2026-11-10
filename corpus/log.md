@@ -69,3 +69,26 @@ Added `scripts/check-skills.mjs` and called it from `corpus/lint.sh` (v0.35.0).
 It found one invalid description (`improve`, an unquoted `: `), now fixed. The
 two long descriptions in the brief were already under 1,024 characters. See
 [the brief](briefs/done/21-the-library-meets-the-agent-skills-format-from-opencode.md).
+
+## [2026-11-10] progress | Brief 27, the library half: the house-style skill and the hooks (v0.36.0)
+
+- **Skill.** `skills/house-style/` writes the house style as 25 numbered rules,
+  each with its rule id or "review", and the adoption order; its references
+  hold the adoption traps and the review checklist, which
+  `plan-split-dispatch`'s review gate now hands the conventions finder.
+- **Hooks.** `hooks/hooks.json` formats each saved file with the repo's own
+  Prettier and runs `check:fast` at `Stop` when the session saved code in that
+  package, blocking again only while the failure changes, at most four times
+  a turn.
+- **Wiki.** The measurements are collated from the 23 repo harness briefs on
+  [house-style.md](wiki/house-style.md) and
+  [house-style-part-2.md](wiki/house-style-part-2.md), with four counts for
+  the owner. [decisions.md](wiki/decisions.md) records house-style as a
+  library folder (the owner's call), the width of 120 and the tsconfig flags.
+- **Briefs.** 02, 03 and 15 now ship their checkers as house-style's
+  `bin/check-base-ui.mjs` and `bin/check-structure.mjs`, run from each repo's
+  `vendor/house-style/`, at the next minor version.
+- **Left:** the `house-style/` folder, its tag and Wicket's proof run. The
+  brief stays in `todo/`. See
+  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+

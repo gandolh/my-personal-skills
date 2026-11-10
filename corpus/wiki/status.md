@@ -1,5 +1,5 @@
 ---
-summary: Snapshot of the skills library as of 2026-11-09 - version 0.35.0, the 26 briefs filed that day (02-27) and what each is for, and that nothing is built until the owner's grilling on 2026-11-10.
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, and brief 27's library half built at version 0.36.0 (the house-style skill and the plugin's hooks).
 updated: 2026-11-10
 ---
 
@@ -67,3 +67,13 @@ The corpus follows it, still specs only, nothing built:
 - Brief 28, *The estate redesign board*, is new and depends on 24.
 - The work happens on `main` in each repo, with no PRs (Q4). Phase B builds
   the Base UI bumps first.
+
+## 2026-11-10: brief 27's library half, v0.36.0
+
+The library is at v0.36.0, with 27 skills. Brief 27 is in progress: the
+`house-style` skill, the plugin's first hooks (`hooks/hooks.json`: the
+formatter and the `Stop` check) and the measurements
+([house-style.md](house-style.md)) are built. Its `house-style/` folder, the
+tag `house-style-v1.0.0` and Wicket's proof run are left. Owner step: update
+the plugin to 0.36.0 so the skill and hooks are live.
+

@@ -290,6 +290,15 @@ Work happens on `main` with no PRs (Q4).
   checkout by name, the way Ward's library and the imbatranim kit are shared.
   A git dependency would need git or SSH inside every Docker build, because
   npm locks GitHub dependencies as git URLs.
+- **House-style is a folder of this library, not its own repo** (the owner's
+  call, 2026-11-10). The package is `house-style/` here, the way Ward's
+  library is ward-auth's `shared-library/` folder. Its version is its own
+  (`house-style/package.json`, 1.0.0), apart from the plugin's, and its tags
+  are `house-style-v<version>`. `npm run house-style:sync -- <ref>` finds the
+  `my-personal-skills` checkout by name and copies the folder at `<ref>` (a
+  tag or a commit) into the repo's `vendor/house-style/`. Wherever this brief
+  says "the `house-style` repo", read "the library's `house-style/` folder".
+  Recorded in [decisions.md](../../wiki/decisions.md).
 - **Q7.** The Claude Code layer lives in the plugin: `Stop` runs `check:fast`
   and `PostToolUse` formats the saved file (decision 0 confirmed).
 - **Q8 and Q51: one estate width, 120.** Measured least churn at atrium and
@@ -410,8 +419,8 @@ Work happens on `main` with no PRs (Q4).
 
 ## Files you OWN
 
-- **New repo `house-style`** (decision 1), created by the owner or with
-  their go-ahead. It holds:
+- **The library's `house-style/` folder** (decision 1; a new repo until the
+  owner's call of 2026-11-10). It holds:
   - `eslint.config.js`, exported as a function taking the repo's paths
     (`{ web: "web/src", server: "server/src", scripts: [...] }`);
   - `tsconfig.base.json`;
@@ -452,8 +461,9 @@ Work happens on `main` with no PRs (Q4).
    Write the numbers to `corpus/wiki/house-style.md`. Bring the owner any
    rule whose count suggests it is wrong for the house, rather than
    loosening it silently.
-2. Build `house-style` with fixtures and tests, tag `v1.0.0`, and keep
-   `CHANGELOG.md`. A rule change is a minor version; turning a warning into
+2. Build `house-style` with fixtures and tests, tag `house-style-v1.0.0`
+   (2026-11-10: the tag names the folder, since it lives in this library), and
+   keep `house-style/CHANGELOG.md`. A rule change is a minor version; turning a warning into
    an error is a minor version with a note.
 3. Write the `house-style` skill: the measured style above, the rules, the
    review checklist, and how a repo adopts the harness:
@@ -472,7 +482,7 @@ Work happens on `main` with no PRs (Q4).
 
 - `corpus/wiki/house-style.md` has the measurements: churn, rule counts,
   timings and `tsc` counts.
-- `house-style` at `v1.0.0`:
+- `house-style` at `house-style-v1.0.0`:
   - each rule has a failing fixture that fails and a passing fixture that
     passes, under its own `npm test`;
   - `npx eslint` with its config on wicket reproduces the house's current
@@ -482,3 +492,23 @@ Work happens on `main` with no PRs (Q4).
 - The skill loads on "code style", "lint rules", "formatting", "house
   style", "set up the harness". The review gate links its checklist.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Progress
+
+- **2026-11-10, the library half (agent `house-style-27`).** Done: the
+  `house-style` skill with 25 numbered rules (each with its rule id or
+  "review"), `references/adoption.md` and `references/review-checklist.md`;
+  the plugin's `hooks/hooks.json` (the formatter, the save note and the `Stop`
+  check, with `node --test hooks/hooks.test.mjs`); the review-gate line in
+  `plan-split-dispatch`; the measurements, collated from the repo briefs
+  rather than re-measured, on [house-style.md](../../wiki/house-style.md)
+  and [house-style-part-2.md](../../wiki/house-style-part-2.md), with four
+  counts for the owner; decisions 1-3 in
+  [decisions.md](../../wiki/decisions.md) (decision 4, the lint additions, is
+  per rule and reversible with a minor version, so it isn't one); briefs 02,
+  03 and 15 point at `house-style/bin/` and the next minor version; v0.36.0.
+- **Left:** the `house-style/` folder itself (built in a separate checkout
+  and moved in by the controller), step 2's tag `house-style-v1.0.0`, and
+  step 4, Wicket's proof run (Wicket's brief 10). The owner updates the
+  plugin to 0.36.0 to make the skill and hooks live.
+

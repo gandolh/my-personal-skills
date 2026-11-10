@@ -18,6 +18,16 @@ Decided 2026-11-10:
 - **Tooling ships from brief 27.** `house-style` is vendored into each repo
   with a version header and refreshed by `house-style:sync` (Q6). The two
   checkers come with it and read the repo's roots from `conventions.json`.
+- **Wiring the vendored copy (2026-11-10, brief 27).** house-style is the
+  library's `house-style/` folder (the owner's call), and a repo takes it with
+  `npm run house-style:sync -- house-style-v<version>`, which copies that
+  folder at the tag into `vendor/house-style/`. Nothing is copied by hand.
+  Each repo's `check:conventions` runs
+  `node vendor/house-style/bin/check-base-ui.mjs` and
+  `node vendor/house-style/bin/check-structure.mjs`, `--warn-only` where the
+  next bullet says, and its configs extend the vendored ones. The `house-style`
+  skill's adoption reference has the steps. A repo moves to a newer checker by
+  syncing a newer tag, a minor version of house-style.
 - **The deploy is left alone** (Q1). Every service runs in a container built
   from the repo's `infrastructure/Dockerfile` with `npm ci` and `tsc -b`, and
   no tests or lint. The gate is the `Stop` hook plus `npm run check`.

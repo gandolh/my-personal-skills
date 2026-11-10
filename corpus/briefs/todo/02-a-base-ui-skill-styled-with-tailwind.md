@@ -118,6 +118,14 @@ From the owner's grilling (see
 These replace the defaults above wherever they differ, and the skill builds
 them as rules.
 
+- **The checker ships from house-style (2026-11-10, brief 27).** The checker is
+  `bin/check-base-ui.mjs` in the library's `house-style/` folder, not a script
+  under `skills/base-ui/`. Each repo runs its vendored copy,
+  `node vendor/house-style/bin/check-base-ui.mjs [--warn-only]`, with its roots
+  from `conventions.json`. A new checker is a minor version of house-style,
+  and this brief bumps the plugin to the next minor version (brief 27 took
+  0.36.0).
+
 **Scope.** Briefs 05-14 are superseded: each app's Tailwind migration is now
 a brief in that app's own corpus, and the skill's migration method
 (`migrating-from-plain-css.md`) is what they follow. Brief 04 is a tracker of
@@ -224,8 +232,10 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
 
 - `skills/base-ui/SKILL.md` (new)
 - `skills/base-ui/references/*.md` (new)
-- `skills/base-ui/scripts/check-base-ui.mjs` (new) and its fixtures and test
-  under `skills/base-ui/scripts/`
+- `house-style/bin/check-base-ui.mjs` (new) in the library's `house-style/`
+  folder, with its fixtures and tests under `house-style/` and a
+  `house-style/CHANGELOG.md` entry (changed 2026-11-10, brief 27: it was
+  `skills/base-ui/scripts/`)
 - `README.md` (the skills table), `docs/history.md`,
   `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` (version)
 - This repo's `corpus/` (status, log, decisions)
@@ -349,9 +359,11 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
    7. Done when `check-base-ui.mjs` passes, along with the app's typecheck,
       tests and build.
 
-5. **`scripts/check-base-ui.mjs`.** A zero-dependency Node ≥22 ES module:
-   `node check-base-ui.mjs [--version 1.9.0] [web-root]`. It reads
-   `package.json` and walks `src/`. Each finding is printed as
+5. **`house-style/bin/check-base-ui.mjs`** (moved from `scripts/` on
+   2026-11-10, brief 27). A zero-dependency Node ≥22 ES module, run in a repo
+   as `node vendor/house-style/bin/check-base-ui.mjs [--warn-only] [--version 1.9.0]`.
+   It reads the web roots from the repo's `conventions.json`, then each
+   root's `package.json`, and walks its `src/`. Each finding is printed as
    `file:line rule-N message`, and the script exits 1 on any error. Checks:
    - rule 1: an exact pin equal to `--version`;
    - rule 2: an import from the root;
@@ -364,13 +376,14 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
    - rule 10: `Select.Root` without `items` (a warning);
    - rule 11: `window.confirm|alert|prompt` or a bare `confirm(`.
 
-   The header carries the skill's version and says the file is copied into
-   repos as `scripts/check-base-ui.mjs`. Add fixtures, one passing and one
-   failing per rule, and a `node --test` file. Warnings don't fail the run.
+   It ships with house-style and reaches repos through `house-style:sync`,
+   never by hand. Add fixtures, one passing and one failing per rule, and a
+   `node --test` file under `house-style/`. Warnings don't fail the run, and
+   `--warn-only` turns errors into warnings.
 
 6. **Wire it up.** Add a row to the README skills table and a
-   `docs/history.md` entry, bump the version to v0.35.0 in both plugin
-   files, and update `corpus/wiki/status.md` and `log.md`. Add a
+   `docs/history.md` entry, bump the version to the next minor version
+   (2026-11-10: 0.35.0 and 0.36.0 are taken) in both plugin files, and update `corpus/wiki/status.md` and `log.md`. Add a
    `decisions.md` entry, "Base UI conventions as a skill, not a shared
    library", recording the verdict above, the rejected alternatives (a
    styled library on Base UI, one from scratch, leaving each app alone) and
@@ -383,9 +396,9 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
 - Every API in the references matches `@base-ui/react@1.9.0`'s types. Check
   by installing 1.9.0 in a scratch dir and compiling each example with
   `tsc --noEmit`.
-- `node --test skills/base-ui/scripts/` passes. Every rule's failing
-  fixture is reported, and every passing fixture is clean.
+- House-style's `npm test` passes, with `check-base-ui`'s tests in it. Every
+  rule's failing fixture is reported, and every passing fixture is clean.
 - Run against a scratch copy of ro-housing's `web/` (Tailwind already), the
   checker reports only real findings. Record the count in the outcome note.
-- `bash corpus/lint.sh` passes, and the version reads 0.35.0 in both plugin
-  files.
+- `bash corpus/lint.sh` passes, and both plugin files read the next minor
+  version.

@@ -166,7 +166,8 @@ The skill targets 5.x and says so.
    `inject()` tests through a `testing/buildTestApp.ts`, where the repo's
    decisions allow it. Shelfmark's decisions say "nothing boots the app";
    that repo keeps its rule until the owner revisits it.
-6. **Version.** Default: v0.36.0, after brief 02's v0.35.0.
+6. **Version.** Default: v0.36.0, after brief 02's v0.35.0. (Changed
+   2026-11-10: brief 27 took 0.36.0, so this is the next minor version.)
 7. **Import boundaries through dependency-cruiser.** Added 2026-11-09 from
    the review of mattpocock/skills (brief 18). Default: rules 5 and 7
    below (feature boundaries, and no Fastify in `lib/`) become
@@ -193,6 +194,16 @@ From the owner's grilling; the technical calls are on
 [grilling-2026-11-10-technical-calls.md](../../wiki/grilling-2026-11-10-technical-calls.md).
 Work happens on `main` with no PRs (Q4). Brief 16 is now a tracker of each
 repo's server brief.
+
+- **The checker and presets ship from house-style (2026-11-10, brief 27).** The
+  checker is `bin/check-structure.mjs` in the library's `house-style/` folder,
+  not a script under `skills/code-structure/`, and the `.dependency-cruiser.cjs`
+  and `knip.json` presets of decisions 7 and 8 are house-style's too. Each repo
+  runs its vendored copy, `node vendor/house-style/bin/check-structure.mjs
+  [--warn-only]`, with its roots from `conventions.json`, and extends the
+  vendored presets. A new checker is a minor version of house-style. The
+  plugin version is the next minor version, not decision 6's v0.36.0, which
+  brief 27 took.
 
 - **Q23.** `features/<name>/` is the folder, confirmed.
 - **Q24.** Typed plugin options with explicit registration, confirmed. No
@@ -259,8 +270,10 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
 
 - `skills/code-structure/SKILL.md` (new)
 - `skills/code-structure/references/*.md` (new)
-- `skills/code-structure/scripts/check-structure.mjs` (new), with its
-  fixtures and test
+- `house-style/bin/check-structure.mjs` (new) in the library's `house-style/`
+  folder, with its fixtures and tests under `house-style/` and a
+  `house-style/CHANGELOG.md` entry; the dependency-cruiser and knip presets
+  there (changed 2026-11-10, brief 27: it was `skills/code-structure/scripts/`)
 - `README.md`, `docs/history.md`, both plugin files, this repo's `corpus/`
   (status, log, decisions)
 
@@ -349,9 +362,12 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
    Follow this library's rule on unvendored sources: take the ideas, copy
    no text. Credit the demo and Collina's skill in `research.md`.
 
-3. **`scripts/check-structure.mjs`.** A zero-dependency Node ≥22 module:
-   `node check-structure.mjs [repo-root]`. It finds `server/` and `web/` (or
-   says it found neither) and prints `file:line rule-N message`. Checks:
+3. **`house-style/bin/check-structure.mjs`** (moved from `scripts/` on
+   2026-11-10, brief 27). A zero-dependency Node ≥22 module, run in a repo as
+   `node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]`.
+   It reads the server, web and shared roots from the repo's
+   `conventions.json` (or says it found none) and prints
+   `file:line rule-N message`. Checks:
    - rule 1: `listen(` anywhere but `server.ts`;
    - rule 2: no exported `buildApp` in `app.ts`;
    - rule 3: `process.env` outside `config.ts` (tests excepted), and any
@@ -367,8 +383,9 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
    only, through `--warn-only`. A repo drops the flag once it has migrated.
    Add fixtures and a `node --test` file.
 
-   Rules 5 and 7 are enforced by the shipped `.dependency-cruiser.cjs`
-   (decision 7), and unused files and dependencies by knip (decision 8).
+   Rules 5 and 7 are enforced by house-style's `.dependency-cruiser.cjs`
+   preset (decision 7), and unused files and dependencies by knip with
+   house-style's preset (decision 8).
    `check:conventions` runs all three. Prove each rule bites with a
    deliberate violation in the fixtures.
 
@@ -384,7 +401,7 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
    5. Drop `--warn-only`.
 
 5. **Wire it up.** Add the README row, the `docs/history.md` entry and the
-   v0.36.0 bump. Update `corpus/wiki/status.md` and `log.md`. Add
+   next minor version bump (2026-11-10: 0.36.0 is brief 27's). Update `corpus/wiki/status.md` and `log.md`. Add
    `decisions.md` entries for owner decisions 1-4 above, with their
    rejected alternatives.
 
@@ -395,12 +412,13 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
 - The skeletons compile with `tsc --noEmit` in a scratch workspace with
   `fastify@5.12.x`, `@fastify/type-provider-zod@1.0.x` and `zod@4.x`, and
   `buildTestApp` plus one `inject()` test passes there.
-- `node --test skills/code-structure/scripts/` passes, with a failing and a
-  passing fixture per rule.
+- House-style's `npm test` passes, with a failing and a passing fixture per
+  `check-structure` rule.
 - `depcruise` with the shipped config fails on the boundary fixture and
   passes on the clean one, and `knip` flags the fixture's unused
   dependency.
 - Run with `--warn-only` against scratch copies of Almanac and atrium, the
   checker exits 0 and lists the gaps. Paste the counts into the outcome
   note, for brief 16's table.
-- `bash corpus/lint.sh` passes, and the version reads 0.36.0.
+- `bash corpus/lint.sh` passes, and both plugin files read the next minor
+  version.
