@@ -30,3 +30,17 @@ Shelfmark, Newspapper, public-resource-map and presentation-sites each got
 one brief in their own corpus. Sources were read in scratch clones, pinned
 by commit. Two spikes back briefs 02 and 03. Questions for the grilling are
 in [open-questions.md](wiki/open-questions.md).
+
+## [2026-11-10] resume | Repo-local briefs: 10 repos written, 12 to go, Phase B not started
+
+The cloud session paused on the owner's request after usage limits.
+
+- **Briefs.** Repo-local briefs (house style, Base UI conventions, Tailwind,
+  server structure, bumps) are in Almanac (the reference), Satchel,
+  the-board, Newspapper, wicket, Shelfmark, Postern, lantern and ward-auth,
+  with a partial set in mini-projects. Each is on its repo's one draft PR.
+- **New questions.** Their cross-repo questions are Q47-62 on
+  [open-questions-from-the-repo-briefs.md](wiki/open-questions-from-the-repo-briefs.md).
+- **The hand-off** is [resume-2026-11-10.md](resume-2026-11-10.md): the
+  remaining repos, the method, the repo notes, and the prompt for the next
+  session.

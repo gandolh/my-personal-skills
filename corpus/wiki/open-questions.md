@@ -1,6 +1,6 @@
 ---
 summary: The open questions behind the 2026-11-09 briefs (02-27 here, plus Shelfmark 04, Newspapper 06, public-resource-map 01, presentation-sites 01), in dependency order for the grilling on 2026-11-10. Each has the default its brief builds, the evidence, and the briefs it unblocks. Delete a question once it is answered.
-updated: 2026-11-09
+updated: 2026-11-10
 ---
 
 # Open questions: the grilling of 2026-11-10
@@ -13,6 +13,8 @@ updated: 2026-11-09
 - Answered questions move to [decisions.md](decisions.md) (the ones that
   pass its three-part test) or into the brief itself. Then they leave this
   page.
+
+The questions the repo briefs raised (Q47-62), and the facts to fold into briefs 02, 03, 16 and 27, are on [open-questions-from-the-repo-briefs.md](open-questions-from-the-repo-briefs.md).
 
 ## Round 0: facts only the owner has
 
