@@ -149,3 +149,28 @@ From SocialEvents:
 - **`dotenv/config` reads `.env` from the working directory,** so a script
   run from the repo root reads a different file than the workspace's dev
   script. `config.ts` loads `.env` by an explicit path.
+
+From imbatranimOS and presentation-sites:
+
+- **Size a bump from the lockfile, not the range.** imbatranimOS says
+  `^1.4.1` and resolves Base UI 1.6.0.
+- **A NestJS backend is carved out** of `erasableSyntaxOnly` and the
+  parameter-property ban: its dependency injection needs constructor
+  parameter properties and `emitDecoratorMetadata`.
+- **`no-warning-comments`** needs `location: "start"` (or a case-sensitive
+  `TODO:`), or the word "Todo" in prose is a finding.
+- **An orphan tsconfig base.** imbatranimOS has a full house base that
+  nothing extends, and four unrelated bases. The harness makes one base and
+  points every package at it.
+- **No z-index scale** in imbatranimOS: 15 literal `z-[N]` from 900 to
+  10001, with a Select popup under a Dialog. Rule 8's scale fixes a real bug.
+- **Astro needs its own preset:** `prettier-plugin-astro`,
+  `eslint-plugin-astro` and `astro check`. `astro-eslint-parser` has no
+  `projectService`, so typed lint falls back to `project: true` (50 s for the
+  four sites).
+- **`astro check` takes 8-15 s per site,** so `check:fast` runs it only in
+  the sites with changed files.
+- **Prettier can be undeclared,** present only as a hoisted transitive
+  dependency, with a `format` script relying on it.
+- **Phone menus without a title.** The five Astro phone menus are Dialogs
+  with an `aria-label` and no `Dialog.Title`; the move to `Drawer` adds one.
