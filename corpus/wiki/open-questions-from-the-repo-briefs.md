@@ -136,3 +136,49 @@ From atrium:
 - **Layered modules break the feature rule.** atrium's modules reach into
   each other in 24 places, with three cycles, so "reach another feature only
   through its `index.ts`" needs a cycle-breaking step or recorded exceptions.
+
+From comercial-website:
+
+- **A missing `strict`.** `frontend/tsconfig.app.json` has no `strict`, and
+  adding it costs 0 errors. Every repo's harness brief checks for it.
+- **An old TypeScript pin blocks the flags.** The backend is on TypeScript
+  5.7.3, which predates `erasableSyntaxOnly` (5.8), so the TypeScript bump
+  comes before the flag.
+- **Fastify's own 4xx answer 500.** An error handler with no `statusCode`
+  branch turns bad JSON or an oversized body into a 500. Other servers that
+  copied the shape likely have the same bug.
+- **A plugin library reads env.** `backend/core` reads 10 variables at module
+  load. A shared library should take its config as plugin options.
+- **zod 4's messages differ.** A handler that sends the first issue's message
+  to users shows new text after the move to zod 4.
+- **Upload routes and `requestTimeout`.** A request timeout cuts a large
+  upload (500 MB multipart here), so upload routes keep it at 0 or raise it.
+- **Unlayered CSS beats utilities even in a Tailwind repo.** An unlayered
+  `.material-symbols-outlined { font-size: 24px }` beats every `text-*`
+  utility, which is why 31 sites carry an inline `fontSize`.
+- **A `render` function that wraps the caller's button** in a `span`
+  (`Dropdown.tsx:37`, `Tooltip.tsx:15`) breaks rule 9, and the checker should
+  catch it.
+- **Third-party widget libraries** (`sonner` for toasts) count as widgets
+  Base UI replaces, behind a wrapper with the same call shape (technical
+  call, 2026-11-10).
+
+From public-resource-map:
+
+- **No error handler at all.** With no `setErrorHandler`, Fastify's default
+  puts a thrown error's message in the reply, so the error rule fixes a leak.
+- **`safeParse(req.…)` hides from the regex too.** 14 sites in 7 files, and
+  the `.parse(request.` grep finds none of them.
+- **`await-thenable` flags awaits on Drizzle's synchronous better-sqlite3
+  calls** (58 here). Removing them changes nothing. Expect it in every Drizzle
+  plus better-sqlite3 repo.
+- **`vitest/valid-expect`** needs `maxArgs: 2` for `expect(x, "message")`.
+- **`e2e/` and `playwright.config.ts` sit outside every tsconfig,** so typed
+  lint fails to parse them until a tsconfig covers them.
+- **`eslint-plugin-better-tailwindcss`:** only its unknown-class,
+  deprecated-class and class-order rules are worth turning on (412
+  logical-property and 194 line-wrapping findings were noise).
+- **Prettier's ignore list** needs each repo's frozen fixtures, generated meta
+  JSON and any stylesheet still in `layer(legacy)`.
+- **An unlayered `:focus-visible`** with a `border-radius` overrides every
+  `rounded-*` utility.
