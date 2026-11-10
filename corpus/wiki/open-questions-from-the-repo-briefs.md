@@ -98,3 +98,41 @@ briefs, under "Owner decisions". The numbering continues from
 62. **A named type scale** (Satchel uses 13 sizes), a `phone` custom variant
     for "≤640" breakpoints (Tailwind's `max-sm:` is `<640`), and
     `data-testid` for class-based test selectors (Postern has 60)?
+
+## Facts from the 2026-11-10 sets (no decision needed)
+
+From mini-projects (`literally-a-todo-app`):
+
+- **A schema stricter than the handler breaks the client.** The todo `PATCH`
+  accepts `completed` as `0 | 1 | boolean` and the frontend sends `0 | 1`, so
+  a `z.boolean()` would refuse every tick. Route-schema steps check each
+  client's real payloads first.
+- **Inline styles are a second layering trap.** An inline `style` beats every
+  layer, so one component can't mix old inline styles and new utilities. Move
+  each component whole, one per commit.
+- **`hover:` only applies under `(hover: hover)`** in Tailwind v4, so
+  controls revealed on hover vanish on touch screens. Use
+  `[@media(hover:none)]:` and `group-focus-within:` for them.
+- **Material Symbols ligatures are read aloud.** An icon-only button
+  announces `keyboard_arrow_up`. The glyph needs `aria-hidden` and the button
+  an `aria-label`.
+
+From atrium:
+
+- **`node:test` and typed lint.** `no-floating-promises` fires on every
+  `describe`/`it` (814 times in atrium) unless `allowForKnownSafeCalls` names
+  them.
+- **Q47 and Q50 interact.** With `noUncheckedIndexedAccess` off,
+  `no-unnecessary-type-assertion` flags most `!` as unneeded (608 findings in
+  atrium). Turning the flag on makes them needed again.
+- **Workspace names differ.** atrium's workspaces are `apps/api`, `apps/web`
+  and `packages/shared`, so the skills' path rules need a mapping, not fixed
+  `server/ web/ shared/` paths.
+- **Hand-parsed replies.** atrium's controllers `schema.parse()` their replies
+  by hand in at least 14 places; response schemas replace them.
+- **Import-time config.** Config read as import-time constants, with a test
+  setup that depends on them, makes a `loadConfig(env)` factory a large
+  change. The code-structure skill should allow import-time config.
+- **Layered modules break the feature rule.** atrium's modules reach into
+  each other in 24 places, with three cycles, so "reach another feature only
+  through its `index.ts`" needs a cycle-breaking step or recorded exceptions.
