@@ -1,3 +1,3 @@
-export function greet(): void {
-  console.log(`hello from a CLI on ${process.env.HOSTNAME ?? "this machine"}`);
+export function greet(name: string): void {
+  console.log(`hello from a CLI, ${name}`);
 }

@@ -62,10 +62,10 @@ const KNOWN_OPTIONS = new Set([
  * @param {string} [options.root] The repo root, for typed linting and the Tailwind entry (default: the working directory).
  * @param {string | string[]} [options.web] The React source folders: they get the hooks rules, and the Tailwind rules when `tailwind` is set.
  * @param {string | string[]} [options.server] The Node source folders. No rule is scoped to them in 1.0.0; the key names the root for later presets.
- * @param {string[]} [options.scripts] Folders of scripts run by hand, where `console` is the interface (default `["scripts"]`).
+ * @param {string[]} [options.scripts] Folders of scripts run by hand, where `console` is the interface and `process.env` is read directly (default `["scripts"]`).
  * @param {string[]} [options.tests] Test file globs (default `**\/*.test.*` and `**\/*.spec.*`).
  * @param {string[]} [options.defaultExports] Globs where a framework or a runtime contract needs a default export, beyond config files.
- * @param {string[]} [options.console] Globs of CLI entry files where `console` is allowed.
+ * @param {string[]} [options.console] Globs of CLI entry files where `console` is allowed. They still read the environment through `config.ts`.
  * @param {{ css: string, order?: boolean }} [options.tailwind] The Tailwind CSS entry, and whether the class order is enforced yet.
  * @param {boolean} [options.vitest] Whether tests run on vitest (default true); a `node:test` repo passes false.
  * @param {{ project?: true | string | string[], allowDefaultProject?: string[] }} [options.typed] Typed-lint parser settings: `projectService` unless `project` is given.
@@ -253,7 +253,15 @@ export function houseStyle(options = {}) {
       rules: {
         // A script or a CLI talks to the person running it through the console.
         "no-console": "off",
-        // A script or a CLI is an entry point of its own, not app code, so it reads its environment directly.
+      },
+    },
+    {
+      // Only the script folders, not the `console` globs: a file allowed to print (a server entry that
+      // logs before its logger exists, a seed CLI inside the app) still reads its settings through config.ts.
+      name: "house-style/scripts",
+      files: scripts.map((dir) => `${trim(dir)}/**`),
+      rules: {
+        // A script run by hand is a program of its own, not app code, so it reads its environment directly.
         "n/no-process-env": "off",
       },
     },

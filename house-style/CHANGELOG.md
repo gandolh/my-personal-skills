@@ -18,7 +18,8 @@ and the pins below in one go (the `house-style` skill has the steps).
   recommended on `web`; `better-tailwindcss/no-unknown-classes` and
   `no-deprecated-classes` on `web` with `tailwind`, and
   `enforce-consistent-class-order` with `tailwind.order`; `n/no-process-env`
-  outside `config.ts`, tests, tool configs (`*.config.*`), scripts and CLIs;
+  outside `config.ts`, tests, tool configs (`*.config.*`) and scripts (not the
+  `console` globs: a CLI may print, but reads its settings through `config.ts`);
   `@vitest/eslint-plugin` recommended on tests, with `valid-expect`'s
   `maxArgs: 2` and without `no-conditional-expect` (the house asserts inside a
   `catch`); and the house shapes as errors: no `enum`, no

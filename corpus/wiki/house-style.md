@@ -101,13 +101,16 @@ Four rules had counts that suggested they were wrong for the house as first
 set. The controller of brief 27 made these calls; the owner may overrule any
 of them.
 
-1. **`n/no-process-env` allows tests, tool configs and CLIs.** App code reads
-   the environment only through `config.ts`; tests (ward-auth 214, Newspapper
-   42, comercial-website 14), `*.config.*` tool configs and the `scripts` and
-   `console` globs aren't app code. On a scratch Wicket the count drops from 6
-   to 0, because Wicket's `console` globs name its server entry
-   (`server/src/index.ts`) beside the seed CLI; a repo that wants its entry
-   held to `config.ts` leaves it out of `console`.
+1. **`n/no-process-env` allows tests, tool configs and scripts.** App code
+   reads the environment only through `config.ts`; tests (ward-auth 214,
+   Newspapper 42, comercial-website 14), `*.config.*` tool configs and the
+   `scripts` folders aren't app code. Changed 2026-11-11 (the controller's
+   call): the `console` globs are **not** exempt. They list files allowed to
+   print, such as Wicket's `server/src/index.ts`, which logs before its logger
+   exists, and that says nothing about reading the environment. So a scratch
+   Wicket keeps 4 findings, by grep (`server/src/index.ts:29` and three in
+   `seed.ts`), and Wicket's brief 13 moves the entry's read into `config.ts`
+   with this rule behind it.
 2. **`vitest/no-conditional-expect` is off.** The house asserts on a thrown
    error inside its `catch` (game-engine 90, Newspapper 13 of 14, ward-auth 10,
    3D-sandbox 8, Wicket 2).

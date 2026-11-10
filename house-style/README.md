@@ -136,7 +136,7 @@ globs from the repo root.
 | `scripts` | `["scripts"]` | Folders of scripts, where `console` and `process.env` are allowed |
 | `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` |
-| `console` | none | CLI entry files, where `console` and `process.env` are allowed |
+| `console` | none | CLI entry files, where `console` is allowed. They read the environment through `config.ts`, like the rest of the app |
 | `tailwind` | none | `{ css, order }`: the CSS entry, and whether the class order is enforced yet |
 | `vitest` | `true` | `false` for a repo whose tests run on `node:test` |
 | `typed` | `projectService` | `{ allowDefaultProject }`, or `{ project: true }` where `project` measures faster |

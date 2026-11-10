@@ -186,7 +186,7 @@ paths from the repo root; the rest are globs.
 | `scripts` | `["scripts"]` | Script folders, where `console` and `process.env` are allowed |
 | `tests` | `**/*.test.*`, `**/*.spec.*` | The vitest rules, `!` as a warning, `process.env` allowed |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` |
-| `console` | none | CLI entry files, where `console` and `process.env` are allowed |
+| `console` | none | CLI entry files, where `console` is allowed; they still read the environment through `config.ts` |
 | `tailwind` | none | `{ css, order }`: the CSS entry, and the class order once the repo has migrated |
 | `vitest` | `true` | `false` for a repo on `node:test` (atrium) |
 | `typed` | `projectService` | `{ allowDefaultProject }`, or `{ project: true }` |
@@ -212,9 +212,12 @@ Traps the repo briefs hit:
   `assertFunctionNames`.
 - `vitest/no-conditional-expect` is off: the house asserts on a thrown error
   inside its `catch` (game-engine 90, Newspapper 13 of 14, ward-auth 10).
-- `n/no-process-env` is off in tests, tool configs (`*.config.*`), the
-  `scripts` folders and the `console` globs. App code reads the environment
-  only through `config.ts`.
+- `n/no-process-env` is off in tests, tool configs (`*.config.*`) and the
+  `scripts` folders. App code reads the environment only through `config.ts`,
+  and that includes the `console` globs: they list files allowed to print
+  (Wicket's `server/src/index.ts` logs before its logger exists), which says
+  nothing about reading the environment. A server entry or a CLI inside the
+  app reads its settings from `config.ts`.
 - `consistent-type-imports` needs `disallowTypeAnnotations: false` for
   `typeof import("./X")` lazy-chunk types.
 - `no-floating-promises` names `node:test`'s `describe`, `it` and `test` in

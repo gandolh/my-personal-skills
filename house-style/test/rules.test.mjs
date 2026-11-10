@@ -15,7 +15,7 @@ const OPTIONS = {
   root: ROOT,
   web: "web/src",
   server: "server/src",
-  console: ["server/src/cli.ts"],
+  console: ["server/src/cli.ts", "server/src/cli-env.fail.ts"],
   defaultExports: ["web/src/routes/**"],
   tailwind: { css: "web/src/index.css" },
 };
@@ -34,7 +34,8 @@ const CASES = [
   { rule: "react-hooks/rules-of-hooks", area: "react-hooks recommended, on web only", fail: "web/src/react/hooks.fail.tsx", pass: ["web/src/react/hooks.pass.tsx", "server/src/scope/hooks-outside-web.pass.ts"] },
   { rule: "better-tailwindcss/no-unknown-classes", fail: "web/src/tailwind/no-unknown-classes.fail.tsx", pass: ["web/src/tailwind/no-unknown-classes.pass.tsx"] },
   { rule: "better-tailwindcss/no-deprecated-classes", fail: "web/src/tailwind/no-deprecated-classes.fail.tsx", pass: ["web/src/tailwind/no-deprecated-classes.pass.tsx"] },
-  { rule: "n/no-process-env", fail: "server/src/node/env-reader.fail.ts", pass: ["server/src/node/config.ts", "server/src/tests/env-in-tests.pass.test.ts", "web/vite.config.ts", "scripts/env-script.ts", "server/src/cli.ts"] },
+  { rule: "n/no-process-env", fail: "server/src/node/env-reader.fail.ts", pass: ["server/src/node/config.ts", "server/src/tests/env-in-tests.pass.test.ts", "web/vite.config.ts", "scripts/env-script.ts"] },
+  { rule: "n/no-process-env", area: "still on in the console globs", fail: "server/src/cli-env.fail.ts", pass: [] },
   { rule: "vitest/expect-expect", area: "@vitest/eslint-plugin recommended", fail: "server/src/tests/expect-expect.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
   { rule: "vitest/no-focused-tests", area: "@vitest/eslint-plugin recommended", fail: "server/src/tests/focused.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
   { rule: "vitest/valid-expect", area: "maxArgs 2", fail: "server/src/tests/valid-expect.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
