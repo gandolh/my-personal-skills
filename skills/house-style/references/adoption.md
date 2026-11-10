@@ -24,14 +24,40 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 
 - From the repo root: `npm run house-style:sync -- house-style-v1.0.0`. The
   script finds the `my-personal-skills` checkout by name (in the projects
-  folder `$PROJECTS_DIR` names, directly or one group folder down) and copies its `house-style/` folder from git objects at that ref. The
+  folder `$PROJECTS_DIR` names, directly or one group folder down) and copies
+  its `house-style/` folder from git objects at that ref into the git work
+  tree it runs in, replacing the copy wholesale and writing the header. The
   first time, `vendor/house-style/bin/sync.mjs` doesn't exist yet, so run the
-  library checkout's `house-style/bin/sync.mjs` once from the repo root.
+  library checkout's `house-style/bin/sync.mjs house-style-v1.0.0` once from
+  the repo root.
 - Add `"house-style:sync": "node vendor/house-style/bin/sync.mjs"`.
-  `npm run house-style:sync -- --check` exits 1 when the copy no longer
-  matches the commit in its header.
-- Pin, exactly, the devDependencies the house-style README lists. Repos
-  without `save-exact=true` in `.npmrc` get it.
+  `npm run house-style:sync -- --check` writes nothing and exits 1 when the
+  copy no longer matches the commit in its header; `-- <ref> --check`
+  compares with another ref. A usage error exits 2.
+- Pin, exactly, the devDependencies the house-style README lists. Every sync
+  and `--check` lists each pin in the root `package.json` or a workspace that
+  differs, without changing anything or the exit code. Repos without
+  `save-exact=true` in `.npmrc` get it. At 1.0.0 the list is:
+
+  | Package | Version |
+  |---|---|
+  | `@eslint/js` | `10.0.1` |
+  | `@vitest/eslint-plugin` | `1.6.28` |
+  | `dependency-cruiser` | `18.7.2` |
+  | `eslint` | `10.9.1` |
+  | `eslint-plugin-better-tailwindcss` | `4.10.0` |
+  | `eslint-plugin-import-x` | `4.18.1` |
+  | `eslint-plugin-n` | `18.5.0` |
+  | `eslint-plugin-react-hooks` | `7.1.1` |
+  | `knip` | `6.44.2` |
+  | `prettier` | `3.9.10` |
+  | `typescript` | `6.0.3` |
+  | `typescript-eslint` | `8.72.2` |
+
+  The ESLint config imports every plugin, so a repo without React or Tailwind
+  pins them too. dependency-cruiser can wait for the repo's server brief.
+- **Node.** The tools want `^22.13.0 || ^24.0.0 || >=26.0.0`: ESLint 10 skips
+  Node 23 and dependency-cruiser 18 skips 25. The sync alone runs on 22.6.
 - **TypeScript first.** `erasableSyntaxOnly` needs TypeScript 5.8, and
   `@vitest/eslint-plugin` 1.6.28 wants TypeScript 6 as an optional peer, so
   npm refuses it on 5.x. Bump to the house's TypeScript before anything else.
@@ -121,16 +147,18 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 - **NestJS carve-out.** imbatranimOS's backend needs parameter properties and
   `emitDecoratorMetadata`, so it turns `erasableSyntaxOnly` off and is exempt
   from the parameter-property rule.
-- `e2e/` and `playwright.config.ts` usually sit outside every tsconfig, so
-  typed lint can't parse them: give them a tsconfig, or list them in
-  `allowDefaultProject`.
+- `e2e/` usually sits outside every tsconfig, so typed lint can't parse it:
+  give it a tsconfig, or list it in `houseStyle()`'s `untyped`. Tool configs
+  (`playwright.config.ts`, `vitest.config.ts`) and JavaScript files need
+  nothing: the house config lints them without type information.
 
 ## 6. ESLint
 
 ```js
-import houseStyle from "./vendor/house-style/eslint.config.js";
+import { houseStyle } from "./vendor/house-style/eslint.config.js";
 
 export default houseStyle({
+  root: import.meta.dirname,
   web: "web/src",
   server: "server/src",
   scripts: ["scripts"],
@@ -141,22 +169,52 @@ export default houseStyle({
 });
 ```
 
+The import is the named `houseStyle`. The copy's default export is a config
+that ignores everything: ESLint 10 loads the nearest `eslint.config.js` for
+each file it lints, and for the copy's own files that is the vendored one, so
+a function there would crash ESLint on them.
+
 Every key is optional; a repo without `web` gets no React or Tailwind rules.
+An unknown key is an error, so a typo can't switch a rule off. Folders are
+paths from the repo root; the rest are globs.
+
+| Option | Default | What it does |
+|---|---|---|
+| `root` | the working directory | The repo root, for typed lint and the Tailwind entry |
+| `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
+| `server` | none | Node folders; no rule is scoped to them in 1.0.0 |
+| `scripts` | `["scripts"]` | Script folders, where `console` and `process.env` are allowed |
+| `tests` | `**/*.test.*`, `**/*.spec.*` | The vitest rules, `!` as a warning, `process.env` allowed |
+| `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` |
+| `console` | none | CLI entry files, where `console` and `process.env` are allowed |
+| `tailwind` | none | `{ css, order }`: the CSS entry, and the class order once the repo has migrated |
+| `vitest` | `true` | `false` for a repo on `node:test` (atrium) |
+| `typed` | `projectService` | `{ allowDefaultProject }`, or `{ project: true }` |
+| `untyped` | none | TypeScript globs no tsconfig covers, linted without types |
+| `ignores` | vendor, dist, coverage | More folders ESLint skips |
+
 Repo-specific rules go after the house config (Postern's
-`no-restricted-imports` for its `jmap` boundary). Typed lint goes through
-`projectService`; fall back to `project: true` only for Astro or where it
-measures faster.
+`no-restricted-imports` for its `jmap` boundary), and so does a rule a repo
+starts as a warning, with a dated comment naming the brief that turns it back.
+Typed lint goes through `projectService`; fall back to `project: true` only
+for Astro or where it measures faster.
 
 Traps the repo briefs hit:
 
 - A repo's own `no-restricted-syntax` block **replaces** the house's for the
-  files it matches (sports-app). Repeat the `TSEnumDeclaration` selector in it.
+  files it matches (sports-app). Spread the copy's exported `restrictedSyntax`
+  (the `TSEnumDeclaration` selector) into it first.
 - `no-warning-comments` needs `location: "start"`, or the word "todo" in prose
   is a finding (17 in game-engine, where a todo is a spec; the Todo app's name
   in imbatranimOS).
 - `vitest/valid-expect` needs `maxArgs: 2` for `expect(value, "why")`.
   Helpers that assert (`expectError`) go in `expect-expect`'s
   `assertFunctionNames`.
+- `vitest/no-conditional-expect` is off: the house asserts on a thrown error
+  inside its `catch` (game-engine 90, Newspapper 13 of 14, ward-auth 10).
+- `n/no-process-env` is off in tests, tool configs (`*.config.*`), the
+  `scripts` folders and the `console` globs. App code reads the environment
+  only through `config.ts`.
 - `consistent-type-imports` needs `disallowTypeAnnotations: false` for
   `typeof import("./X")` lazy-chunk types.
 - `no-floating-promises` names `node:test`'s `describe`, `it` and `test` in
@@ -169,9 +227,12 @@ Traps the repo briefs hit:
 - `react-hooks` 7.1.1's compiler rules fire on "mirror state into a ref during
   render" (18 in 3D-sandbox). Fixing them changes behaviour: list them with a
   test first.
-- `better-tailwindcss`: only unknown classes, deprecated classes and class
-  order are on (412 logical-property and 194 line-wrapping findings were
-  noise). Class order stays off until the repo's Tailwind migration.
+- `better-tailwindcss`: only `no-unknown-classes`, `no-deprecated-classes`
+  and, with `tailwind.order`, `enforce-consistent-class-order` are on (412
+  logical-property and 194 line-wrapping findings were noise). Class order
+  stays off until the repo's Tailwind migration.
+- Tailwind 4 scans every committed file for class names, `vendor/` included:
+  the stylesheet adds `@source not "<path to>/vendor";`.
 - Leaving Biome (3D-sandbox) loses `organizeImports`: adding
   `simple-import-sort` would reorder 105 files, so it is a separate question.
   `useButtonType` and `noDangerouslySetInnerHtml` carry over as
@@ -188,6 +249,26 @@ Traps the repo briefs hit:
 "check:conventions": "knip && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
 ```
 
+The two checkers ship in house-style's next minor version. Until a repo syncs
+it, `check:conventions` is `knip` alone.
+
+- **knip** has no `extends`, so `knip.config.js` spreads the preset and adds
+  the repo's entries:
+
+  ```js
+  import preset from "./vendor/house-style/knip.json" with { type: "json" };
+
+  export default { ...preset, entry: ["scripts/*.ts"] };
+  ```
+
+  The preset ignores `vendor/`, fails on unused files and dependencies, and
+  warns on unused exports and types. knip follows the root ESLint config into
+  the copy, so the plugins count as used.
+- **dependency-cruiser** joins with the repo's server brief:
+  `module.exports = { extends: "./vendor/house-style/.dependency-cruiser.cjs" };`.
+  The preset forbids cycles, unresolvable imports, a feature reached past its
+  `index`, and Fastify in `lib/`.
+
 `scripts/check-fast.mjs` lints the files changed against `HEAD` and the
 untracked ones, and nothing else:
 
@@ -202,6 +283,10 @@ const run = spawnSync("npx", ["eslint", "--no-warn-ignored", ...files], { stdio:
 process.exit(run.status ?? 1);
 ```
 
+- After a sync the changed files include `vendor/house-style/`. ESLint skips
+  them, because the house config ignores `vendor/` and the copy's own
+  `eslint.config.js` ignores everything, and `--no-warn-ignored` keeps that
+  quiet. So the script needs no filter of its own.
 - `tsc -b` is incremental. A web project typechecked with `tsc -p web --noEmit`
   gets `incremental` and a `tsBuildInfoFile` under `node_modules/.tmp/`.
 - `check:fast` never runs tests; the Stop hook refuses one that does.

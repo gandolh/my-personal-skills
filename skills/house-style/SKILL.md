@@ -49,11 +49,11 @@ rule's entry in the shipped config carries its reason as a comment.
 | 12 | No `@ts-ignore`; `@ts-expect-error` only, with its reason | A suppression must fail once the error is gone, and say why | `@typescript-eslint/ban-ts-comment` |
 | 13 | No `TODO` or `FIXME` comments | Todos live in `corpus/todos/`, where someone reads them | `no-warning-comments` |
 | 14 | No `console` outside scripts and CLIs | Services log through their logger | `no-console` |
-| 15 | Only `config.ts` reads `process.env` | One place says what the app needs and fails early | `n/no-process-env` |
+| 15 | App code reads `process.env` only in `config.ts`. Tests, tool configs (`*.config.*`), scripts and CLIs aren't app code and may read it | One place says what the app needs and fails early | `n/no-process-env` (off in tests, `*.config.*`, `scripts` and the `console` globs) |
 | 16 | Named exports. A default export only where a framework or a runtime contract needs one (configs, route modules, scenes read as `mod.default`) | Names survive renames and search; imports agree | `import-x/no-default-export` |
 | 17 | React follows the rules of hooks and the compiler rules | Mirrored state and impure renders are bugs the type checker can't see | `react-hooks` `recommended` (on `web` only) |
-| 18 | Tailwind classes exist in the theme and aren't deprecated; class order is consistent once a repo has migrated | A typo'd class renders nothing and fails nowhere else | `better-tailwindcss/no-unregistered-classes`, `better-tailwindcss/no-deprecated-classes`, `better-tailwindcss/enforce-consistent-class-order` |
-| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`) |
+| 18 | Tailwind classes exist in the theme and aren't deprecated; class order is consistent once a repo has migrated | A typo'd class renders nothing and fails nowhere else | `better-tailwindcss/no-unknown-classes`, `better-tailwindcss/no-deprecated-classes`, `better-tailwindcss/enforce-consistent-class-order` (with `tailwind.order`) |
+| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine, and so is an `expect` inside a `catch` | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`), without `vitest/no-conditional-expect` |
 | 20 | Stores and services are factory functions returning a documented `interface`; classes only for `Error` subclasses | The interface is the contract, and a fake is a plain object | review |
 | 21 | `interface` for object shapes, `type` for unions and mapped types | One way to say each thing | review |
 | 22 | PascalCase component files; lowercase or kebab-case modules | A file name says what it holds | review |
@@ -78,9 +78,11 @@ turns it on (imbatranimOS's NestJS backend keeps parameter properties and
   (version, source commit, and where the upgrade notes are). ESLint, Prettier
   and knip ignore it.
 - Root configs that extend the copy: `prettier.config.js`, `tsconfig.base.json`,
-  `eslint.config.js` (the vendored file exports a function taking the repo's
-  roots), `knip` and `.dependency-cruiser.cjs` from the presets, and a
-  `.prettierignore` listing `*.md` and `vendor/house-style/`.
+  `eslint.config.js` (calling the copy's named export `houseStyle`, a function
+  of the repo's folders), a `knip.config.js` that spreads the knip preset (knip
+  has no `extends`), `.dependency-cruiser.cjs` extending its preset, and a
+  `.prettierignore` listing `*.md` and `vendor/house-style/`. A Tailwind
+  stylesheet has `@source not` for `vendor/`.
 - `.git-blame-ignore-revs` with the one reformat commit.
 - These scripts in the root `package.json`:
 
@@ -114,8 +116,10 @@ the traps each step hit in the repo briefs.
    the owner with its counts before it is turned on. Don't loosen it quietly.
 2. **Vendor.** `npm run house-style:sync -- house-style-v1.0.0` copies the
    library's `house-style/` folder at that tag into `vendor/house-style/`
-   (the first time, run the library checkout's `house-style/bin/sync.mjs`
-   from the repo root). Pin the devDependencies the house-style README lists.
+   (the first time, before the copy exists, run the library checkout's
+   `house-style/bin/sync.mjs house-style-v1.0.0` from the repo root). Pin the
+   devDependencies the house-style README lists; the sync reports any pin that
+   differs.
 3. **Prettier.** Add the config, `.prettierignore`, `format` and
    `format:check`, and commit that alone.
 4. **The reformat.** `npm run format`, committed alone as
