@@ -255,7 +255,9 @@ their findings yourself, and dispatch **one fix agent whose tier follows the fix
 (haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
 correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
 generalist pass routinely misses (it has, every time). A repo review skill/command can
-stand in for a finder.
+stand in for a finder. In a TypeScript repo, give the conventions finder the `house-style`
+skill's review checklist (`${CLAUDE_PLUGIN_ROOT}/skills/house-style/references/review-checklist.md`)
+and tell it to skip style the linter and formatter already enforce.
 
 **This gate is mandatory for any multi-file run.** Skip it only on a genuinely small
 run (1–2 files, one chunk), and say so explicitly rather than silently dropping it.

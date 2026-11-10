@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.35.0, 26 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.36.0, 27 skills.
 
 ## What it does
 
@@ -16,6 +16,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 - Splits implementation across models: Opus plans and reviews, Sonnet does most chunks, with a review gate before anything counts as done.
 - Gives design work a vocabulary and a build engine (impeccable, the taste presets, 74 brand `DESIGN.md` references) instead of one-off styling.
 - Sets one standard for READMEs, docs sites, diagrams and prose across every repo.
+- Keeps TypeScript repos to one house style: shared configs vendored into each repo, `npm run check` as the gate, and two hooks that format each saved file and run the repo's fast check before an agent can finish.
 
 Use it if you want the same workflow in every repo and are happy with an opinionated one. It is tuned to one person's projects; the rules in it are deliberate, not neutral defaults.
 
@@ -56,12 +57,13 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 | `writing-guidelines` | Prose review against Vercel's Writing Guidelines, fetched fresh each run (MIT) |
 | `unslop` | Cuts AI tells from writing (MIT) |
 
-**Code understanding and review**
+**Code understanding, style and review**
 
 | Skill | What it does |
 |---|---|
 | `codegraph` | Scope a change with a code graph (impact, callers), confirm with grep + read |
 | `thermo-nuclear-review` | A very strict maintainability review; use it deliberately (MIT) |
+| `house-style` | The house TypeScript style as numbered rules, each with its lint rule or a review check, and how a repo adopts the harness: configs vendored from `house-style/`, one reformat commit, `npm run check` and `check:fast` |
 
 **Design and build**
 
@@ -87,7 +89,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 /plugin install personal-skills@personal-skills-marketplace
 ```
 
-Restart Claude Code (or reload) so the command and skills are picked up. To update later:
+Restart Claude Code (or reload) so the command, skills and hooks are picked up. To update later:
 
 ```
 /plugin marketplace update personal-skills-marketplace
@@ -95,7 +97,7 @@ Restart Claude Code (or reload) so the command and skills are picked up. To upda
 
 ### Other agents
 
-The skills follow the Agent Skills format (`SKILL.md` with `name` and `description`), so another agent that reads it can use them. In opencode and similar agents, copy or link `skills/` into `~/.agents/skills/` (or a project's `.agents/skills/`). The slash commands and the plugin's agents are Claude Code only. A few skills use Claude Code frontmatter keys (`when_to_use` and others), which other agents ignore. `node scripts/check-skills.mjs` checks every skill against the portable limits.
+The skills follow the Agent Skills format (`SKILL.md` with `name` and `description`), so another agent that reads it can use them. In opencode and similar agents, copy or link `skills/` into `~/.agents/skills/` (or a project's `.agents/skills/`). The slash commands, the plugin's agents and its hooks are Claude Code only. A few skills use Claude Code frontmatter keys (`when_to_use` and others), which other agents ignore. `node scripts/check-skills.mjs` checks every skill against the portable limits.
 
 ## Docs
 
