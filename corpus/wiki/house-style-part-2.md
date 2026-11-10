@@ -1,11 +1,11 @@
 ---
 summary: Part 2 of the house-style measurements (brief 27), collated from the repo harness briefs - each repo's lint findings for the typed rules and the house shapes, the timings of tsc, ESLint (projectService against project), Prettier and the tests, the knip results, and what no brief measured.
-updated: 2026-11-10
+updated: 2026-11-11
 ---
 
 # House style: findings, timings and gaps
 
-Part 1, with the churn, the TypeScript flags and the owner's list, is
+Part 1, with the churn, the TypeScript flags and the calls on four rules, is
 [house-style.md](house-style.md). As there, each number comes from that
 repo's harness brief, and "gap" means it wasn't measured.
 

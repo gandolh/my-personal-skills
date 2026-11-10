@@ -92,3 +92,20 @@ two long descriptions in the brief were already under 1,024 characters. See
   brief stays in `todo/`. See
   [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
 
+## [2026-11-11] progress | Brief 27, the house-style package
+
+- **Package.** `house-style/` holds the configs, the presets and the sync,
+  1.0.0 unreleased, built in a scratch repository and moved in. Its `npm test`
+  runs each rule against a failing and a passing fixture, the presets on
+  scratch projects, and the sync against a scratch checkout.
+- **Proof on a scratch Wicket.** `--check` exits 1 before the copy and 0
+  after; the lint keeps Wicket's clean state and adds only the new rules'
+  findings, as its brief 10 counted.
+- **Calls.** Four rules changed scope on the counts, recorded on
+  [house-style.md](wiki/house-style.md) for the owner to overrule.
+- **Skill.** SKILL.md and the adoption reference now match the package: the
+  named `houseStyle` import, the real Tailwind rule id, the env rule's scope,
+  the options, the pins, and the knip, dependency-cruiser and Tailwind lines.
+- **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
+  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+

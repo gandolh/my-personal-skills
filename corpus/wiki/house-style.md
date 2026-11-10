@@ -1,6 +1,6 @@
 ---
-summary: The house-style measurements for brief 27, collated from the 23 repo harness briefs of 2026-11-09 and 2026-11-10 (not re-measured) - Prettier churn per repo at width 120 and its least-churn width, the TypeScript flag error counts, and the rules whose counts the owner should see. Rule findings, timings, knip and the gaps are on house-style-part-2.md.
-updated: 2026-11-10
+summary: The house-style measurements for brief 27, collated from the 23 repo harness briefs of 2026-11-09 and 2026-11-10 (not re-measured) - Prettier churn per repo at width 120 and its least-churn width, the TypeScript flag error counts, and the calls made on the four rules whose counts looked wrong. Rule findings, timings, knip and the gaps are on house-style-part-2.md.
+updated: 2026-11-11
 ---
 
 # House style: the measurements
@@ -95,23 +95,29 @@ Errors when the flag is added. Parameter properties are nearly every
 Brief 27 assumed the house had no parameter properties. It has a few in most
 repos and 168 in game-engine, which is why decision 3 converts them to fields.
 
-## For the owner
+## Calls made 2026-11-10 (the owner may overrule)
 
-Counts that suggest a rule may be wrong for the house as set. None is loosened
-here; each is the owner's call.
+Four rules had counts that suggested they were wrong for the house as first
+set. The controller of brief 27 made these calls; the owner may overrule any
+of them.
 
-1. **`@typescript-eslint/no-non-null-assertion` as an error in source**
-   (Q47). game-engine has 596 in source (3,072 in tests) and its brief proposes
-   a `--max-warnings` ceiling instead. Elsewhere the source count is 0-170
-   (atrium 170, 3D-sandbox 97, Postern 82).
-2. **`@typescript-eslint/no-unnecessary-type-assertion` where
-   `noUncheckedIndexedAccess` is off** (Q50): atrium 608, game-engine 313,
-   Newspapper 111. Most are `!` that the deferred flag would make necessary
-   again, so fixing them now is churn the later brief reverts. ward-auth's
-   brief turns the flag on first for this reason.
-3. **`vitest/no-conditional-expect` against the house's try/catch idiom**
-   (`expect` inside a `catch`): game-engine 90, Newspapper 13 of 14, ward-auth
-   10, 3D-sandbox 8, Wicket 2.
-4. **`n/no-process-env` in tests.** The contract applies it everywhere but
-   `config.ts`; brief 03's rule 3 and Wicket's brief except tests. Test counts:
-   ward-auth 214, Newspapper 42, comercial-website 14.
+1. **`n/no-process-env` allows tests, tool configs and CLIs.** App code reads
+   the environment only through `config.ts`; tests (ward-auth 214, Newspapper
+   42, comercial-website 14), `*.config.*` tool configs and the `scripts` and
+   `console` globs aren't app code. On a scratch Wicket the count drops from 6
+   to 0, because Wicket's `console` globs name its server entry
+   (`server/src/index.ts`) beside the seed CLI; a repo that wants its entry
+   held to `config.ts` leaves it out of `console`.
+2. **`vitest/no-conditional-expect` is off.** The house asserts on a thrown
+   error inside its `catch` (game-engine 90, Newspapper 13 of 14, ward-auth 10,
+   3D-sandbox 8, Wicket 2).
+3. **game-engine keeps `@typescript-eslint/no-non-null-assertion` as a
+   warning** in its own config, with a `--max-warnings` ceiling and a dated
+   comment, until it pays them down: 596 in source, 3,072 in tests. Elsewhere
+   the rule is an error in source as set (Q47): 0-170 there (atrium 170,
+   3D-sandbox 97, Postern 82).
+4. **`@typescript-eslint/no-unnecessary-type-assertion` is off, with a dated
+   comment, in repos without `noUncheckedIndexedAccess`** (atrium 608,
+   game-engine 313, Newspapper 111) until their flag brief. Most findings are
+   `!` the deferred flag (Q50) makes necessary again, so fixing them now is
+   churn that brief would revert. ward-auth turns the flag on first instead.

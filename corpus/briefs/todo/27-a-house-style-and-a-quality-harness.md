@@ -511,4 +511,12 @@ Work happens on `main` with no PRs (Q4).
   and moved in by the controller), step 2's tag `house-style-v1.0.0`, and
   step 4, Wicket's proof run (Wicket's brief 10). The owner updates the
   plugin to 0.36.0 to make the skill and hooks live.
-
+- **2026-11-11, the package.** Built in a scratch repository and moved into
+  the library at `house-style/` (1.0.0, unreleased, not tagged): the ESLint
+  config as `houseStyle(options)`, the Prettier config, the tsconfig base, the
+  knip and dependency-cruiser presets and `bin/sync.mjs`, with a failing and a
+  passing fixture per rule under its `npm test`. On a scratch copy of Wicket
+  it reproduces the clean state plus the new rules' findings (see
+  [house-style.md](../../wiki/house-style.md) for the calls on four rules).
+  The skill's adoption reference now matches it. Left: the tag and Wicket's
+  proof run.
