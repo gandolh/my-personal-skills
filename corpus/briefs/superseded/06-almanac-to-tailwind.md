@@ -1,5 +1,7 @@
 # Task 06: Almanac's web app to Tailwind
 
+> Superseded on 2026-11-10 by Almanac brief 03, *The web app to Tailwind*. Kept for the method and measurements it records.
+
 ## Context
 
 The owner's call of 2026-11-09 is whole apps to Tailwind (brief 02, call 3).

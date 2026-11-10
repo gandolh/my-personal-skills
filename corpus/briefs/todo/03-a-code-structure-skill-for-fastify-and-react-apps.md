@@ -187,6 +187,74 @@ The skill targets 5.x and says so.
    (brief 13). Rejected: nothing in its place, which is how dead
    dependencies pile up today.
 
+## Decisions of 2026-11-10
+
+From the owner's grilling; the technical calls are on
+[grilling-2026-11-10-technical-calls.md](../../wiki/grilling-2026-11-10-technical-calls.md).
+Work happens on `main` with no PRs (Q4). Brief 16 is now a tracker of each
+repo's server brief.
+
+- **Q23.** `features/<name>/` is the folder, confirmed.
+- **Q24.** Typed plugin options with explicit registration, confirmed. No
+  decorators as a test seam: tests pass dependencies as plugin options (Q56).
+- **Q25.** A response schema on every route. Pass-through JSON uses a loose
+  object. **Q53:** streams and binary routes (Newspapper's 7 streams,
+  lantern's posters) are exempt, each with a `conventions.json` entry.
+- **Q26.** Shelfmark's "nothing boots the app" decision stands: its server
+  brief tests handlers and plugins without `inject()`.
+- **Q27.** atrium stays on `node:test`, and every other repo uses vitest.
+- **Q28.** sports-app's plain `.mjs` server is converted to TypeScript in its
+  server brief. It **keeps TypeBox** for its `shared/api.ts`, so the zod rule
+  reads "zod, or the repo's existing schema library".
+- **Q43.** One error handler, keeping the repo's body shape. It passes
+  Fastify's own 4xx through and never echoes a thrown message.
+- **Q52.** Validation before authorisation is accepted (three Satchel
+  routes). **Q54:** a big `store.ts` stays whole in `db/` (Satchel's has 24
+  methods and one transaction over 3 tables; the-board's tickets and runs
+  import each other's stores). **Q55:** a zod schema lives in `shared/` when
+  the client imports it, otherwise in its feature folder. **Q56:** one
+  `ApiError` class stays, and a feature's CLI may live beside it.
+- **Checker roots.** The checkers and the skill's path rules read the repo's
+  roots from `conventions.json` (atrium's `apps/api`, `apps/web` and
+  `packages/shared`; public-resource-map's `backend/`), not fixed
+  `server/ web/ shared/` paths.
+- **Config read at import time is allowed.** A `loadConfig(env)` factory is
+  required only where a repo can take it without a large change (atrium).
+- **NestJS carve-out.** imbatranimOS's backend is NestJS and is out of the
+  structure.
+- **The entry rename** (`index.ts` to `server.ts`) changes the Dockerfile
+  `CMD` in the same commit (Q1).
+- **Layered modules and cycles.** "Reach another feature only through its
+  `index.ts`" gets a cycle-breaking step or recorded exceptions (atrium: 24
+  cross-reaches, three cycles).
+
+## Facts found writing the repo briefs (2026-11-10)
+
+Detail and evidence are in brief 16's "Server facts" section. The skill and
+`migrating-a-server.md` carry each as a step or a trap:
+
+- the zod provider throws on `.transform()` in a response schema, and resolves
+  a second zod copy unless a root `overrides` dedupes it;
+- a response schema's declared status that the handler doesn't send itself
+  (a guard's 401) becomes a 500: declare only what each handler sends;
+- set `connectionTimeout` and `requestTimeout` per repo (long polls, slow
+  SMTP, large uploads);
+- the `.parse(request.` grep misses helper parsing and `safeParse(req.`, so
+  the structure checker needs a better test;
+- env loaders fail quietly: `config.ts` loads `.env` by explicit path, fails
+  loudly, and parses with zod (`PORT=abc`, an empty list variable);
+- `npm test` fails on a fresh clone without a prior build, so every server has
+  a `pretest`;
+- Fastify's own 4xx answer 500 without a `statusCode` branch, and with no
+  handler the default leaks the thrown message;
+- `logger: false` makes `app.log.error` a no-op;
+- a shared plugin library takes config as plugin options;
+- `await-thenable` flags awaits on Drizzle's synchronous better-sqlite3 calls;
+- zod 4's issue messages differ from zod 3's;
+- the proof a response schema changes nothing is a byte compare: serialise
+  every fixture through the zod type provider and compare with
+  `JSON.stringify`.
+
 ## Files you OWN
 
 - `skills/code-structure/SKILL.md` (new)

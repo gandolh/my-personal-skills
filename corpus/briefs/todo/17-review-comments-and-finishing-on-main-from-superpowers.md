@@ -1,4 +1,11 @@
-# Task 17: Taking review comments, and finishing a branch (from obra/superpowers)
+# Task 17: Taking review comments, and finishing on main (from obra/superpowers)
+
+> Revised 2026-11-10 (Q31): the owner works on `main` only and there are no
+> PRs, so "ship a branch" becomes **finish on main**. The skill verifies,
+> commits and pushes to `main`. It never merges, and never approves a PR. The
+> branch, PR-body and base-branch parts below apply only where a repo does
+> use a PR (a repo the owner doesn't control); the skill names this as the
+> exception. The skill is `finish-on-main` (decision 1's name changes with it).
 
 ## Context
 
@@ -58,6 +65,19 @@ rebuild (best-practices page, 2026-11-09):
 `/code-review`, then `/verify` for a UI change. The PR body records all
 three. The skill has side effects (a push, a PR), so it takes
 `disable-model-invocation: true` and runs only when the owner types it.
+
+## Decisions of 2026-11-10 (Q31)
+
+- **Finish on main.** Steps: run the repo's `npm run check` (brief 27) and,
+  for a UI change, `/verify`; run `/code-review`; commit with the repo's
+  message style; write the `log.md` entry; push to `main`. The owner pushes
+  where a repo's rules say so (this repo's rule: commit locally, the owner
+  pushes), and the skill follows the repo's rule.
+- **Never merge or approve a PR.** If a repo does have one, the skill stops at
+  a green, reviewed PR.
+- **Review comments** stay as written: classify, verify, answer with evidence.
+- Routing: `orchestrate` gets a `finish` intent ("finish this", "commit and
+  push", "answer the review").
 
 ## Files you OWN
 

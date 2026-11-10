@@ -1,5 +1,7 @@
 # Task 08: Newspapper's UI to Tailwind
 
+> Superseded on 2026-11-10 by Newspapper brief 10, *The UI to Tailwind*. Kept for the method and measurements it records.
+
 ## Context
 
 The owner's call of 2026-11-09 is whole apps to Tailwind (brief 02, call 3).

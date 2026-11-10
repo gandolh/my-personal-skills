@@ -86,6 +86,15 @@ Weighed and left out:
 - `verification-loop`: already `plan-split-dispatch`'s verify gate.
 - The rest: off-stack.
 
+## Decision of 2026-11-10 (Q30)
+
+Yes: the load-bearing rules of `corpus-flow` and `plan-split-dispatch` move
+into each skill's first 5,000 tokens, with the rest in `references/`. This
+brief does that work itself, ahead of the stocktake, so the two skills'
+bodies are an exception to "Files you must NOT touch" below. Nothing else
+changes in them. Check the result by counting tokens up to each skill's last
+load-bearing rule.
+
 ## Files you OWN
 
 - `skills/stocktake/SKILL.md` (new) and its `references/rubric.md`.

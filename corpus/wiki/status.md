@@ -1,6 +1,6 @@
 ---
 summary: Snapshot of the skills library as of 2026-11-09 - version 0.34.0, the 26 briefs filed that day (02-27) and what each is for, and that nothing is built until the owner's grilling on 2026-11-10.
-updated: 2026-11-09
+updated: 2026-11-10
 ---
 
 # Status
@@ -49,3 +49,21 @@ in briefs 02 and 03.
 
 Owner steps: the grilling on 2026-11-10, then review the PRs. Nothing is
 deployed.
+
+## 2026-11-10: grilled, trackers written
+
+The owner's grilling of 2026-11-10 is done (Q1-62 answered; see
+[grilling-2026-11-10.md](grilling-2026-11-10.md) and
+[grilling-2026-11-10-technical-calls.md](grilling-2026-11-10-technical-calls.md)).
+The corpus follows it, still specs only, nothing built:
+
+- Briefs 04, 15 and 16 are **trackers** of each repo's own briefs.
+- Briefs 05-14 are **superseded** by each repo's own Tailwind brief.
+- Briefs 02, 03 and 27 carry the answers and the Round 8 and later facts as
+  dated decisions. Brief 19 takes Q30, 25 takes Q34, 26 takes Q35.
+- Brief 17 is now "finish on main" (Q31). Brief 24 is now "Vendor Hallmark,
+  and adopt taste-skill 2.5's ideas" (Q39).
+- Brief 22 is **blocked**: no second vendor's CLI is installed (Q32).
+- Brief 28, *The estate redesign board*, is new and depends on 24.
+- The work happens on `main` in each repo, with no PRs (Q4). Phase B builds
+  the Base UI bumps first.

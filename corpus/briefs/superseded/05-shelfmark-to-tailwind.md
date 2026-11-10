@@ -1,5 +1,7 @@
 # Task 05: Shelfmark's web app to Tailwind
 
+> Superseded on 2026-11-10 by Shelfmark brief 07, *The web app to Tailwind*. Kept for the method and measurements it records.
+
 ## Context
 
 On 2026-11-09 the owner decided that every app styles with Tailwind instead

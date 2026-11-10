@@ -60,6 +60,15 @@ among six. The estate has real targets:
    use `security-audit`"), and `orchestrate` gets a "security audit"
    intent.
 
+## Decision of 2026-11-10 (Q34)
+
+The owner accepts a run of **about an hour** (roughly a fifth of a five-hour
+usage window). Run the skill on ward-auth first, in one focused session, on
+the login, session and token code (`api/` and the OIDC, auth and grants
+folders), not the whole repo. Confirmed findings become ward-auth briefs in
+its own corpus. The run's duration, agent count and rough cost go in this
+repo's `log.md`, and decide whether the next targets run.
+
 ## Files you OWN
 
 - `skills/security-audit/**`: vendored verbatim at `c1c8a8c`.

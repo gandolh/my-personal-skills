@@ -1,96 +1,68 @@
-# Task 04: Every repo on Base UI 1.9.0
+# Task 04: Every repo on Base UI 1.9.0 (tracker)
+
+This brief is a **tracker**. Each repo's own bump brief does the work, in
+that repo's corpus. Phase B of the estate rollout builds these first, since
+every later brief (harness, conventions, Tailwind, redesign) assumes
+`@base-ui/react` at exactly 1.9.0 and rule 1 of brief 02 passing.
 
 ## Context
 
 On 2026-11-09 the owner asked for every repo on the latest stable Base UI.
 That day npm's `latest` for `@base-ui/react` was **1.9.0**, published
 2026-10-09; there was no `next` tag. Brief 02's rule 1 says every repo pins
-it exactly.
+it exactly. Between 1.4 and 1.9 two things broke: `OTPFieldPreview` became
+`OTPField` (`@base-ui/react/otp-field`), and `sanitizeValue()` became
+`normalizeValue()`. A grep of every repo on 2026-11-09 found neither in use.
+Each bump brief re-runs the grep.
 
-The versions resolved in each repo's lockfile on 2026-11-09:
+Size a bump from the **lockfile**, not the range. ImbatranimOS says `^1.4.1`
+and resolves 1.6.0.
 
-| Repo (workspace) | Spec in package.json | Resolved | Work |
+Decided 2026-11-10: the work happens on `main` in each repo's main checkout,
+committed and pushed there. There are no PRs (Q4). No private repo uses Base
+UI (Q2), so the table is complete.
+
+## The table
+
+Briefs are named "<repo> brief NN, *Title*" and live in that repo's
+`corpus/briefs/todo/`.
+
+| Repo | Bump brief | What it changes | Order constraint |
 |---|---|---|---|
-| comercial-website (`frontend`) | `^1.4.1` | 1.4.1 | bump, pin |
-| mini-projects (`literally-a-todo-app/frontend`) | `^1.4.1` | 1.4.1 | bump, pin |
-| ImbatranimOS (`packages/ui`, `apps/core`) | `^1.4.1` | 1.6.0 | bump, pin, then re-sync the kit (below) |
-| ro-housing (`web`) | `1.5.0` | 1.5.0 | bump |
-| newspapper (`ui`) | `1.5.0` | 1.5.0 | bump |
-| atrium (`apps/web`) | `1.6.0` | 1.6.0 | bump |
-| public-resource-map (`ui`) | `1.6.0` | 1.6.0 | bump |
-| imbatranim-apps (root) | `1.6.0` | 1.6.0 | bump after ImbatranimOS |
-| sports-app (`client`) | `1.6.0` | 1.6.0 | bump |
-| 3D-sandbox (`apps/web`) | `1.8.0` | 1.8.0 | bump |
-| presentation-sites (`sites/saloon`, `churchix/packages/ui`) | `^1.9.0` | 1.9.0 | pin only |
-| shelfmark, ward-auth, the-board, almanac, wicket, postern, lantern, Satchel; presentation-sites' `auto-service`, `tractari`, `subcort` | `1.9.0` | 1.9.0 | none |
+| mini-projects (`literally-a-todo-app/frontend`) | brief 01, *Base UI 1.9.0 in the todo frontend* | `^1.4.1` (1.4.1) to exact 1.9.0 | none |
+| comercial-website (`frontend`) | brief 10, *Base UI 1.9.0* | `^1.4.1` (1.4.1) to exact 1.9.0 | none |
+| imbatranimOS (`packages/ui`, `apps/core`) | brief 85, *Base UI to 1.9.0* | `^1.4.1` (resolves 1.6.0) to exact 1.9.0 | **first of the two**; imbatranim-apps follows |
+| imbatranim-apps | brief 07, *Base UI 1.9.0 through kit sync* | 1.6.0 to 1.9.0, by `kit:sync` to an imbatranimOS commit that has the bump; never edit `vendor/` by hand | after imbatranimOS brief 85 |
+| ro-housing (`web`) | brief 21, *Base UI 1.9.0* | 1.5.0 to 1.9.0 | none |
+| newspapper (`ui`) | brief 07, *Base UI 1.9.0* | 1.5.0 to 1.9.0 | none |
+| atrium (`apps/web`) | brief 01, *Base UI 1.9.0* | 1.6.0 to 1.9.0 | none |
+| public-resource-map (`ui`) | brief 02, *Base UI 1.9.0* | 1.6.0 to 1.9.0 | none |
+| sports-app (`client`) | brief 01, *Base UI 1.9.0* | 1.6.0 to 1.9.0 | none |
+| 3D-sandbox (`apps/web`) | brief 04, *Base UI 1.9.0* | 1.8.0 to 1.9.0 | none |
+| presentation-sites (`sites/saloon`) | brief 02, *Pin Base UI exactly* | `^1.9.0` to exact 1.9.0 | none |
+| churchix (`packages/ui`, its own corpus) | brief 02, *Pin Base UI exactly* | `^1.9.0` to exact 1.9.0 | none |
+| SocialEvents | brief 16, *Base UI adopted by the conventions* | adoption at 1.9.0 (no Base UI today; Tailwind only) | with its conventions brief |
+| almanac, shelfmark, ward-auth, the-board, wicket, postern, lantern, satchel | none | already 1.9.0, exact | none |
+| presentation-sites' `auto-service`, `tractari`, `subcort` | none | already 1.9.0, exact | none |
+| game-engine, just-a-bot | none | no Base UI | none |
 
-Not checked: the owner's private repos (theme-200177-j5, uni-master,
-master-thesis-research, dwh-finance, educational-platform), and repos the
-survey found no Base UI in. Check the private ones in a session that has
-them, and add a row if any uses Base UI.
-
-There are two breaking changes between 1.4 and 1.9:
-
-- `OTPFieldPreview` became `OTPField`, imported from
-  `@base-ui/react/otp-field`.
-- `sanitizeValue()` became `normalizeValue()`.
-
-A grep of every repo above on 2026-11-09 found neither in use. Re-run the
-grep before bumping. Everything else in the changelog from v1.5.0 to v1.9.0
-is a fix or an addition, but read those sections anyway for behaviour
-changes in the components each repo uses: focus, dismissal, animations and
-positioning.
-
-**The kit.** imbatranim-apps vendors ImbatranimOS's `packages/ui/src`
-byte-for-byte at a commit recorded in `vendor/imbatranim-ui/COMMIT`. It is
-written by `npm run kit:sync -- <os-checkout> <commit>` and must not be
-hand-edited. So ImbatranimOS bumps first and commits, then imbatranim-apps
-bumps its own dependency and re-syncs to that commit.
-
-## Files you OWN
-
-In each repo in the table with work to do:
-
-- the `package.json` that declares `@base-ui/react`, and that repo's
-  lockfile;
-- any source file a breaking change or a behaviour change forces;
-- one `corpus/log.md` entry in that repo, where it has a corpus.
-
-## Files you must NOT touch
-
-- Styling. The Tailwind moves are briefs 05-14. A bump that needs a visual
-  change is a finding to log, not a restyle.
-- `vendor/imbatranim-ui/` in imbatranim-apps, except through `kit:sync`.
-- Other dependencies. Don't run a general `npm update`.
-
-## What to do
-
-One repo per session (a session that has that repo). In each:
+## What each bump brief does
 
 1. Re-run the grep for `OTPFieldPreview`, `otp-field` and `sanitizeValue`.
-2. Set `"@base-ui/react": "1.9.0"` exactly, then
-   `npm install @base-ui/react@1.9.0 --save-exact` in the workspace. Check
-   that the lockfile resolves 1.9.0 and nothing else changed beyond Base
-   UI's own dependency tree (`@floating-ui/*` and the like).
-3. Run that repo's `typecheck`, `test`, `lint` and `build` scripts, whichever
-   exist. Fix what the bump broke, and keep each fix to what the bump needs.
-4. Open the app, using the repo's `ui-test-plans` hub if it has one, and
-   check each Base UI component it uses. Open and close it, press Esc, use
-   the keyboard, and look at it at phone width. Write down anything that
-   behaves differently.
-5. Commit with `chore(deps): @base-ui/react 1.9.0`, and add a line to the
-   repo's `corpus/log.md`.
-6. ImbatranimOS, then imbatranim-apps (`kit:sync` to the new commit, then
-   steps 2-5).
+2. Set `"@base-ui/react": "1.9.0"` exactly (`--save-exact`). The lockfile
+   resolves 1.9.0 and changes nothing beyond Base UI's own dependency tree.
+3. Run the repo's `typecheck`, `test`, `lint` and `build`.
+4. Open the app and check each Base UI component: open, close, Esc, keyboard,
+   phone width. Record any behaviour difference.
+5. Commit `chore(deps): @base-ui/react 1.9.0` and add a `log.md` line.
 
-## Acceptance
+No restyling and no other dependency changes in a bump.
 
-- Every `package.json` in the estate that declares `@base-ui/react` reads
-  exactly `"1.9.0"`, and every lockfile resolves 1.9.0. Check with this
-  brief's grep, plus the lockfile read from the survey.
-- In each repo, the scripts in step 3 pass, or the outcome note says which
-  already failed before the bump.
-- imbatranim-apps' `vendor/imbatranim-ui/COMMIT` names an ImbatranimOS
+## Acceptance (for this tracker)
+
+- Every row's brief is in its repo's `done/`.
+- Every `package.json` that declares `@base-ui/react` reads exactly
+  `"1.9.0"` and every lockfile resolves 1.9.0.
+- imbatranim-apps' `vendor/imbatranim-ui/COMMIT` names an imbatranimOS
   commit that has the bump.
-- The outcome note lists every behaviour difference found in step 4, or
-  says none was found.
+- The outcome note lists each repo's behaviour differences, or says none.

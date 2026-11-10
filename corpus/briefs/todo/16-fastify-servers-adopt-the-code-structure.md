@@ -1,132 +1,141 @@
-# Task 16: The Fastify servers adopt the code structure
+# Task 16: The Fastify servers adopt the code structure (tracker)
+
+This brief is a **tracker**. Each server's own brief, in its repo's corpus,
+does the move, following `skills/code-structure/references/migrating-a-server.md`
+(brief 03): `config.ts` and the `server.ts` / `app.ts` split, the error
+plugin, `features/` folders, zod route schemas with response schemas one
+feature at a time, then drop `--warn-only`. This page lists the briefs, the
+order, and the server facts every one of them uses.
 
 ## Context
 
-The owner asked on 2026-11-09 for the code structure (brief 03's
-`code-structure` skill) to be enforced through the repos. This brief brings
-each Fastify server to it, one repo per session, following
-`skills/code-structure/references/migrating-a-server.md`:
+The survey of 2026-11-09 found Fastify 5.12.7 almost everywhere, no route
+schemas outside ward-auth, no type provider, no `fastify-plugin`, and request
+input validated by hand with zod in 12 servers. The type provider needs zod
+4.2 or later (brief 03's spike).
 
-1. `config.ts` and the `server.ts` / `app.ts` split.
-2. The error plugin.
-3. `features/` folders.
-4. Zod route schemas with response schemas, one feature at a time.
-5. Drop `--warn-only`.
+Decided 2026-11-10:
 
-The survey of 2026-11-09 found:
+- **Order** (technical call): smallest first, so the method is proven before
+  the big ones.
+  1. mini-projects, imbatranim-apps, 3D-sandbox, the-board, wicket, lantern;
+  2. newspapper, SocialEvents, Satchel, Almanac, Shelfmark, ro-housing;
+  3. public-resource-map, atrium, comercial-website, ward-auth.
+- **The entry rename changes the Dockerfile (Q1).** pm2 is gone. Every
+  service runs in a container built from the repo's `infrastructure/Dockerfile`,
+  whose `CMD` names a file path (for example `node server/dist/index.js`).
+  Renaming `index.ts` to `server.ts` must change that `CMD` in the same
+  commit, and the repo owns the Dockerfile. The deploy runs no tests or lint,
+  so the `Stop` hook and `npm run check` are the gate.
+- **No PRs (Q4).** Each brief is built on `main` in the repo's main checkout.
 
-- Fastify 5.12.7 almost everywhere.
-- No route schemas outside ward-auth, no type provider, no
-  `fastify-plugin`.
-- Request input validated by hand with zod in 12 servers.
-- `app.ts` plus `index.ts` as the usual split.
+## The servers
 
-Most rows rename `index.ts` to `server.ts`, which moves the built entry from
-`dist/index.js` to `dist/server.js`. Before renaming, find how vps-deploy
-starts each service: `npm start`, or a file path in its pm2 config. If it
-names the file, change it in the same session, or keep the old name and
-record the exception in `scripts/conventions.json` (brief 15).
+Briefs are in the repo's `corpus/briefs/todo/`.
 
-Owner decision on the order, default: smallest first, so the method is
-proven before the big ones.
+| Repo (package) | Server brief | Notes |
+|---|---|---|
+| mini-projects (`literally-a-todo-app/backend`) | brief 05, *The server in the code structure* | no `app.ts` yet; add `buildApp` and a first test |
+| imbatranim-apps (`server`) | brief 10, *The server in the code structure* | the converter is not HTTP; it stays in `lib/` |
+| 3D-sandbox (`apps/api`) | brief 07, *The server in the code structure* | three entry files become two |
+| the-board (`server`) | brief 19, *The server in the code structure* | `store.ts` stays whole in `db/` (Q54) |
+| wicket (`server`) | brief 13, *The server in the code structure* | routes move out of `app.ts`; the long poll needs a timeout |
+| lantern (`server`) | brief 18, *The server in the code structure* | `suggest/` is pure; the record route is slow |
+| newspapper (`api`) | brief 11, *The API in the code structure* | streams are exempt from response schemas (Q53) |
+| SocialEvents (`server`) | brief 17, *The server in the code structure* | Fastify 5.8.5, bump to 5.12.x first |
+| Satchel (`server`) | brief 04, *The server in the code structure* | the websocket hub stays a plugin |
+| almanac (`server`) | brief 04, *The server in the code structure* | already has `FeatureContext`; `recurrence/` is pure |
+| shelfmark (`server`) | brief 08, *The server in the code structure* | tests handlers and plugins without `inject()` (Q26) |
+| ro-housing (`api`) | brief 24, *The server in the code structure* | `.ts` import suffixes; routes live inside `app.ts` |
+| public-resource-map (`backend`) | brief 05, *The server in the code structure* | zod 3 to 4 first; no error handler today |
+| atrium (`apps/api`) | brief 04, *The server in the code structure* | zod 3 to 4 first; `modules/` to `features/`; stays on `node:test` (Q27) |
+| comercial-website (`backend/app`, `backend/core`) | brief 13, *The server in the code structure* | zod 3 to 4 first; `backend/core` is a plugin library and takes config as options |
+| ward-auth (`api`, `shared-library`) | brief 06, *The server in the code structure* | the only server with route schemas; keep `oidc-provider`'s mount; `shared-library` changes only with a version bump |
+| sports-app (`server`) | brief 04, *The server in TypeScript and the code structure* | plain `.mjs` converted to TypeScript (Q28); **keeps TypeBox** for its `shared/api.ts` contract, so the zod rule reads "or the repo's existing schema library" |
+| imbatranimOS | none | **NestJS**, not Fastify: carved out of the structure, of `erasableSyntaxOnly` and of the parameter-property ban (brief 27) |
+| postern | none | no backend |
 
-1. the mini todo app, imbatranim-apps, 3D-sandbox, the-board, wicket,
-   lantern;
-2. newspapper, SocialEvents, Satchel, Almanac, Shelfmark, ro-housing;
-3. public-resource-map, atrium, comercial-website, ward-auth.
+Out of scope: hackathons' ITFest backend (an archive) and dwh-finance (Q2).
 
-## The servers (2026-11-09)
+## Server facts every server brief uses
 
-The counts are what the survey measured:
+Found writing the repo briefs on 2026-11-09 and 2026-11-10.
 
-- *hand-parse*: files that call `.parse(request.…)`;
-- *env*: files that read `process.env`;
-- *NODE_ENV*: files that check it;
-- *inject*: test files that call `inject()`.
+- **The zod provider's `.transform()` trap.** Its serializer throws on a
+  `.transform()` in a response schema: Almanac's `occurrenceSchema` and
+  Shelfmark's `savedViewSchema.state`. Split the input schema from the output
+  schema.
+- **A second zod copy.** The provider resolves a second zod copy (the-board),
+  so a root `overrides` entry dedupes it.
+- **A declared status becomes a 500.** A response schema that declares a
+  status the handler doesn't send itself (a guard's 401) turns that reply into
+  a 500 (wicket). Declare only the statuses each handler sends. With
+  `preHandler` guards that reply with 401 or 403 themselves, the route declares
+  only its success status (SocialEvents).
+- **Timeouts per repo.** `connectionTimeout` cuts long responses: wicket's
+  25 s long poll, lantern's 26 s record route, ward-auth's slow SMTP. Set it
+  per repo. `requestTimeout` cuts large uploads (comercial-website's 500 MB
+  multipart), so upload routes keep it at 0 or raise it.
+- **Helper parsing the grep misses.** `.parse(request.` finds none of the
+  helper sites: wicket 5, lantern 13, public-resource-map's 14 `safeParse(req.`
+  in 7 files. The structure checker needs a better test than grep, and a
+  schema stricter than the handler breaks the client (the mini todo `PATCH`
+  accepts `0 | 1 | boolean`), so each route step checks the client's real
+  payloads first.
+- **Quiet env loaders.** Copied `REPO_ROOT` and env loaders swallow `ENOENT`,
+  so a moved file silently drops `.env` (Shelfmark, lantern). `config.ts`
+  centralises them and fails loudly. It parses with zod: an empty list
+  variable gives `[]` (CORS silently off) and `PORT=abc` gives `NaN`.
+  `dotenv/config` reads `.env` from the working directory, so `config.ts` loads
+  it by an explicit path. A shared plugin library takes its config as plugin
+  options.
+- **`npm test` on a fresh clone.** It fails without a prior build in Satchel,
+  the-board, Shelfmark and lantern. Every server gets a `pretest`.
+- **Fastify's own 4xx answer 500.** An error handler with no `statusCode`
+  branch turns bad JSON or an oversized body into a 500 (comercial-website,
+  and likely every copy of that shape). The one handler passes Fastify's 4xx
+  through and never echoes a thrown message to the client (Q43). With no
+  handler at all (public-resource-map), Fastify's default puts the thrown
+  message in the reply.
+- **`logger: false`.** It turns `app.log.error` into a no-op, so a server that
+  says it logs 500s may log nothing.
+- **Import-time config is allowed** (atrium). A `loadConfig(env)` factory over
+  import-time constants plus a test setup that depends on them is a large
+  change; the checkers read the repo's roots from `conventions.json`.
+- **Layered modules and cycles.** atrium's modules reach into each other in 24
+  places with three cycles, so "reach another feature only through its
+  `index.ts`" needs a cycle-breaking step or recorded exceptions.
+- **Validation before authorisation** is accepted (Q52); Satchel has three
+  such routes.
+- **Hand-parsed replies.** atrium's controllers `schema.parse()` replies by
+  hand in at least 14 places; response schemas replace them.
+- **zod 4's messages differ.** A handler that sends the first issue's message
+  to users shows new text after the move.
+- **`await-thenable` on Drizzle's synchronous better-sqlite3 calls** (58 in
+  public-resource-map). Removing the awaits changes nothing.
+- **Proving a response schema changes nothing: the byte compare.** Serialise
+  every fixture through the zod type provider and compare the bytes with
+  `JSON.stringify` (byte-identical for 3D-sandbox's three scenes). For routes
+  with live data, capture the JSON of every route the web calls on a seeded
+  database before and after. Any field the schema drops is either a leak,
+  which stays dropped and is noted, or a missing schema field, which gets
+  added.
 
-| Repo (package) | Entry today | Layout today | Hand-parse | env / NODE_ENV | Tests / inject | Notes |
-|---|---|---|---|---|---|---|
-| mini-projects (`literally-a-todo-app/backend`) | `server.ts`, no `app.ts` | flat (`routes.ts`, `db.ts`) | 0 | 0 / 0 | 0 / 0 | add `buildApp` and a first test |
-| imbatranim-apps (`server`) | `app.ts` + `index.ts` | flat, websocket | 0 | 1 / 0 | 2 / 1 | the converter is not HTTP; it stays in `lib/` |
-| 3D-sandbox (`apps/api`) | `app.ts` + `index.ts` + `server.ts` | `store/` | 0 | 1 / 0 | 2 / 1 | three entry files become two |
-| the-board (`server`) | `app.ts` + `index.ts` | flat; `store.ts` 685 lines | 1 | 2 / 0 | 3 / 1 | split `store.ts` by feature |
-| wicket (`server`) | `app.ts` + `index.ts` | flat; `app.ts` 404 lines | 0 | 2 / 0 | 7 / 2 | routes move out of `app.ts` |
-| lantern (`server`) | `app.ts` + `index.ts` | `routes/`, `sources/`, `pool/`, `suggest/` | 1 | 4 / 0 | 15 / 8 | `suggest/` is pure, so it goes to `lib/` or stays a feature's service |
-| newspapper (`api`) | `server.ts`, no `app.ts` | `routes/` (12), `lib/` | 0 | 5 / 0 | 9 / 6 | add `buildApp`; SSE and uploads |
-| SocialEvents (`server`) | `app.ts` + `index.ts` | `routes/`, `services/`, `dal/` | 7 | 1 / 1 | 4 / 1 | Fastify 5.8.5; bump to 5.12.x first |
-| Satchel (`server`) | `app.ts` + `index.ts` | `routes/`, `store.ts` 714, `live/`, `push/` | 4 | 4 / 1 | 12 / 8 | websocket hub stays a plugin |
-| almanac (`server`) | `app.ts` + `index.ts` | `routes/`, `store/`, `recurrence/`, `push/`, `reminders/` | 6 | 3 / 0 | 23 / 11 | already has `FeatureContext`; `recurrence/` is pure |
-| shelfmark (`server`) | `app.ts` + `index.ts` | `routes/`, `store/`, `lookup/`, `cip/` | 4 | 4 / 0 | 21 / 0 | its decisions say "nothing boots the app": no `inject` tests unless the owner revisits that |
-| ro-housing (`api`) | `app.ts` + `server.ts` | flat plus `adapters/`, `details/`, `db/` | 0 | 6 / 0 | 20 / 5 | `.ts` import suffixes (the rest use `.js`); keep the repo's style |
-| public-resource-map (`backend`) | `app.ts` + `index.ts` | `routes/`, `ingest/`, `lib/`, `db/` | 6 | 12 / 3 | 26 / 15 | drizzle; the most env readers |
-| atrium (`apps/api`) | `app.ts` + `index.ts` | `modules/<name>/` (8) | 7 | 4 / 1 | 24 / 23 | rename `modules` to `features`; `latex-compile.service.ts` is 1,722 lines, so split it; `node:test` runner |
-| comercial-website (`backend/app`, `backend/core`) | `create-server.ts` + `server.ts` | `modules/*.ts`, `repositories/` | 10 | 5 / 2 | 12 / 5 | kysely; `backend/core` is a shared plugin library, so it follows the `plugins/` rules; `invoices.ts` is 859 lines |
-| ward-auth (`api`, `shared-library`) | `app.ts` + `index.ts` | `oidc/`, `auth/`, `grants/`, `db/`, `mail/` | 11 | 2 / 5 | 50 / 26 | the only server with route schemas (5 files); an OIDC provider, so keep `oidc-provider`'s mount as it is; `shared-library` is a Fastify plugin other apps vendor, so change its API only with a version bump |
+## Files you own (per repo)
 
-Three rows start with a **zod 3 → 4 move**, because the type provider
-needs zod ≥4.2 (brief 03's spike):
+The server package's `src/**`, its `package.json`, the lockfile, the
+`--warn-only` flag in `check:conventions`, the Dockerfile `CMD` where the
+entry is renamed, and the repo's `architecture.md`, `decisions.md` and
+`log.md`. Not `web/`, except where a response schema changes a field the web
+reads (fix the schema, not the web).
 
-- atrium (3.25.76);
-- comercial-website's `backend` (3.24.1); its `frontend` is already 4.3.6;
-- public-resource-map (3.25.76).
+## Acceptance (for this tracker)
 
-Use zod's v4 migration guide. The usual breaks are error customisation
-(`message` becomes `error`), `.strict()` and `.passthrough()`, and
-`z.string().email()` becoming `z.email()`. That step is its own commit,
-with the shared schemas' tests green before the provider goes in.
-
-Out of scope:
-
-- sports-app's `server/`: plain `.mjs`, 1,636 lines, not TypeScript. It
-  gets its own brief if the owner wants it converted.
-- hackathons' ITFest backend: an archive.
-
-**Depends on:** brief 03, and brief 15 for that repo (the checker is wired,
-`--warn-only`).
-
-## Files you OWN
-
-In each repo's server package:
-
-- `src/**`;
-- its `package.json` (`start`, `dev`, and new dependencies:
-  `@fastify/type-provider-zod`, `fastify-plugin`, `close-with-grace`);
-- the lockfile;
-- the `--warn-only` flag in `check:conventions`;
-- the repo's `corpus/wiki/architecture.md`, `decisions.md` (an entry
-  adopting the structure) and `log.md`.
-
-## Files you must NOT touch
-
-- `web/`, except where a response schema changes a field the web reads.
-  That is a finding: fix the schema, not the web.
-- `shared/` schemas, except to add response schemas that don't exist yet.
-- The deploy, except the entry-file change above.
-
-## What to do
-
-For each repo, in its own session:
-
-1. Run `node scripts/check-structure.mjs` strict, and record the counts.
-2. Follow `migrating-a-server.md` step by step. After each step, the repo's
-   `typecheck`, `test` and `build` pass, and the server starts and answers
-   its health route.
-3. For step 4, first capture the JSON of every route the web calls (with a
-   seeded database), then compare it after. Any field the response schema
-   drops is either a leak, which stays dropped and is noted, or a missing
-   schema field, which gets added.
-4. Drop `--warn-only`, then commit each step separately.
-5. Update the repo's `architecture.md`, add the `decisions.md` entry and
-   write `log.md`.
-
-## Acceptance
-
-- In every row, `check-structure.mjs` passes strict, or passes with
-  exceptions recorded in `conventions.json`.
+- Every row's brief is in its repo's `done/`.
+- In every row, `check-structure.mjs` passes strict, or with exceptions in
+  `conventions.json`.
 - The repo's `typecheck`, `test`, `lint` and `build` pass, and the server
-  starts in dev and from `dist/`.
+  starts in dev and from `dist/` (and from its container's `CMD`).
 - No handler calls `.parse()` on request input, and every route has a
-  `response` schema.
-- The before/after JSON comparison is in each repo's `log.md` entry.
-- This brief's outcome note has the table above with a "done" column and
-  the strict counts before and after.
+  `response` schema, except streams and binary routes with an entry.
+- The before and after JSON comparison is in each repo's `log.md` entry.

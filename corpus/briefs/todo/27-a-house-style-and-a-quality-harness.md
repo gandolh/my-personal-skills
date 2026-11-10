@@ -278,6 +278,136 @@ So the harness has **two layers**:
    every hand-back (`CLAUDE.md`), and the deploy runs it where vps-deploy
    runs checks (brief 15).
 
+## Decisions of 2026-11-10
+
+From the owner's grilling; each is a decision, not a default. The reasons are
+on [grilling-2026-11-10-technical-calls.md](../../wiki/grilling-2026-11-10-technical-calls.md).
+Work happens on `main` with no PRs (Q4).
+
+- **Q6 changed: `house-style` is vendored**, not a git dependency (this
+  replaces decision 1's default and its caveat). Each repo holds a copy with a
+  version header, refreshed by a `house-style:sync` script that finds the
+  checkout by name, the way Ward's library and the imbatranim kit are shared.
+  A git dependency would need git or SSH inside every Docker build, because
+  npm locks GitHub dependencies as git URLs.
+- **Q7.** The Claude Code layer lives in the plugin: `Stop` runs `check:fast`
+  and `PostToolUse` formats the saved file (decision 0 confirmed).
+- **Q8 and Q51: one estate width, 120.** Measured least churn at atrium and
+  public-resource-map, near-least at Almanac and wicket (130 is 1.3% and 0.8%
+  there), and a common convention; the small-tools family uses it (Q61). Other
+  least-churn widths: the-board 150 (7.3% at 130), Postern 180 (at least 160
+  files change at any width), Newspapper 100. Code written near 80 columns
+  pays most (SocialEvents' p95 line is 76 characters: 175 lines change at 80,
+  590 at 120, 835 at 150). Biome's own least-churn width is 110 in 3D-sandbox
+  (36 lines against 783 at 120), but the estate width stays 120. The reformat
+  is a one-off commit per repo, listed in `.git-blame-ignore-revs`.
+- **Q9.** The outliers (Newspapper, ro-housing, sports-app, imbatranim-apps)
+  move to double quotes and semicolons in their one reformat commit.
+- **Q10.** `check:fast` is a typecheck plus ESLint on the changed files, built
+  incrementally (`tsc -b`). Target 15 s; up to about 30 s is accepted where
+  `tsc` alone is slower. Timing evidence: `astro check` takes 8-15 s per site,
+  so it runs only in sites with changed files; `astro-eslint-parser` has no
+  `projectService`, so typed lint falls back to `project: true` (50 s for the
+  four sites); typed lint adds its own cost on every repo.
+- **Q11.** `verbatimModuleSyntax` and `erasableSyntaxOnly` now (parameter
+  properties become fields: Satchel 10, wicket 3), `exactOptionalPropertyTypes`
+  after a count. A TypeScript older than 5.8 is bumped first
+  (comercial-website's backend is on 5.7.3). A missing `strict` is added
+  (comercial-website's `frontend/tsconfig.app.json`: 0 errors).
+- **Q12.** The six typed rules. `no-floating-promises` names `node:test`'s
+  `describe`, `it` and `test` in `allowForKnownSafeCalls` (814 findings in
+  atrium otherwise).
+- **Q13.** The house shapes as errors. `console` is allowed in scripts and
+  CLIs. A default export is allowed where a framework needs one (config files,
+  route modules) and where it is a runtime contract (3D-sandbox's scene
+  modules read `mod.default`), through a glob exception.
+- **Q14.** Comments are prose, checked by the review gate, not linted.
+- **Q47.** `!` is an error in source and a warning in tests. **Q48:**
+  `switch-exhaustiveness-check` with `considerDefaultExhaustiveForUnions:
+  true`. **Q49:** components use named exports; Newspapper's 46 move in its
+  reformat step. **Q50:** `noUncheckedIndexedAccess` is deferred to a later
+  brief per repo, with its count; note it interacts with Q47, since with the
+  flag off `no-unnecessary-type-assertion` flags most `!` (608 in atrium).
+- **Q45.** Markdown stays out of Prettier. **Q46:** a short root `CLAUDE.md`
+  with the commands in every repo.
+
+**Rule details found writing the repo briefs:**
+
+- `no-warning-comments` takes `location: "start"` (or a case-sensitive
+  `TODO:`), or the word "Todo" in prose is a finding (18 times in
+  game-engine, where "todo" names a spec).
+- `vitest/valid-expect` takes `maxArgs: 2` for `expect(x, "message")`.
+- `consistent-type-imports` takes `disallowTypeAnnotations: false` for
+  `typeof import("./X")` lazy-chunk types.
+- TypeScript 6 stops auto-including `@types/*`: a package needs
+  `"types": ["node"]` (3D-sandbox's `packages/geometry`).
+- `@vitest/eslint-plugin` 1.6.28 wants TypeScript 6 as an optional peer, so
+  `npm` refuses on 5.x until the TypeScript bump.
+- `e2e/` and `playwright.config.ts` sit outside every tsconfig, so typed lint
+  can't parse them until one covers them.
+- A stale `*.tsbuildinfo` hides flag measurements: delete it and `dist` before
+  measuring a tsconfig flag.
+- Parameter properties cost more than brief 27's "the house has none" claim.
+- An orphan tsconfig base (imbatranimOS has a full house base nothing
+  extends, and four unrelated bases): the harness makes one base and points
+  every package at it.
+- `.gitignore` with `.claude` (ro-housing) or `.claude/*` needs a
+  `!.claude/rules/` line, or the rules stay untracked.
+- A repo with two npm projects and no root `package.json` (ro-housing's
+  `api/` and `web/`) gets a **scripts-only root `package.json`**, so the
+  `Stop` hook finds `check:fast`.
+- Node's type stripping needs `.ts` import suffixes, so the house's `.js`
+  suffixes don't run against `.ts` files without a build.
+- **`--workspaces --if-present` can check nothing.** just-a-bot's root
+  `typecheck` checked only the docs site because the bot's workspaces had no
+  `typecheck` script. The harness checks that every workspace has the script.
+- A Docusaurus workspace breaks the exact-pin rule (`~6.0.2` TypeScript, 16
+  `^` ranges) even where the main code pins exactly.
+- Prettier can be undeclared, present only as a hoisted transitive dependency
+  with a `format` script relying on it.
+- **Prettier churns code already in house style.** It normalises number
+  literals (`0xA11CE0` to `0xa11ce0`, `0.40` to `0.4`) and rewraps: 66% of
+  game-engine's files change though it already uses double quotes and
+  semicolons.
+- **`.prettierignore` needs:** frozen fixtures, generated meta JSON, any
+  stylesheet still in `layer(legacy)`, AssemblyScript sources (decorators
+  don't parse), generated files, and sources a hash test checks against
+  committed binaries.
+- **The program-neutral reformat check.** Bundle each file with esbuild
+  before and after the reformat and compare the output. 4 of 1,476
+  game-engine files differ, each explainable. Every repo's reformat commit
+  uses it as acceptance.
+- **Determinism hazards** (game-engine): turning parameter properties into
+  fields can change key order (`JSON.stringify`, `Object.keys`), so the new
+  fields follow the existing ones in parameter order; deleting an "unused"
+  `const x = rng.next()` shifts every later draw, so the call stays as a bare
+  statement.
+- **Tests that read production env.** Two just-a-bot tests import an env
+  loader that reads the checkout's `.env`, which holds production values. A
+  `Stop` hook or `check` that runs `npm test` there would read production
+  secrets, so such a repo runs its tests in a copy without `.env*`
+  (`test:clean`), and the harness says so.
+- **Biome migration** (3D-sandbox). Leaving Biome loses `organizeImports`:
+  `simple-import-sort` would reorder 105 files. Biome's `useButtonType`,
+  `noDangerouslySetInnerHtml` and `noAutofocus` carry over as
+  `no-restricted-syntax` selectors and `jsx-a11y`.
+- **React compiler rules** in `react-hooks` 7.1.1 fire on "mirror state into
+  a ref during render" (18 times in 3D-sandbox); the house has no rule for
+  that yet.
+- **`await-thenable`** flags awaits on Drizzle's synchronous better-sqlite3
+  calls (58 in public-resource-map).
+- **Astro** needs its own preset: `prettier-plugin-astro`,
+  `eslint-plugin-astro` and `astro check`.
+- **NestJS carve-out.** imbatranimOS's backend needs constructor parameter
+  properties and `emitDecoratorMetadata`, so it is exempt from
+  `erasableSyntaxOnly` and the parameter-property ban.
+- **`eslint-plugin-better-tailwindcss`:** only its unknown-class,
+  deprecated-class and class-order rules are on.
+- **Checker roots** come from `conventions.json`, including a root that
+  has `components/ui/` rather than `ui/` (rule 3 of brief 02 would otherwise
+  pass for nothing).
+
+
 ## Files you OWN
 
 - **New repo `house-style`** (decision 1), created by the owner or with

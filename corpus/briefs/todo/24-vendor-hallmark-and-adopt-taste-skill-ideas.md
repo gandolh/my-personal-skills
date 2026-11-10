@@ -1,4 +1,10 @@
-# Task 24: Re-pin the taste suite (from leonxlnx/taste-skill)
+# Task 24: Vendor Hallmark, and adopt taste-skill 2.5's ideas
+
+> Revised 2026-11-10 (Q39 and Q33). The owner chose **Hallmark** as the design
+> skill for every web UI, keeping what is useful from taste-skill 2.5. The
+> bake-off in presentation-sites' brief 01 is cancelled (that brief is
+> superseded). The original re-pin plan is below; the decisions section says
+> what replaces it.
 
 ## Context
 
@@ -43,7 +49,36 @@ exactly 2.5's target. Hallmark (presentation-sites' brief 01, "Hallmark against 
 other candidate, and the two need comparing before either is vendored
 whole.
 
-## Owner decisions (defaults)
+## Decisions of 2026-11-10 (these replace the defaults below)
+
+1. **Vendor Hallmark** (`nutlope/hallmark`, pinned at `407fa68`, MIT) as the
+   design skill, with its licence kept. Hallmark brings a tiered browser lint,
+   the **Floor** that never ships (contrast, focus, reduced motion, invented
+   facts, a broken phone layout), a page built from its job, and credited,
+   openly licensed photographs. Vendor it verbatim and check its size first;
+   if photographs make the folder large, vendor without them and say so in
+   `ATTRIBUTION.md`.
+2. **Adopt taste-skill 2.5's ideas, not its text.** Palettes and type dealt by
+   trade, and its copy layer, go into the library's own design guidance
+   (`design-md-library` or a Hallmark companion reference), written fresh with
+   the source credited. taste-skill 2.5.1 is not vendored.
+3. **The taste suite stays opt-in at its current pin** (`72e2995`):
+   `design-taste-frontend`, `high-end-visual-design`, `minimalist-ui` and
+   `industrial-brutalist-ui` stay as vendored, marked superseded upstream in
+   `ATTRIBUTION.md`, and run only when called by name. They are not re-pinned.
+4. **`redesign-existing-projects` retires**, since Hallmark redesigns and
+   audits by path. Grep the library for references (impeccable, the README,
+   `orchestrate`) and update them. It stays in git history.
+5. **Routing.** `orchestrate` gets a "redesign" intent that points at Hallmark
+   and at brief 28 (the estate redesign board).
+6. Hallmark is the design skill that every repo's redesign brief uses (each
+   repo's "A redesign with Hallmark on the estate board").
+
+Work that follows from steps 1-4 replaces the "What to do" below; where they
+disagree, this section wins. Re-pinning the three classics from
+taste-skill-classics and the 2.5.1 install notes are dropped.
+
+## Defaults before 2026-11-10 (superseded where they disagree)
 
 1. **Vendor 2.5.1 whole?** Default: **no, not yet.** A 40 MB folder in
    every install of this plugin is a real cost, and the bake-off in presentation-sites' brief 01

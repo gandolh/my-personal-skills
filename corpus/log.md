@@ -44,3 +44,21 @@ The cloud session paused on the owner's request after usage limits.
 - **The hand-off** is [resume-2026-11-10.md](resume-2026-11-10.md): the
   remaining repos, the method, the repo notes, and the prompt for the next
   session.
+
+## [2026-11-10] grill | The corpus follows the owner's answers
+
+After the grilling of 2026-11-10 (Q1-62 answered):
+
+- **Trackers.** Briefs 04 (Base UI bumps), 15 (harness, conventions,
+  Tailwind per repo, the migration order) and 16 (the server brief per repo)
+  became trackers of the repo-local briefs.
+- **Superseded.** Briefs 05-14 moved to `briefs/superseded/`, each replaced by
+  its repo's own Tailwind brief.
+- **Blocked.** Brief 22 moved to `briefs/blocked/` (no second vendor's CLI).
+- **Revised.** 02, 03 and 27 gained the answers and the facts as dated
+  decisions. 17 became "finish on main", 24 "Vendor Hallmark, and adopt
+  taste-skill 2.5's ideas". 19, 25 and 26 took Q30, Q34 and Q35.
+- **New.** Brief 28, *The estate redesign board*.
+- **Wiki.** `open-questions.md` and the Round 8 page now point at the two
+  grilling pages.
+

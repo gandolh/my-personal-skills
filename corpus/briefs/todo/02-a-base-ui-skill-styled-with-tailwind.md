@@ -110,6 +110,112 @@ trigger phrases, and the description says what the skill is.
 - **A root `font-size` other than 16 px** shifts Tailwind's rem-based scale (Almanac's is 15 px). The migration method either sets `--spacing` to match or moves the size onto `body` (a grilling question).
 - **Custom theme size and colour names need `extendTailwindMerge`** in `cn()`, or tailwind-merge drops classes it doesn't recognise as conflicting.
 
+## Decisions of 2026-11-10
+
+From the owner's grilling (see
+[grilling-2026-11-10.md](../../wiki/grilling-2026-11-10.md) and
+[grilling-2026-11-10-technical-calls.md](../../wiki/grilling-2026-11-10-technical-calls.md)).
+These replace the defaults above wherever they differ, and the skill builds
+them as rules.
+
+**Scope.** Briefs 05-14 are superseded: each app's Tailwind migration is now
+a brief in that app's own corpus, and the skill's migration method
+(`migrating-from-plain-css.md`) is what they follow. Brief 04 is a tracker of
+the per-repo bumps. Work happens on `main`, with no PRs (Q4).
+
+**Owner answers.**
+
+- **Q19, visual parity: close enough.** The migration's acceptance is before
+  and after screenshots at 1280 and 390 px showing no visible change to layout
+  or colour. A few pixels of drift in spacing or rounding needn't be fixed or
+  listed. Step 5 of the method says so.
+- **Q18, dark mode: a switch everywhere, light by default.** A new rule: every
+  app has a Light / Dark / System choice, a first visit shows light, and the
+  choice is kept on the device (atrium keeps its per-profile sync and sepia
+  theme). `dark:` keys off a `data-theme` attribute through `@custom-variant`
+  (Postern's method), never `prefers-color-scheme`. Exceptions: 3D-sandbox's
+  Solstice keeps its dark default and gets the switch; Ward's console stays
+  dark only while its sign-in pages get the switch; the client sites and
+  Churchix's parish sites have no switch.
+- **Q40, phone menus: the swipeable `Drawer`.** A new rule: a phone navigation
+  panel uses 1.9.0's `Drawer`, closed by a swipe, a tap outside, the X or Esc.
+  It always carries a title (a `Dialog.Title` or the Drawer's equivalent); the
+  five Astro phone menus in presentation-sites are Dialogs with only an
+  `aria-label` today.
+- **Q58.** Inline "Delete? Yes / No" confirms stay inline (Satchel,
+  Shelfmark); the rule is no native dialogs, not "always `AlertDialog`". A
+  dialog that holds a form sets `disablePointerDismissal`, and closes with
+  Cancel, the X or Esc.
+
+**Technical calls.**
+
+- **Q15.** Base UI is imported only under `ui/` folders; atrium's and
+  Postern's feature files move behind wrappers. **Q59:** in feature-folder
+  repos the wrappers stay in `components/ui/`; comercial-website's
+  folder-per-wrapper layout stays.
+- **Q16.** Native text, date and time inputs, and a native `<select>` on
+  phones, stay native.
+- **Q41 and Q57.** A filter that switches what a list shows uses `RadioGroup`
+  (or `Tabs` when it switches panels), so arrow keys may choose. A picker that
+  **saves** on each choice uses a guarded `ToggleGroup`: arrow keys move focus
+  without saving, and one item always stays pressed.
+- **Q42.** FullCalendar's CSS loads with the calendar only.
+- **Q44.** The root font size goes back to the browser's default and the app's
+  size moves onto `body`, because a pixel size on `html` overrides the
+  reader's font setting and skews every `rem` utility. Where an app's size
+  isn't 16 px, `--spacing` is set to keep every spacing utility at its pixel
+  value (imbatranimOS: `0.203125rem`), and named text sizes become same-pixel
+  scale entries.
+- **Q60.** jsdom tests only for wrappers that hold logic; flows stay in
+  Playwright. **Q62:** a named type scale in `@theme`; no `phone` variant
+  (Tailwind's `max-sm:` is used and the one-pixel edge accepted); tests select
+  by role, and `data-testid` only where no role fits.
+- **Q17 and Q61.** Token names name a role, never a value. The small-tools
+  family (wicket, the-board, lantern) uses `surface`, `ink`, `accent`, `line`
+  and `danger` (`bg-surface`, `text-ink`, no `bg-bg`). Other apps keep their
+  names until their redesign.
+- **Q21.** ward-auth's public pages get a second stylesheet once they pass
+  about 5 kB gzipped. **Q22:** lantern adopts Base UI.
+
+## Facts found writing the repo briefs (2026-11-10)
+
+- **Unlayered CSS beats utilities, even in a Tailwind repo.** An unlayered
+  `.material-symbols-outlined { font-size: 24px }` beats every `text-*`
+  utility (31 inline `fontSize` sites in comercial-website), and an unlayered
+  `:focus-visible` with a `border-radius` overrides every `rounded-*`. A
+  migration imports all old CSS into one `layer(legacy)` and empties it file
+  by file (Postern's method, adopted for the estate). Vendor CSS (Leaflet,
+  FullCalendar) goes in `layer(vendor)`, declared first.
+- **Inline styles are a second layering trap.** An inline `style` beats every
+  layer, so a component can't mix old inline styles and new utilities. Move
+  each component whole, one per commit.
+- **`hover:` applies only under `(hover: hover)`** in Tailwind v4, so controls
+  revealed on hover vanish on touch screens. Use `[@media(hover:none)]:` and
+  `group-focus-within:`.
+- **Material Symbols ligatures are read aloud.** An icon-only button announces
+  `keyboard_arrow_up`: the glyph gets `aria-hidden` and the button an
+  `aria-label`.
+- **Rule 3 can pass for nothing.** When the whole UI tree is a `ui/` folder
+  (sports-app's `client/src/ui/`), "Base UI only under `ui/`" checks nothing.
+  The checker tests for `components/ui/`.
+- **The `render` wrapper and rule 9.** A `render` function that wraps the
+  caller's button in a `span` (comercial-website's `Dropdown.tsx` and
+  `Tooltip.tsx`) breaks rule 9. The checker catches it.
+- **Third-party widgets.** A library such as `sonner` for toasts counts as a
+  widget Base UI replaces, behind a wrapper with the same call shape.
+- **A z-index scale.** imbatranimOS has 15 literal `z-[N]` from 900 to 10001,
+  with a Select popup under a Dialog. Rule 8's token scale fixes a real bug.
+- **Checker roots.** The checker reads the repo's roots from
+  `conventions.json` (atrium's `apps/*`, public-resource-map's `ui/app/`),
+  not fixed `web/` paths.
+- **`better-tailwindcss`.** Only its unknown-class, deprecated-class and
+  class-order rules are worth turning on (412 logical-property and 194
+  line-wrapping findings were noise).
+- **tailwind-merge** drops custom theme size and colour names it doesn't know,
+  so `cn()` uses `extendTailwindMerge`.
+- **A schema stricter than the handler** breaks the client (the todo `PATCH`),
+  which matters when a wrapper replaces a native control that sent `0 | 1`.
+
 ## Files you OWN
 
 - `skills/base-ui/SKILL.md` (new)

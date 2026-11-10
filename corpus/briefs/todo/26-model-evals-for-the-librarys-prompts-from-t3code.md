@@ -84,6 +84,13 @@ costs real usage.
    touches a front-door skill's description or rules. Never in CI, which
    this repo forbids anyway.
 
+## Decision of 2026-11-10 (Q35)
+
+Eval reports stay local and each run is capped: `claude plugin eval` runs with
+`--no-publish` and `--max-cost-usd 5`. Both flags go in `evals/README.md` and
+in every case's run command. A run that hits the cap is recorded as
+incomplete, not as a pass.
+
 ## Files you OWN
 
 - `evals/` (new):

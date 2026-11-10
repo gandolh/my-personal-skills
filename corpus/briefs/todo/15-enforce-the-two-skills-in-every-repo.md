@@ -1,113 +1,113 @@
-# Task 15: Enforce the base-ui and code-structure skills in every repo
+# Task 15: Enforce the two skills in every repo (tracker)
+
+This brief is a **tracker**. Each repo carries its own set of briefs in its
+own corpus, written on 2026-11-10 from the owner's grilling. This page lists
+them, the order to build them in, and the answers every one of them carries.
+It no longer plans to copy the checkers into each repo by hand.
 
 ## Context
 
 On 2026-11-09 the owner asked for the Base UI conventions (brief 02) and the
 code structure (brief 03) to be **enforced through the repositories**, not
-only written down.
+only written down. No repo has CI, and this library's rules forbid adding
+GitHub Actions, so the gates are each repo's `npm run check` (brief 27), the
+`Stop` hook in the plugin, and agents reading `.claude/rules/`.
 
-No repo in the estate has CI, and this library's own rules forbid adding
-GitHub Actions. The gates that do exist are each repo's `npm run lint`, run
-by hand and by agents before a hand-back, and the deploy. Shelfmark's
-status, for example, deploys with `node cli.ts shelfmark deploy` from the
-owner's vps-deploy project. So enforcement means three things:
+Decided 2026-11-10:
 
-1. **The checkers live in the repo**, copied from the skills as
-   `scripts/check-base-ui.mjs` and `scripts/check-structure.mjs`. Each
-   header names the skill version it came from.
-2. **`npm run lint` runs them.** A `check:conventions` script runs both, and
-   `lint` chains it after the repo's own linter:
-   `"lint": "eslint . && npm run check:conventions"`. 3D-sandbox uses Biome,
-   so chain it there the same way. ImbatranimOS uses Turbo, so add the check
-   as a root task.
-3. **Agents read the rules, and the harness enforces them.** Claude Code's
-   docs (2026-11-09) say `CLAUDE.md` is advisory and should stay under
-   about 200 lines. So instead of a long "Conventions" section:
-   - `CLAUDE.md` gets the commands (`npm run check`, `npm run check:fast`,
-     how to run one test);
-   - `.claude/rules/web.md` (`paths: ["web/src/**"]`) and
-     `.claude/rules/server.md` (`paths: ["server/src/**"]`) carry the
-     few rules from briefs 02 and 03 an agent must hold while editing
-     there, with a pointer to each skill;
-   - the plugin's `Stop` hook (brief 27, decision 0) runs `check:fast`
-     before an agent may finish. That is the deterministic part.
+- **Tooling ships from brief 27.** `house-style` is vendored into each repo
+  with a version header and refreshed by `house-style:sync` (Q6). The two
+  checkers come with it and read the repo's roots from `conventions.json`.
+- **The deploy is left alone** (Q1). Every service runs in a container built
+  from the repo's `infrastructure/Dockerfile` with `npm ci` and `tsc -b`, and
+  no tests or lint. The gate is the `Stop` hook plus `npm run check`.
+- **No PRs** (Q4). The owner works on `main`; each repo's briefs are built on
+  `main` in its main checkout, committed and pushed there.
+- **Repos with `--warn-only`.** A repo not yet migrated runs a checker with
+  `--warn-only` until its own Tailwind or server brief removes the flag. A
+  repo already on Tailwind runs `check-base-ui` strict from the start.
 
-   Brief 27 supersedes this brief's copy-the-checkers plan if its decision
-   1 (a shared `house-style` package) is taken. Re-read 27 before starting.
+## The migration order (Q20, decided 2026-11-10)
 
-Owner decisions, with defaults:
+1. the mini todo app (`literally-a-todo-app`), as the proof;
+2. wicket, 3. the-board, 4. lantern, 5. Satchel, 6. ward-auth, 7. Almanac,
+8. Shelfmark, 9. Postern, 10. Newspapper.
 
-- **The deploy.** Default: if vps-deploy's per-project deploy already runs a
-  project's tests or lint before building, it also runs `npm run lint`.
-  Check vps-deploy's code, then add it there under that project's own brief.
-  The alternative is to leave the deploy alone.
-- **A repo that isn't migrated yet.** Default: it runs `check-base-ui.mjs`
-  with `--warn-only` until its Tailwind brief (05-14) is done, and
-  `check-structure.mjs` with `--warn-only` until its server row in brief 16
-  is done. The flag comes off in the brief that fixes the repo. A repo
-  already on Tailwind runs `check-base-ui` strict from the start: atrium,
-  ro-housing, comercial-website, public-resource-map, 3D-sandbox,
-  sports-app, presentation-sites, ImbatranimOS and imbatranim-apps.
-- **Exceptions.** Default: a repo-local `scripts/conventions.json` lists
-  allowed exceptions, each with a reason. An example is ward-auth's second
-  entry stylesheet, if brief 09 needs one. Both checkers read the file and
-  print the exceptions they honour.
+The repos already on Tailwind (atrium, comercial-website, public-resource-map,
+ro-housing, sports-app, SocialEvents, 3D-sandbox, ImbatranimOS,
+imbatranim-apps, presentation-sites, churchix) follow the same rhythm, each
+with its bump first (brief 04). In every repo the order is: **bump (04), harness,
+Base UI by the conventions, Tailwind, server, redesign** (brief 28).
 
-The repos in scope are every repo with a `web/` app on Base UI (brief 04's
-table) or a Fastify server (brief 16's table). For a repo with only one of
-the two, wire only that checker. hackathons and game-engine are out: they
-are archives or have no web UI.
+## Each repo's briefs
 
-**Depends on:** briefs 02 and 03 (the checkers exist) and 04 (pins at
-1.9.0, so rule 1 passes).
+Briefs are in the repo's `corpus/briefs/todo/`. "-" means the repo has no
+such brief, because it does not apply.
 
-## Files you OWN
+| Repo | Harness | Base UI by the conventions | Tailwind | Server |
+|---|---|---|---|---|
+| mini-projects | brief 02, *The todo app house-style harness* | brief 03, *Base UI by the conventions* | brief 04, *The web app to Tailwind* | brief 05, *The server in the code structure* |
+| wicket | brief 10, *The house-style harness* | brief 11, *Base UI by the conventions* | brief 12, *The web app to Tailwind* | brief 13, *The server in the code structure* |
+| the-board | brief 16, *The house style and the quality harness* | brief 17, *Base UI by the conventions* | brief 18, *The web app to Tailwind* | brief 19, *The server in the code structure* |
+| lantern | brief 15, *The house-style harness* | brief 16, *Base UI by the conventions* | brief 17, *The web app to Tailwind* | brief 18, *The server in the code structure* |
+| Satchel | brief 01, *The house-style harness* | brief 02, *Base UI by the conventions* | brief 03, *The web app to Tailwind* | brief 04, *The server in the code structure* |
+| ward-auth | brief 03, *The house-style harness* | brief 04, *Base UI by the conventions* | brief 05, *The UI to Tailwind* | brief 06, *The server in the code structure* |
+| almanac | brief 01, *The house-style harness* | brief 02, *Base UI by the conventions* | brief 03, *The web app to Tailwind* | brief 04, *The server in the code structure* |
+| shelfmark | brief 05, *The house-style harness* | brief 06, *Base UI by the conventions* | brief 07, *The web app to Tailwind* | brief 08, *The server in the code structure* |
+| postern | brief 01, *The house-style harness* | brief 02, *Base UI by the conventions* | brief 03, *The web app to Tailwind* | - (no backend) |
+| newspapper | brief 08, *The house-style harness* | brief 09, *Base UI by the conventions* | brief 10, *The UI to Tailwind* | brief 11, *The API in the code structure* |
+| atrium | brief 02, *The house-style harness* | brief 03, *Base UI by the conventions* | - (already Tailwind) | brief 04, *The server in the code structure* |
+| comercial-website | brief 11, *The house-style harness* | brief 12, *Base UI by the conventions* | - | brief 13, *The server in the code structure* |
+| public-resource-map | brief 03, *The house-style harness* | brief 04, *Base UI by the conventions* | - | brief 05, *The server in the code structure* |
+| ro-housing | brief 22, *The house-style harness* | brief 23, *Base UI by the conventions* | - | brief 24, *The server in the code structure* |
+| sports-app | brief 02, *The house-style harness* | brief 03, *Base UI by the conventions* | - | brief 04, *The server in TypeScript and the code structure* |
+| SocialEvents | brief 15, *The house-style harness* | brief 16, *Base UI adopted by the conventions* | - | brief 17, *The server in the code structure* |
+| 3D-sandbox | brief 05, *The house-style harness* | brief 06, *Base UI by the conventions* | - | brief 07, *The server in the code structure* |
+| imbatranimOS | brief 86, *The house-style harness* | brief 87, *Base UI by the conventions* | - | - (NestJS: no Fastify brief) |
+| imbatranim-apps | brief 08, *The house-style harness* | brief 09, *Base UI by the conventions* | - | brief 10, *The server in the code structure* |
+| presentation-sites | brief 03, *The house style and the quality harness* | brief 04, *Base UI by the conventions with the theme switch* | - | - (no server) |
+| churchix (own corpus) | brief 03, *The house style and the quality harness* | brief 04, *Base UI by the conventions with the theme switch* | - | - |
+| game-engine | brief 03, *The house-style harness* | - | - | - |
+| just-a-bot | brief 18, *The house-style harness* | - | - | - |
 
-In each repo:
+Out of scope: hackathons (an archive), and the private repos (Q2).
 
-- `scripts/check-base-ui.mjs`, `scripts/check-structure.mjs` and
-  `scripts/conventions.json`;
-- the `lint` and `check:conventions` scripts in the root `package.json`;
-- the "Conventions" section in `CLAUDE.md` and `corpus/CLAUDE.md`;
-- a `corpus/log.md` entry.
+## The owner's answers every repo brief carries (2026-11-10)
 
-## Files you must NOT touch
+- **Q18, dark mode.** Every app gets a Light / Dark / System switch, light by
+  default on a first visit, kept on the device (atrium keeps its per-profile
+  sync and sepia theme). Tailwind's `dark:` keys off `data-theme` through
+  `@custom-variant`, not `prefers-color-scheme`. The exceptions:
+  - **3D-sandbox's Solstice** keeps its Darkroom dark default and gets the
+    switch;
+  - **Ward's console** keeps its one dark surface; the sign-in pages get the
+    switch;
+  - **the client sites** (presentation-sites' auto-service, saloon, subcort,
+    tractari) and **Churchix's parish sites** keep the one look designed for
+    each, with no switch.
+- **Q19, visual parity.** A Tailwind migration is done when before and after
+  screenshots at 1280 and 390 px show no visible change to layout or colour.
+  A few pixels of drift in spacing or rounding needn't be fixed or listed.
+- **Q40, the phone menu.** Phone navigation panels move to Base UI 1.9.0's
+  swipeable `Drawer`, closed by a swipe, a tap outside, the X or Esc.
+- **Q58.** Inline "Delete? Yes / No" confirms stay inline (Satchel,
+  Shelfmark); no move to `AlertDialog`. A dialog that holds a form sets
+  `disablePointerDismissal`.
+- **Q44, the root font size.** It goes back to the browser's default and the
+  app's size moves onto `body`. ImbatranimOS has no exception: its 13 px moves
+  to `body` with `--spacing: 0.203125rem` (imbatranimOS brief 87).
 
-- Source files. Fixing what a strict checker reports in a Tailwind repo is
-  that repo's own follow-up brief (file one there for anything over about
-  an hour), or a one-line fix if it is trivial.
-- The repo's existing ESLint config. The one exception is adding
-  `no-restricted-imports` for the `@base-ui/react` root, where the repo uses
-  ESLint.
+The technical calls behind the rest are on
+[grilling-2026-11-10-technical-calls.md](../../wiki/grilling-2026-11-10-technical-calls.md);
+the owner's answers are on
+[grilling-2026-11-10.md](../../wiki/grilling-2026-11-10.md).
 
-## What to do
+## Acceptance (for this tracker)
 
-One repo per session, in this order:
-
-1. the Tailwind repos, strict;
-2. the plain-CSS repos, warn-only;
-3. the servers.
-
-In each repo:
-
-1. Copy the two checkers from the skills at their current version.
-2. Run each strict. Record the counts in the repo's `log.md` entry and this
-   brief's outcome note.
-3. Pick strict or `--warn-only` per the decisions above. Write
-   `conventions.json` for any exception, with its reason.
-4. Add the scripts and the `CLAUDE.md` sections.
-5. `npm run lint` must pass: strict findings fixed or excepted, warnings
-   allowed.
-6. Commit with `chore: enforce base-ui and code-structure conventions`.
-
-Then, separately, check vps-deploy for the deploy decision.
-
-## Acceptance
-
-- Every repo in scope has both scripts (or the one that applies), a
-  `check:conventions` script, a `lint` that runs it, and the `CLAUDE.md`
-  section.
-- `npm run lint` passes in each.
-- The outcome note has a table per repo: strict or warn-only for each
-  checker, the counts, and the exceptions.
-- The vps-deploy decision is recorded, either way.
+- Every row's briefs are in their repo's `done/`.
+- Each repo's `npm run check` passes with both checkers strict, or with
+  exceptions recorded in `conventions.json`, each with a reason.
+- Each repo has a short root `CLAUDE.md` with the commands (Q46) and
+  `.claude/rules/` files for web and server.
+- The outcome note has a table per repo: strict or `--warn-only` for each
+  checker, and the counts.

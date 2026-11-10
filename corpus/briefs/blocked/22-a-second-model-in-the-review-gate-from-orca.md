@@ -1,5 +1,9 @@
 # Task 22: A second model in the review gate (from stablyai/orca)
 
+**Blocked by:** a second vendor's CLI (Codex or Gemini) is installed
+
+> Decided 2026-11-10 (Q32): neither the Codex nor the Gemini CLI is installed, so this brief waits. The owner moves it back to `todo/` when one is.
+
 ## Context
 
 On 2026-11-09 the owner asked for popular repos to be reviewed for ideas.
