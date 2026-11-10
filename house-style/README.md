@@ -33,8 +33,8 @@ In the copy, `README.md` is a generated header in place of this page.
 ## Names and paths
 
 - **The checkout:** the sync finds the `my-personal-skills` checkout by name,
-  in `$PROJECTS_DIR` (default `~/projects`), directly or one group folder
-  down. Two checkouts with that name are an error.
+  in the folder `$PROJECTS_DIR` names (`bin/sync.mjs` has the default),
+  directly or one group folder down. Two checkouts with that name are an error.
 - **The copy:** `vendor/house-style/` in each repo. It is generated: ESLint,
   Prettier and knip ignore it, and nobody edits it by hand.
 - **The header:** `vendor/house-style/README.md`, with the version, the source
