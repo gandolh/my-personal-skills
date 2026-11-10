@@ -158,7 +158,11 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
 - **Q41 and Q57.** A filter that switches what a list shows uses `RadioGroup`
   (or `Tabs` when it switches panels), so arrow keys may choose. A picker that
   **saves** on each choice uses a guarded `ToggleGroup`: arrow keys move focus
-  without saving, and one item always stays pressed.
+  without saving, and one item always stays pressed. "Saves" means a write
+  to the server: a picker that only stores a choice on the device (the
+  theme, the language) is a `RadioGroup`. Four repo briefs made a
+  device-only picker a `ToggleGroup` (public-resource-map, ro-housing,
+  sports-app, Shelfmark); the skill's rule wins when they are built.
 - **Q42.** FullCalendar's CSS loads with the calendar only.
 - **Q44.** The root font size goes back to the browser's default and the app's
   size moves onto `body`, because a pixel size on `html` overrides the

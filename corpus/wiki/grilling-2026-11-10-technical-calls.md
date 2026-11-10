@@ -65,6 +65,11 @@ answered above.
   (or `Tabs` when it switches panels): arrow keys may choose. A picker that
   **saves** on each choice uses a guarded `ToggleGroup`, so arrow keys move
   focus without saving, and one item always stays pressed.
+  Clarified the same day: "saves" means a write to the server. A picker
+  that only stores a choice on the device (the theme, the language) is a
+  `RadioGroup`. Repo briefs that made a device-only picker a `ToggleGroup`
+  (public-resource-map, ro-housing, sports-app, Shelfmark) follow this rule
+  when the base-ui skill (brief 02) is built.
 - **Q42** FullCalendar's CSS loads with the calendar only.
 - **Q44 changed:** the root font size goes back to the browser's default and
   the app's size moves onto `body`. A pixel size on `html` overrides the
