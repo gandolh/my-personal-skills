@@ -175,3 +175,24 @@ updated: 2026-11-09
 39. **presentation-sites' bake-off** (presentation-sites 01): the
     auto-service home page as the test, with you as the judge. A different
     page?
+
+## Round 7: raised while writing the repo briefs (2026-11-09)
+
+From Almanac's briefs, the reference set:
+
+40. **The phone drawer:** keep it as a Dialog, or move to Base UI 1.9.0's
+    `Drawer` with swipe-to-close?
+41. **A picker that saves on every choice.** Base UI's radios choose on the
+    arrow keys. Record an exception, or use a ToggleGroup instead?
+42. **Vendor CSS on first paint.** Is FullCalendar's 5.4 kB of gzipped CSS on
+    every page's first paint acceptable, or should it load with the calendar
+    only?
+43. **Error bodies.** Does the code-structure skill prescribe an error-body
+    shape, or only "one handler, keep the repo's shape"? Default: the latter.
+44. **A root font size other than 16 px** (Almanac's is 15 px): set Tailwind's
+    `--spacing` to match, or move the size onto `body`?
+45. **Markdown.** Is Markdown (corpus pages) left out of Prettier? Default:
+    yes, because the corpus has its own lint.
+46. **A root `CLAUDE.md`.** Should a repo whose only `CLAUDE.md` is under
+    `corpus/` get a short root one with the commands? Default: yes, per
+    Claude Code's guidance.

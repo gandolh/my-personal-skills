@@ -129,6 +129,12 @@ resolved zod 3: atrium (3.25.76), comercial-website's `backend` (3.24.1)
 and public-resource-map (3.25.76). Their rows in brief 16 start with a zod
 4 move. Every other repo was on 4.3.6-4.6.7.
 
+**Found while writing Almanac's repo briefs (2026-11-09):**
+
+- **The provider's serializer throws on any zod `.transform()`** (reproduced on zod 4.5.4). Almanac's `occurrenceSchema` has one, so it would answer 500. Rule 6 becomes: response schemas are **transform-free output schemas**. A schema that transforms on input gets a separate output schema, or the transform moves into the handler or store.
+- **Required peers.** The provider makes npm install `@fastify/swagger` and `openapi-types` as required peers. Pin both, and note them in each repo's dependency page.
+- **The error body.** Almanac's is `{ error: { code, message } }`, and its web client parses that. The skill prescribes **one handler and the repo's existing body shape**, not a new estate-wide shape (rule 8).
+
 Fastify 6 is in alpha (`6.0.0-alpha.6` on the `next` tag, latest 5.12.8).
 The skill targets 5.x and says so.
 

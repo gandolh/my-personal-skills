@@ -104,6 +104,12 @@ that limits when a skill loads on its own. Give this skill
 loads in UI work and stays out of server work. `when_to_use` carries the
 trigger phrases, and the description says what the skill is.
 
+### Found while writing Almanac's repo briefs (2026-11-09)
+
+- **Unlayered vendor CSS beats every layered rule**, `@layer components` included. A vendor stylesheet (FullCalendar's, Leaflet's) is imported into a low layer, `@import "…" layer(vendor);`, declared before Tailwind's layers. Then an app override in `@layer components` wins.
+- **A root `font-size` other than 16 px** shifts Tailwind's rem-based scale (Almanac's is 15 px). The migration method either sets `--spacing` to match or moves the size onto `body` (a grilling question).
+- **Custom theme size and colour names need `extendTailwindMerge`** in `cn()`, or tailwind-merge drops classes it doesn't recognise as conflicting.
+
 ## Files you OWN
 
 - `skills/base-ui/SKILL.md` (new)

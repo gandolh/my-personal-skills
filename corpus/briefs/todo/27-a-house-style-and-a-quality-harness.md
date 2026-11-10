@@ -214,6 +214,16 @@ So the harness has **two layers**:
 
    Alternative: the skill ships the files and each repo keeps a copy with a
    version header, as brief 15 first planned.
+
+   **Caveat found 2026-11-09 (Almanac):** a `github:` git dependency breaks
+   a Docker build stage with no `git` installed, and Almanac's deps stage
+   has none. So the package either:
+   - publishes to a registry (public npm, or GitHub Packages, which needs a
+     token in the build);
+   - goes in as a packed tarball committed per repo; or
+   - needs `git` added to each Dockerfile.
+
+   This is part of the grilling's Q6.
 2. **Formatter.** Default: **Prettier, at the width with the least churn**
    across the lineage repos. Re-measure 110, 120 and 130 on every house repo
    and pick one width for all. The other settings are double quotes,
