@@ -1,0 +1,36 @@
+{
+  "description": "The house-style harness: format each saved file with the repo's own Prettier, and run the repo's check:fast before Claude ends a turn. Both do nothing in a repo without a Prettier config or a check:fast script.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/format-saved-file.mjs"],
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/note-saved-file.mjs"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/stop-check.mjs"],
+            "timeout": 300
+          }
+        ]
+      }
+    ]
+  }
+}
