@@ -133,3 +133,19 @@ From sports-app, ro-housing and 3D-sandbox:
   (byte-identical for 3D-sandbox's three scenes).
 - **Biome's width is the least-churn width** for a Biome repo (110 in
   3D-sandbox: 36 lines, against 783 at 120). The estate width stays 120.
+
+From SocialEvents:
+
+- **Code written near 80 columns pays most for width 120.** SocialEvents'
+  p95 line is 76 characters, and churn rises with width: 175 lines at 80, 590
+  at 120 (12.5% of 4,723 lines), 835 at 150. The estate width stays 120; the
+  reformat is its one-off cost.
+- **A stale `*.tsbuildinfo` hides flag measurements.** In a composite
+  project, `tsc -b` skips the check when `.tsbuildinfo` files survive a
+  deleted `dist`. Delete both before measuring a tsconfig flag.
+- **Guards that reply.** `preHandler` guards that send 401 and 403 themselves
+  mean the route declares only its success status (the "declared status
+  becomes a 500" fact, seen from the guard's side).
+- **`dotenv/config` reads `.env` from the working directory,** so a script
+  run from the repo root reads a different file than the workspace's dev
+  script. `config.ts` loads `.env` by an explicit path.
