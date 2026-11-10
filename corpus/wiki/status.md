@@ -1,11 +1,11 @@
 ---
-summary: Snapshot of the skills library as of 2026-11-09 - version 0.34.0, the 26 briefs filed that day (02-27) and what each is for, and that nothing is built until the owner's grilling on 2026-11-10.
+summary: Snapshot of the skills library as of 2026-11-09 - version 0.35.0, the 26 briefs filed that day (02-27) and what each is for, and that nothing is built until the owner's grilling on 2026-11-10.
 updated: 2026-11-10
 ---
 
 # Status
 
-As of 2026-11-09 the library is at v0.34.0, with 26 skills. Brief 01 is
+As of 2026-11-09 the library is at v0.35.0, with 26 skills. Brief 01 is
 done. Briefs 02-27 were filed on 2026-11-09 and are **specs only**: the
 owner asked for research and briefs, with a grilling on 2026-11-10 before
 anything is built. The questions for it are in
@@ -24,7 +24,7 @@ anything is built. The questions for it are in
 | 18 A diagnose skill and an owner-steps wizard | from mattpocock/skills | todo |
 | 19 A skills stocktake and MCP pin review | from affaan-m/ecc | todo |
 | 20 Surgical changes in the chunk contract | from andrej-karpathy-skills | todo |
-| 21 The Agent Skills format | from anomalyco/opencode | todo |
+| 21 The Agent Skills format | from anomalyco/opencode | built, v0.35.0 |
 | 22 A second model in the review gate | from stablyai/orca | todo |
 | 23 A session-start hook on the corpus | from thedotmack/claude-mem | todo |
 | 24 Re-pin the taste suite | leonxlnx/taste-skill 2.5.1 | todo |

@@ -62,3 +62,10 @@ After the grilling of 2026-11-10 (Q1-62 answered):
 - **Wiki.** `open-questions.md` and the Round 8 page now point at the two
   grilling pages.
 
+
+## [2026-11-10] done | Brief 21 - the library meets the Agent Skills format
+
+Added `scripts/check-skills.mjs` and called it from `corpus/lint.sh` (v0.35.0).
+It found one invalid description (`improve`, an unquoted `: `), now fixed. The
+two long descriptions in the brief were already under 1,024 characters. See
+[the brief](briefs/done/21-the-library-meets-the-agent-skills-format-from-opencode.md).

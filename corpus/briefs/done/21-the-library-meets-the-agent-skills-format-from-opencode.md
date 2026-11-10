@@ -101,3 +101,15 @@ agent. The repo is also public, and this costs little.
   one whose name doesn't match its directory.
 - Both descriptions are at most 1024 characters, measured by the check.
 - `bash corpus/lint.sh` runs the check and passes.
+
+## Outcome (2026-11-10, v0.35.0)
+
+Built `scripts/check-skills.mjs` (zero dependencies, vendored skills from the
+ATTRIBUTION table are warnings) and wired it into `corpus/lint.sh`; fixtures in
+`scripts/fixtures/` show it exits 1 on a long description, a name that does not
+match its directory and invalid YAML. Counted with a YAML parser, `codegraph`
+(607) and `design-md-library` (685) descriptions were already under 1,024; the
+brief's figures were `description` plus `when_to_use`, so no shortening was
+needed. The check found `improve` with an unquoted `: `, invalid YAML, and
+fixed it. No vendored skill is over a limit. The version bump is a minor, as
+corpus/CLAUDE.md requires.
