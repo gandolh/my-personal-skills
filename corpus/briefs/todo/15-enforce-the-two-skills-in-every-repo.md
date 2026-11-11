@@ -35,7 +35,17 @@ Decided 2026-11-10:
   `main` in its main checkout, committed and pushed there.
 - **Repos with `--warn-only`.** A repo not yet migrated runs a checker with
   `--warn-only` until its own Tailwind or server brief removes the flag. A
-  repo already on Tailwind runs `check-base-ui` strict from the start.
+  checker that already reports nothing when the repo adopts it runs strict
+  from the start (ro-housing's `check-base-ui`). *(Changed 2026-11-11 by the
+  controller: this used to say every repo already on Tailwind runs strict, but
+  atrium is on Tailwind and has 7 rule-3 findings, so it stays `--warn-only`
+  until its own brief. Matches the skill's `references/adoption.md`.)*
+- **dependency-cruiser is in `check:conventions` from day one** (2026-11-11,
+  the controller's call): a rule a repo can't pass yet is lowered to `warn`
+  by name in its `.dependency-cruiser.cjs`, with a dated comment naming the
+  server brief that turns it back on. Repo briefs that stage dependency-cruiser
+  with the server brief (wicket 13, atrium 02) keep only the rule-lowering
+  part of that staging.
 
 ## The migration order (Q20, decided 2026-11-10)
 
