@@ -531,3 +531,27 @@ Work happens on `main` with no PRs (Q4).
   [house-style-part-2.md](../../wiki/house-style-part-2.md). Left: the tag and
   Wicket's proof run.
 
+## Outcome (2026-11-11, v0.39.0)
+
+- **The package.** `house-style/` 1.0.0: the ESLint config
+  (`houseStyle(options)`), the Prettier config, the tsconfig base, the knip
+  and dependency-cruiser presets, `bin/sync.mjs`, and the two checkers
+  (`check-base-ui`, `check-structure`) with `conventions.json`, under one
+  `npm test` (190 tests, a failing and a passing fixture per rule). The
+  CHANGELOG releases `1.0.0 (2026-11-11)`. The package was formatted once with
+  its own Prettier config.
+- **The checkers.** `check-base-ui` (rules 1, 2, 3, 5, 6 and 11 errors, 9 and
+  10 warnings) and `check-structure` (1, 2, 3 and 6 errors, 11 a warning),
+  both `--warn-only` until a repo's own brief drops it.
+- **The proof run.** Wicket's brief 10, pushed 2026-11-11: `npm run check` in
+  about 18-20 s and `check:fast` in about 5-6 s.
+- **The findings folded in** (the proof runs' briefs 02 and 03 included):
+  `.cjs` files get CommonJS globals; scripts versus `console`; knip's
+  `workspaces` entries; the Docker caveat on the tsconfig `extends`;
+  `check:fast` as `npm run typecheck && node scripts/check-fast.mjs`; the
+  bundle compare instead of `git diff -w`; temporary-exception comments say
+  what removes them, never a brief number; `no-circular` and a feature's
+  context type; and, in `base-ui`, Cancel's `initialFocus`, a jsdom recipe for
+  rule 17, plain classes before a repo's Tailwind brief, both radio-group
+  looks, and what the checker counts.
+- **Tag.** Tagged `house-style-v1.0.0` by the controller after this commit.

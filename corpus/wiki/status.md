@@ -30,7 +30,7 @@ anything is built. The questions for it are in
 | 24 Re-pin the taste suite | leonxlnx/taste-skill 2.5.1 | todo |
 | 25 Cloudflare's security audit, on ward-auth first | cloudflare/security-audit-skill | todo |
 | 26 Model evals for the library's prompts | pingdotgg/t3code, `claude plugin eval` | todo |
-| 27 A house style and a quality harness | the measured style, lint, format, hooks | todo |
+| 27 A house style and a quality harness | the measured style, lint, format, hooks | built, v0.39.0 |
 
 Other repos got their own briefs on the same day:
 
@@ -100,3 +100,11 @@ measured behaviour, the research, and `migrating-a-server.md`, the order
 each repo's server brief follows (brief 16 tracks them; wicket's brief 13 is the
 first to use it). The checker was already built in house-style 1.0.0 and was not
 changed. Owner step: update the plugin to 0.38.0.
+
+## 2026-11-11: brief 27, house-style 1.0.0, v0.39.0
+
+The library is at v0.39.0, with 29 skills. Brief 27 is done: `house-style`
+1.0.0 is released in its CHANGELOG (the controller tags `house-style-v1.0.0`
+after the closeout commit), with the findings of wicket's proof run folded
+into the package, the `house-style` skill and the `base-ui` skill. Owner
+step: update the plugin to 0.39.0.

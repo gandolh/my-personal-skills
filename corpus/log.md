@@ -151,3 +151,14 @@ alternatives. The checker was not changed; its Almanac, atrium and wicket
 counts stand. A feature that type-imports `FeatureContext` from `app.ts` is
 a dependency-cruiser cycle, so features name their own options type. See
 [the brief](briefs/done/03-a-code-structure-skill-for-fastify-and-react-apps.md).
+
+## [2026-11-11] done | Brief 27 - a house style and a quality harness
+
+`house-style/` 1.0.0 (CHANGELOG released, tag `house-style-v1.0.0` by the
+controller) and the `house-style` skill with its two checkers, proven on
+wicket's brief 10 (pushed 2026-11-11; `npm run check` in about 18-20 s,
+`check:fast` in about 5-6 s). The proof run's findings are folded in: `.cjs`
+globals, where scripts go, knip workspaces, the Docker caveat, `check:fast`,
+the bundle compare, comments without brief numbers, `no-circular`, and five
+`base-ui` changes. Plugin v0.39.0. See
+[the brief](briefs/done/27-a-house-style-and-a-quality-harness.md).
