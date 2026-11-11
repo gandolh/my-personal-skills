@@ -23,9 +23,9 @@ module.exports = {
       name: "not-to-unresolvable",
       severity: "error",
       comment:
-        "An import that cannot be resolved is an edge every other rule here misses. A Vite virtual module (`virtual:` ids) is made by a plugin at build time, so it is allowed.",
+        "An import that cannot be resolved is an edge every other rule here misses. A Vite virtual module (`virtual:` ids) is made by a plugin at build time, and React Router's route types (`./+types/<route>`) by its typegen, so both are allowed.",
       from: {},
-      to: { couldNotResolve: true, pathNot: "^virtual:" },
+      to: { couldNotResolve: true, pathNot: ["^virtual:", "(^|/)\\+types/"] },
     },
     {
       name: "feature-through-index",

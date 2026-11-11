@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { readdirSync, statSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 import { before, describe, it } from "node:test";
+import { isTestFile } from "../bin/conventions.mjs";
 import { houseStyle } from "../eslint.config.js";
 
 const ROOT = join(import.meta.dirname, "fixtures", "repo");
@@ -180,6 +181,25 @@ const CASES = [
     pass: ["server/src/cli.ts", "scripts/report.ts", "scripts/tool.mjs"],
   },
   {
+    rule: "no-console",
+    area: "off in tests, which stub the console and assert on what was printed",
+    fail: null,
+    pass: ["server/src/tests/console-in-tests.pass.test.ts"],
+  },
+  {
+    rule: "n/no-process-env",
+    area: "off with no-console in a test folder's helper and a jest `*-spec.*`, which aren't vitest files",
+    fail: null,
+    pass: ["server/src/testing/harness.ts", "server/src/app.e2e-spec.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-non-null-assertion",
+    area: "a warning in a test folder's helper",
+    severity: 1,
+    fail: "server/src/testing/non-null.ts",
+    pass: [],
+  },
+  {
     rule: "no-undef",
     area: ".cjs files see CommonJS globals, other names stay undefined",
     fail: "scripts/undefined-global.fail.cjs",
@@ -317,6 +337,110 @@ describe("the env and assertFunctionNames options", () => {
   });
 });
 
+/** The severity of a rule in a calculated config: 0 off, 1 warn, 2 error, undefined when the rule isn't there. */
+function level(entry) {
+  const value = Array.isArray(entry) ? entry[0] : entry;
+  return { off: 0, warn: 1, error: 2 }[value] ?? value;
+}
+
+async function configFor(options, file) {
+  const eslint = new ESLint({
+    cwd: ROOT,
+    overrideConfigFile: true,
+    overrideConfig: houseStyle({ root: ROOT, ...options }),
+  });
+  return eslint.calculateConfigForFile(join(ROOT, file));
+}
+
+/**
+ * Sample paths, whether each is a test or a helper only tests load (the relaxations), and
+ * whether the vitest rules reach it with the default `tests`.
+ */
+const SAMPLES = [
+  { file: "server/src/books.test.ts", test: true, vitest: true },
+  { file: "web/src/App.spec.tsx", test: true, vitest: true },
+  { file: "server/src/books.test.mjs", test: true, vitest: true },
+  { file: "apps/backend/test/app.e2e-spec.ts", test: true, vitest: false },
+  { file: "server/src/foo-spec.mts", test: true, vitest: false },
+  { file: "test/setup.ts", test: true, vitest: false },
+  { file: "server/src/tests/helpers.ts", test: true, vitest: false },
+  { file: "web/src/__tests__/render.tsx", test: true, vitest: false },
+  { file: "shared-library/src/testing/harness.ts", test: true, vitest: false },
+  { file: "a/e2e/b/c.ts", test: true, vitest: false },
+  { file: "web/e2e/login.spec.ts", test: true, vitest: true },
+  { file: "server/src/testing.ts", test: false, vitest: false },
+  { file: "server/src/latest/x.ts", test: false, vitest: false },
+  { file: "server/src/contest/entry.ts", test: false, vitest: false },
+  { file: "server/src/testsuite/a.ts", test: false, vitest: false },
+  { file: "server/src/e2e.ts", test: false, vitest: false },
+  { file: "server/src/my-test.ts", test: false, vitest: false },
+  { file: "server/src/books.test.d.ts", test: false, vitest: false },
+  { file: "docs/specs/a.ts", test: false, vitest: false },
+];
+
+describe("what counts as a test, in two widths", () => {
+  for (const { file, test, vitest } of SAMPLES) {
+    it(`${file}: ${test ? "a test" : "not a test"} to both isTestFile and the relaxations, ${vitest ? "with" : "without"} the vitest rules`, async () => {
+      const config = await configFor({ scripts: [] }, file);
+      assert.equal(isTestFile(file), test, `isTestFile("${file}")`);
+      const relaxed =
+        level(config.rules["@typescript-eslint/no-non-null-assertion"]) === 1 &&
+        level(config.rules["n/no-process-env"]) === 0 &&
+        level(config.rules["no-console"]) === 0;
+      assert.equal(relaxed, test, `the test relaxations on ${file}`);
+      assert.equal(config.rules["vitest/expect-expect"] !== undefined, vitest, `the vitest rules on ${file}`);
+    });
+  }
+});
+
+describe("the playwright option", () => {
+  const playwright = ["web/e2e/**", "web/browser/**"];
+
+  it("takes Playwright specs out of the vitest rules", async () => {
+    assert.notEqual((await configFor({}, "web/e2e/login.spec.ts")).rules["vitest/expect-expect"], undefined);
+    const config = await configFor({ playwright }, "web/e2e/login.spec.ts");
+    assert.equal(config.rules["vitest/expect-expect"], undefined);
+    assert.notEqual((await configFor({ playwright }, "web/src/App.test.tsx")).rules["vitest/expect-expect"], undefined);
+  });
+
+  it("gives its globs the test relaxations, inside a test folder or not", async () => {
+    for (const file of ["web/e2e/login.spec.ts", "web/browser/login.ts"]) {
+      const config = await configFor({ playwright }, file);
+      assert.equal(level(config.rules["@typescript-eslint/no-non-null-assertion"]), 1, file);
+      assert.equal(level(config.rules["n/no-process-env"]), 0, file);
+      assert.equal(level(config.rules["no-console"]), 0, file);
+    }
+    assert.equal(level((await configFor({}, "web/browser/login.ts")).rules["no-console"]), 2);
+  });
+
+  it("changes nothing when it is left out", () => {
+    const vitestBlock = houseStyle({}).find((config) => config.name === "house-style/vitest");
+    assert.equal(vitestBlock.ignores, undefined);
+  });
+});
+
+describe("a block whose files would be empty", () => {
+  it("is left out, so scripts: [] and tests: [] load", async () => {
+    for (const options of [{ scripts: [] }, { tests: [] }, { scripts: [], tests: [] }]) {
+      const config = await configFor(options, "server/src/cli.ts");
+      assert.equal(level(config.rules["no-console"]), 2, JSON.stringify(options));
+    }
+    const names = houseStyle({ scripts: [] }).map((config) => config.name);
+    assert.ok(!names.includes("house-style/console"));
+    assert.ok(!names.includes("house-style/scripts"));
+    assert.ok(!houseStyle({ tests: [] }).some((config) => config.name === "house-style/vitest"));
+  });
+
+  it("keeps the console block when console names files", async () => {
+    const blocks = houseStyle({ scripts: [], console: ["server/src/cli.ts"] });
+    const consoleBlock = blocks.find((config) => config.name === "house-style/console");
+    assert.deepEqual(consoleBlock.files, ["server/src/cli.ts"]);
+    assert.ok(!blocks.some((config) => config.name === "house-style/scripts"));
+    const config = await configFor({ scripts: [], console: ["server/src/cli.ts"] }, "server/src/cli.ts");
+    assert.equal(level(config.rules["no-console"]), 0);
+  });
+});
+
 describe("the options", () => {
   it("rejects an unknown option, so a typo cannot switch a rule off", () => {
     assert.throws(() => houseStyle({ test: ["**/*.test.ts"] }), /unknown option "test"/);
@@ -331,6 +455,12 @@ describe("the options", () => {
   it("leaves the vitest rules out for a node:test repo", () => {
     const names = houseStyle({ vitest: false }).map((config) => config.name);
     assert.ok(!names.includes("house-style/vitest"));
+  });
+
+  it("sets one tsconfigRootDir for every file, in a block without files", () => {
+    const block = houseStyle({ root: ROOT }).find((config) => config.name === "house-style/tsconfig-root");
+    assert.equal(block.files, undefined);
+    assert.equal(block.languageOptions.parserOptions.tsconfigRootDir, ROOT);
   });
 
   it("switches typed linting to project when asked", () => {

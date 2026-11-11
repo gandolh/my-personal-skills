@@ -94,6 +94,17 @@ const MALFORMED = [
     says: /exceptions\[0\]\.path is a path from the repo root/,
   },
   { name: "a blank match", text: exception({ match: "", reason: "x" }), says: /exceptions\[0\]\.match is text/ },
+  { name: "an env that isn't a list", text: '{ "env": "server/src/env.ts" }', says: /"env" is a list of files/ },
+  {
+    name: "an env outside the repo",
+    text: '{ "env": ["../other/env.ts"] }',
+    says: /env\[0\] .* stays inside the repo/,
+  },
+  {
+    name: "an env with a brace glob",
+    text: '{ "env": ["src/{a,b}/env.ts"] }',
+    says: /env\[0\] .* may use \* and \*\*/,
+  },
 ];
 
 describe("a malformed conventions.json", () => {
@@ -185,6 +196,9 @@ describe("conventions.schema.json", () => {
     for (const bad of ["**/src", "../x", "/srv", "C:/x", "a\\b", "src/[a]"]) assert.ok(!root.test(bad), bad);
     for (const ok of ["web/src/**", "server/src/app.ts", "**/components/ui"]) assert.ok(path.test(ok), ok);
     for (const bad of ["a/../b", "/x", "x?"]) assert.ok(!path.test(bad), bad);
+    const env = new RegExp(schema.properties.env.items.pattern);
+    for (const ok of ["shared/src/env.ts", "**/config.ts", "bots/*/src/env.ts"]) assert.ok(env.test(ok), ok);
+    for (const bad of ["../x/env.ts", "/srv/env.ts", "src/{a,b}/env.ts"]) assert.ok(!env.test(bad), bad);
     assert.ok(stylesheet.test("styles/index.css"));
     assert.ok(!stylesheet.test("styles/*.css"));
     assert.ok(new RegExp(schema.$defs.exception.properties.reason.pattern).test("A reason."));

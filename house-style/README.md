@@ -267,6 +267,7 @@ globs from the repo root.
 | `server` | none | Node folders; no rule is scoped to them yet |
 | `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say): they print and read the environment |
 | `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed. The default reaches Playwright specs too: a repo with Playwright passes `tests` without its e2e folder, or turns the vitest rules off for it in its own block |
+| `playwright` | none | Globs of Playwright specs (`["web/e2e/**"]`): they get the test relaxations, and the vitest block ignores them |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` and `*.d.ts` (an ambient `declare module` has no other form) |
 | `console` | none | App files allowed to print: a CLI entry, or a module that logs before the logger exists. Their `process.env` reads are still errors |
 | `env` | `["**/config.ts"]` | Where `n/no-process-env` is off: the repo's env reader. A repo whose reader is `config/env.ts` passes `["server/src/config/env.ts"]` instead of writing its own block. Tests, scripts and `*.config.*` stay exempt |

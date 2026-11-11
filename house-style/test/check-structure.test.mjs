@@ -155,6 +155,58 @@ describe("check-structure without a conventions.json", () => {
   });
 });
 
+describe("check-structure's env key", () => {
+  // A repo with no server root, as a gateway bot is: rule 3 runs on its shared root.
+  const files = {
+    "shared/src/env.ts": "export const home = process.env.HOME;\nexport const mode = process.env.NODE_ENV;\n",
+    "shared/src/other.ts": "export const user = process.env.USER;\n",
+    "shared/src/config.ts": "export const path = process.env.PATH;\n",
+  };
+  const roots = { web: [], server: [], shared: ["shared/src"] };
+
+  it("without it, config.ts is the one reader", () => {
+    const dir = join(scratch, "env-default");
+    writeTree(dir, { ...files, "conventions.json": JSON.stringify(roots) });
+    const run = runChecker("check-structure", [dir]);
+    assert.deepEqual(
+      run.findings.map((f) => `${f.file}:${f.line} rule-${f.rule}`),
+      ["shared/src/env.ts:1 rule-3", "shared/src/env.ts:2 rule-3", "shared/src/other.ts:1 rule-3"],
+      summary(run.findings),
+    );
+    assert.match(run.stdout, /other\.ts:1 rule-3 error: reads process\.env outside config\.ts: take the setting/);
+  });
+
+  it("names the readers instead of config.ts, and NODE_ENV stays a finding in them", () => {
+    const dir = join(scratch, "env-named");
+    writeTree(dir, { ...files, "conventions.json": JSON.stringify({ ...roots, env: ["shared/src/env.ts"] }) });
+    const run = runChecker("check-structure", [dir]);
+    assert.deepEqual(
+      run.findings.map((f) => `${f.file}:${f.line} rule-${f.rule}`),
+      ["shared/src/config.ts:1 rule-3", "shared/src/env.ts:2 rule-3", "shared/src/other.ts:1 rule-3"],
+      summary(run.findings),
+    );
+    assert.match(run.findings.find((f) => f.file === "shared/src/env.ts").message, /reads NODE_ENV/);
+    assert.match(
+      run.findings.find((f) => f.file === "shared/src/other.ts").message,
+      /^reads process\.env outside the env reader \(shared\/src\/env\.ts\)/,
+    );
+  });
+
+  it("takes globs, as ESLint's env option does", () => {
+    const dir = join(scratch, "env-glob");
+    writeTree(dir, {
+      ...files,
+      "conventions.json": JSON.stringify({ ...roots, env: ["**/env.ts", "shared/*/other.ts"] }),
+    });
+    const run = runChecker("check-structure", [dir]);
+    assert.deepEqual(
+      run.findings.map((f) => `${f.file}:${f.line} rule-${f.rule}`),
+      ["shared/src/config.ts:1 rule-3", "shared/src/env.ts:2 rule-3"],
+      summary(run.findings),
+    );
+  });
+});
+
 describe("check-structure's exceptions", () => {
   it("drops the findings an exception covers: a stream route by its path, and a whole file", () => {
     const dir = join(scratch, "exceptions");
