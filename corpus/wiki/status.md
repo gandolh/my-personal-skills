@@ -1,6 +1,6 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, and brief 27's library half built at version 0.36.0 (the house-style skill and the plugin's hooks).
-updated: 2026-11-10
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), and brief 02's base-ui skill at version 0.37.0 (2026-11-11).
+updated: 2026-11-11
 ---
 
 # Status
@@ -14,7 +14,7 @@ anything is built. The questions for it are in
 | Brief | What it is for | State |
 |---|---|---|
 | 01 The corpus skills learn blocked briefs and todos | | built, v0.34.0 |
-| 02 A base-ui skill, styled with Tailwind | conventions, patterns, checker | todo |
+| 02 A base-ui skill, styled with Tailwind | conventions, patterns, checker | built, v0.37.0 |
 | 03 A code-structure skill for Fastify + React | layout, zod route schemas, boundaries | todo |
 | 04 Every repo on Base UI 1.9.0 | version bump across the estate | todo |
 | 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | todo |
@@ -77,3 +77,13 @@ formatter and the `Stop` check) and the measurements
 tag `house-style-v1.0.0` and Wicket's proof run are left. Owner step: update
 the plugin to 0.36.0 so the skill and hooks are live.
 
+## 2026-11-11: brief 02, the base-ui skill, v0.37.0
+
+The library is at v0.37.0, with 28 skills. Brief 02 is done: `base-ui`
+states 17 numbered rules for React UI on Base UI 1.9.0 with Tailwind, each
+with its `check-base-ui` rule or "review", and 16 references of wrappers to
+copy, every TypeScript block compiled against the 1.9.0 types. House-style
+1.0.0 (still untagged) takes exceptions for base-ui rules 1-17, and its rule
+9 no longer warns on a trigger's own parts. Each app's Tailwind and Base UI
+briefs now have the skill to follow, in the owner's Q20 order. Owner step:
+update the plugin to 0.37.0.

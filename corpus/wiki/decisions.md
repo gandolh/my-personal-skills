@@ -1,6 +1,6 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10).
-updated: 2026-11-10
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10).
+updated: 2026-11-11
 ---
 
 # Decisions
@@ -35,6 +35,25 @@ sitting in `todo/` with a tag. Rejected: a `later` tag or a bold line under the
 title (nothing reads it, and `plan-split-dispatch` puts the brief in a wave).
 Existing corpora adopt the folders the first time something there is blocked,
 not in one sweep.
+
+## Base UI conventions as a skill, not a shared library
+_2026-11-09_ (v0.37.0, brief 02) - The estate's apps on Base UI share
+conventions, not components. The `base-ui` skill holds the numbered rules
+and wrappers to copy, each app keeps its own wrappers in its `ui/` folders,
+and house-style's `check-base-ui` reports what a script can see. Rejected:
+a styled component library on Base UI shared by every app, a library
+written from scratch, and leaving each app alone. The reason: each app has
+its own look on purpose (many carry a `DESIGN.md`), the 22 apps were split
+between Tailwind and plain CSS and spread over Base UI 1.4.1 to 1.9.0, and
+the one shared kit (`@imbatranim/ui`, vendored into imbatranim-apps with a
+`COMMIT` pin and a `kit:sync` script) shows what lockstep costs. What
+repeated was behaviour and its traps (the Escape guard, initial focus, the
+pending confirm, `render` on triggers, `items` on selects, no native
+dialogs), each found by hand in several apps; a written rule and a checker
+carry those without tying anyone's markup together, where leaving the apps
+alone meant finding each trap again, one app at a time. The owner accepted
+the verdict on 2026-11-09, with Tailwind for whole apps and every repo on
+Base UI 1.9.0.
 
 ## Hallmark is the design skill, with taste-skill's ideas
 _2026-11-10_ - The owner's grilling (Q39) chose nutlope/hallmark (`407fa68`,
