@@ -129,6 +129,13 @@ export function BookMenu({ title, remove }: { title: string; remove: () => Promi
 }
 ```
 
+## Adapt to the app
+
+- `min-w-44` and the row padding follow the app's density; the panel and
+  row looks come from `looks.ts` in [tailwind.md](tailwind.md).
+- A menu with icons puts them at the row's start, `aria-hidden`, with the
+  label as the item's text.
+
 ## Traps
 
 - **`modal` defaults to `true`.** An open menu locks the page's scroll, and

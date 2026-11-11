@@ -228,6 +228,13 @@ export function NoteActions({
 }
 ```
 
+## Adapt to the app
+
+- The labels ("Cancel", "Working…", "That didn't work. Try again.") are
+  the app's voice; keep a pending label on the action and Cancel first.
+- `danger` maps to the app's destructive button variant (imbatranimOS's
+  `variant="destructive"`).
+
 ## Notes
 
 - **An alert dialog doesn't close on an outside press**, by design; Esc and

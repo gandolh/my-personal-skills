@@ -216,6 +216,15 @@ export function RenameBook({ title, rename }: { title: string; rename: (title: s
   until the transition ends, so the `data-ending-style` values are what it
   animates to on close.
 
+## Adapt to the app
+
+- The three widths (400, 560, 720 px) are Almanac's; an app with other
+  dialog widths changes `SIZES`, not the call sites.
+- An app whose phones should see a centred card instead of a full screen
+  drops the `md:` prefixes from the position classes.
+- The header's divider and the footer's bar follow the app's look; the
+  Title, the labelled X and the focus function stay.
+
 ## Traps
 
 - **A trigger made of a component uses `render`** (rule 9). The `trigger`

@@ -62,6 +62,13 @@ export function RemoveFromShelf({ onRemove }: { onRemove: () => void }) {
 }
 ```
 
+## Adapt to the app
+
+- The inverted chip (`bg-ink text-surface`) reads in both themes; an app
+  with a tooltip token pair (imbatranimOS's `inverse-surface`) uses it.
+- `delay={500}` on the provider is a middle value; keep one delay for the
+  whole app.
+
 ## Why `render`
 
 `Tooltip.Trigger` renders a `<button>` of its own. With a `Button` as its

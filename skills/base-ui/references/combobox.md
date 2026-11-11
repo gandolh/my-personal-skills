@@ -122,6 +122,12 @@ export function CityPicker({
 }
 ```
 
+## Adapt to the app
+
+- The input group matches the app's text field ([field.md](field.md)) so a
+  form row lines up; the list's maximum height (22rem) suits a phone.
+- `empty` is the app's wording for no match.
+
 ## Notes
 
 - **Label the input.** A `<label htmlFor>` names `Combobox.Input`, as here.

@@ -148,6 +148,13 @@ reviewer finds it:
   and tractari) and **Churchix's parish sites** keep the one look designed
   for each, with no switch.
 
+## Adapt to the app
+
+- The storage key (`theme`) is the app's; an app with other display
+  settings keeps them together, as Postern does.
+- The labels read Light, Dark and System everywhere, so the estate's apps
+  agree.
+
 ## Tests
 
 - Light and Dark pin the root's computed `color-scheme`; System follows a

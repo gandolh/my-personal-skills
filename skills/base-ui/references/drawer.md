@@ -110,6 +110,14 @@ export function PhoneNav({ navigate }: { navigate: (href: string) => void }) {
 }
 ```
 
+## Adapt to the app
+
+- The panel's width (`min(20rem, 85vw)`) and side follow the app's top bar:
+  a menu button on the right opens a drawer from the right
+  (`swipeDirection="right"`, `translateX(100%)`).
+- The link rows are the app's own navigation items; keep them at least
+  44 px tall for a thumb.
+
 ## Notes
 
 - **The swipe follows the finger.** `--drawer-swipe-movement-x` moves the

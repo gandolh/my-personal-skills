@@ -126,6 +126,12 @@ export function NoteToolbar({
 }
 ```
 
+## Adapt to the app
+
+- `toolbarButton` is the bar's one look; an app whose toolbar sits on the
+  page background drops `bg-raised` from the bar.
+- The glyphs (B, I, the arrow) stand in for the app's icon set.
+
 ## Notes
 
 - **Disabled buttons stay focusable** (`focusableWhenDisabled` is on by

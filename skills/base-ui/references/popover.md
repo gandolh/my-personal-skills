@@ -84,6 +84,13 @@ export function VatInfo() {
 }
 ```
 
+## Adapt to the app
+
+- `w-72` suits a few lines of text or a short form; a wider panel sets its
+  own width through `className`.
+- An app with an arrow on its popovers adds `Popover.Arrow` inside the
+  popup, styled with `data-side`.
+
 ## Notes
 
 - **Not modal by default.** `modal` is `false` in 1.9.0: focus can leave

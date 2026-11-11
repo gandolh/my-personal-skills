@@ -113,6 +113,13 @@ export function ChangeEmail({ save }: { save: (email: string) => Promise<Errors 
 }
 ```
 
+## Adapt to the app
+
+- The input's height and radius match the app's buttons, so a field and its
+  submit line up.
+- Error text uses the app's danger token; an app that shows errors with an
+  icon adds it before the text, `aria-hidden`.
+
 ## What to keep in mind
 
 - **Native stays native** (Q16, rule 13): text, email, number, date and time

@@ -106,6 +106,13 @@ export function SortBy({ value, onChange }: { value: Sort; onChange: (sort: Sort
 }
 ```
 
+## Adapt to the app
+
+- The trigger's height and border match the app's text inputs, so a form
+  row lines up.
+- An app whose values are numbers converts at the call site
+  (`String(minutes)`), since the wrapper keys items by string.
+
 ## Why `items`
 
 `Select.Value` shows the raw `value` unless the root knows the labels. With

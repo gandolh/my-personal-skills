@@ -102,6 +102,14 @@ export function EmailAlerts({ initial, save }: { initial: boolean; save: (on: bo
 }
 ```
 
+## Adapt to the app
+
+- The switch's track and thumb sizes (36 by 20 px) and the box's 16 px are
+  a middle density; the thumb travels the track's inner width less its own
+  (here 32 less 16 px, `translate-x-4`).
+- A checked state uses the app's accent; an app whose accent is pale on its
+  surface (imbatranimOS's Apricot) keeps a border on the checked box.
+
 ## Notes
 
 - **The value the server takes.** `onCheckedChange` gives a boolean. A

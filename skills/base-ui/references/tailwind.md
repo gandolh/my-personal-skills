@@ -123,8 +123,12 @@ What each part is for:
   in `utilities`; any CSS outside a layer beats both. So old stylesheets go
   in `legacy` while the migration runs ([migrating-from-plain-css.md](migrating-from-plain-css.md)),
   and third-party CSS goes in `vendor`. `vendor` sits *after* `base` on
-  purpose: before it, Tailwind's reset (`border: 0 solid`, `img { display:
-  block }`) would beat Leaflet's or FullCalendar's own rules.
+  purpose. Measured in Chrome with 4.3.5 on 2026-11-11: with `vendor`
+  declared first, Tailwind's reset beat a vendor rule's border, padding and
+  margin and turned its `img` to `display: block`; after `base`, the vendor
+  rule held. In both orders an override in `@layer components` won over the
+  vendor rule, which is what the layer is for. Only `!important` vendor
+  rules (Leaflet's tile `max-width`) survive either way.
 - **A third-party stylesheet only one lazy route needs** (FullCalendar in
   Almanac, Q42) is the one second stylesheet: a small `.css` beside that
   route that holds only `@import "…" layer(vendor);`. The `@layer`
@@ -268,8 +272,9 @@ export interface ButtonProps extends Omit<ComponentProps<typeof BaseButton>, "cl
 }
 
 /**
- * The house button, on Base UI's Button: it stays focusable while disabled,
- * so a pending action keeps the keyboard where it was.
+ * The house button, on Base UI's Button. A button that is disabled while its
+ * action runs, and must keep keyboard focus meanwhile, also sets
+ * `focusableWhenDisabled` (off by default for a standalone Button).
  */
 export function Button({ variant = "default", className, ...props }: ButtonProps) {
   return (
@@ -338,6 +343,23 @@ export function ChevronDownIcon(props: IconProps) {
   );
 }
 ```
+
+## Adapting a wrapper to an app
+
+Every reference ends with what to change for its own component; these hold
+for all of them.
+
+- **Swap the token names, keep the roles.** The examples use `surface`
+  (the page), `raised` (popups, dialogs, inputs), `hover`, `ink`,
+  `ink-muted`, `line`, `accent` with `on-accent`, `danger` with
+  `on-danger`, and `scrim`. Map each to the app's own name for that role:
+  Postern's `bg-surface-raised`, imbatranimOS's `bg-surface-container`.
+- **Sizes follow the app's density.** `h-9`, `px-3`, `text-body` are a
+  middle density; a compact app (imbatranimOS's toolbars) drops a step,
+  and its radii come from its own `--radius-*`.
+- **Leave the behaviour alone.** `render` on triggers, the guards, the
+  focus functions, `items`, the portals and the z tokens are the rules;
+  only class strings and icons are the app's.
 
 ## Shared looks
 
