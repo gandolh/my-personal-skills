@@ -121,8 +121,8 @@ unused files.
 
 Measured, not collated: house-style's `check-base-ui` and `check-structure`
 on scratch copies (no `node_modules`, `.env*`, `data/` or `*.db`), each with a
-`conventions.json` written in the copy. Every rule's count was checked against
-a plain grep of the same thing.
+`conventions.json` written in the copy. Each count, zeros included, was
+checked against a plain grep or `find` of the same thing.
 
 `check-base-ui`:
 
@@ -133,9 +133,13 @@ a plain grep of the same thing.
 | atrium (`--warn-only`) | `apps/web/src`, `"stylesheet": "styles/globals.css"` | rule 3: 7, rule 9: 1 | 0 |
 
 - ro-housing has nothing to spot-check: its 7 Base UI imports are all in
-  `components/ui/`, `Select.Root` is only re-exported, and it has no trigger
-  with a component child, native dialog or arbitrary colour. Without the
-  `stylesheet` key it reports 1, rule 5 on `styles.css`.
+  `components/ui/`, its pin is exact, and it has no native dialog or arbitrary
+  colour. Without the `stylesheet` key it reports 1, rule 5 on `styles.css`.
+- Rules 9 and 10 can't see through ro-housing's wrappers, which re-export the
+  parts (`DialogTrigger`, and `Select` for `Select.Root`). By hand: both
+  `<DialogTrigger>` uses pass `render`, and the 5 `<Select>` uses pass no
+  `items` but show their labels through a `SelectValueLabel` lookup, which
+  meets rule 10's purpose but not its letter.
 - atrium's rule 3 findings are the 7 feature files its brief 03 moves behind
   wrappers. Its rule 9 finding is false: `CoverCard.tsx`'s `Menu.Trigger`
   holds a `DotsGlyph` icon, and the heuristic can't tell an icon from a button.

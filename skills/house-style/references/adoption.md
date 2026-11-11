@@ -271,14 +271,12 @@ checkers; they say there is nothing to check.
   the copy, so the plugins count as used.
 - **dependency-cruiser** runs from the harness on. The preset forbids cycles,
   unresolvable imports, a feature reached past its `index`, and Fastify in
-  `lib/`, and the repo's `.dependency-cruiser.cjs` names its tsconfig so `.js`
-  suffixes resolve to `.ts` files:
+  `lib/`. `.js` suffixes on `.ts` files resolve without help; a repo whose
+  tsconfig has `paths` aliases also names it, with
+  `options: { tsConfig: { fileName: "tsconfig.json" } }`:
 
   ```js
-  module.exports = {
-    extends: "./vendor/house-style/.dependency-cruiser.cjs",
-    options: { tsConfig: { fileName: "tsconfig.json" } },
-  };
+  module.exports = { extends: "./vendor/house-style/.dependency-cruiser.cjs" };
   ```
 
   A rule that fails before the repo's server brief is lowered to a warning by
@@ -311,7 +309,8 @@ checkers; they say there is nothing to check.
 - **`--warn-only`** stays on a checker until the repo brief that fixes its
   findings drops it: `check-base-ui`'s with the repo's Base UI or Tailwind
   brief, `check-structure`'s with its server brief. A checker that already
-  reports nothing runs strict from the start (ro-housing's `check-base-ui`). A
+  reports nothing runs strict from the start (ro-housing's `check-base-ui`,
+  with its `"stylesheet": "styles.css"`). A
   malformed `conventions.json` fails the run even with `--warn-only`.
 
 `scripts/check-fast.mjs` lints the files changed against `HEAD` and the

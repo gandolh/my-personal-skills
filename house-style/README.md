@@ -120,7 +120,11 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 The other rules of the two skills are for review, except `code-structure`'s 5
 and 7 (a feature used through its index, no Fastify in `lib/`), which are the
 dependency-cruiser preset's, and unused files and dependencies, which are knip's.
-A test is `*.test.*`, `*.spec.*`, or a file under a `test`, `tests`,
+Rules 9 and 10 see the parts by their own names, `<X.Trigger>` and
+`<Select.Root>` (under whatever name the file imports Select by). A wrapper
+that re-exports a part under a new name (`export const DialogTrigger =
+Dialog.Trigger`) hides its call sites from them, so review covers those. A
+test is `*.test.*`, `*.spec.*`, or a file under a `test`, `tests`,
 `__tests__`, `testing` or `e2e` folder. Comments, strings and regexes are
 masked before the source rules look, so a rule's text in a comment isn't a
 finding.
