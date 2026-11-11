@@ -95,6 +95,11 @@ Adopted as method into first-party skills, with no code copied:
   interview method and "find facts yourself, ask only for decisions" rule in `grill-me`,
   plus the glossary/ADR discipline (`domain-modeling`, `grill-with-docs`) now expressed
   as `corpus/wiki/glossary.md` and the three-part decision test in `corpus-flow`.
+- **[fastify/demo](https://github.com/fastify/demo)** (MIT) and **Matteo Collina's
+  `fastify-best-practices`** in [mcollina/skills](https://github.com/mcollina/skills) (MIT) —
+  the app and server split, plugin order, feature folders, schemas on every route and the
+  production list behind `code-structure`; with mattpocock/skills' `setup-ts-deep-modules`
+  for its import boundaries. Pins and dates are in `skills/code-structure/references/research.md`.
 
 - **[samber/developer-relations-skills](https://github.com/samber/developer-relations-skills)**
   (`readme-optimization`, MIT), **noffle's *Art of README***,
