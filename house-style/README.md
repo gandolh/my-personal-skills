@@ -108,7 +108,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 3 | A Base UI import outside the `ui` folders (tests excepted) |
 | | 5 | A stylesheet other than the one, a CSS module, and the one without `@import "tailwindcss"` |
 | | 6 | An arbitrary colour in a class name: `bg-[#…]`, `text-[rgb(…)]`, `border-[hsl(…)]`, … |
-| | 9 | A `<X.Trigger>` whose first child is a component and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
+| | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
 | | 10 | A `<Select.Root>` without `items` (a warning) |
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |

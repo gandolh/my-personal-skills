@@ -75,8 +75,8 @@ const MALFORMED = [
   },
   {
     name: "a rule past the check's last",
-    text: exception({ rule: 14, reason: "x" }),
-    says: /exceptions\[0\]\.rule is a base-ui rule number, 1 to 13/,
+    text: exception({ rule: 18, reason: "x" }),
+    says: /exceptions\[0\]\.rule is a base-ui rule number, 1 to 17/,
   },
   {
     name: "a rule that isn't a number",
@@ -121,6 +121,16 @@ describe("a malformed conventions.json", () => {
     assert.equal(run.status, 2);
     assert.match(run.stderr, /scripts\/conventions\.json:4: exceptions\[1\] has no reason/);
     assert.ok(!run.stderr.includes("exceptions[0]"), run.stderr);
+  });
+
+  it("takes each check's last rule number, the edge of the refusal above", () => {
+    for (const [check, last] of Object.entries(CHECKS)) {
+      const text = JSON.stringify({
+        exceptions: [{ check, rule: last, path: "web/src", reason: "A review rule's record." }],
+      });
+      const run = runChecker("check-base-ui", [repo({ "conventions.json": text })]);
+      assert.equal(run.status, 0, `${check} ${last}: ${run.stdout}${run.stderr}`);
+    }
   });
 });
 

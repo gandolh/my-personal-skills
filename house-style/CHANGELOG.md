@@ -41,6 +41,12 @@ and the pins below in one go (the `house-style` skill has the steps).
   2, 3 and 6 as errors, 11 as a warning; 5 and 7 are the dependency-cruiser
   preset's). Both take `--warn-only`, print `file:line rule-N severity: message`,
   exit 1 on an error left and 2 when they can't check.
+- **The `base-ui` skill's numbers** (2026-11-11, brief 02): the skill has 17
+  rules, so a `conventions.json` exception may name base-ui rules 1 to 17
+  (14 to 17, like 4, 7, 8, 12 and 13, are review's, recorded rather than
+  checked). Rule 9 no longer warns when a trigger's first child is a part of
+  its own component, such as `<Select.Value>` in `<Select.Trigger>`: that is
+  the component's anatomy, not a wrapped control.
 - **`conventions.json`**, read by both checkers from the repo root, `scripts/`
   or `tools/`: the `web`, `server` and `shared` roots, the `ui` folders, the
   one `stylesheet`, and `exceptions`, each with its check, rule, path and a

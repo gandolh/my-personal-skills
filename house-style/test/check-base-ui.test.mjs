@@ -52,7 +52,7 @@ const CASES = [
   {
     rule: 9,
     area: "a warning",
-    fail: [{ file: "app/src/components/ui/rule-9.fail.tsx", count: 2, severity: "warning" }],
+    fail: [{ file: "app/src/components/ui/rule-9.fail.tsx", count: 3, severity: "warning" }],
     pass: ["app/src/components/ui/rule-9.pass.tsx"],
   },
   {
@@ -80,7 +80,7 @@ describe("check-base-ui, rule by rule", () => {
   it("exits 1, because errors are left", () => assert.equal(run.status, 1, run.stdout + run.stderr));
   it("prints each finding as file:line rule-N severity: message", () => {
     assert.ok(run.findings.length > 0);
-    assert.match(run.stdout, /^check-base-ui: 13 errors, 3 warnings \(/m);
+    assert.match(run.stdout, /^check-base-ui: 13 errors, 4 warnings \(/m);
   });
   checkCases({ it, root: ROOT, findings: run.findings, cases: CASES, support: SUPPORT });
 });
@@ -106,7 +106,7 @@ describe("check-base-ui's flags", () => {
 
   it("runs from the repo root when no root is given", () => {
     const run = runChecker("check-base-ui", [], { cwd: ROOT });
-    assert.equal(run.findings.length, 16, run.stdout);
+    assert.equal(run.findings.length, 17, run.stdout);
   });
 
   it("exits 2 on an unknown flag or a version that isn't exact", () => {
