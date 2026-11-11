@@ -47,6 +47,7 @@ const CASES = [
   { rule: "@typescript-eslint/ban-ts-comment", fail: "server/src/shapes/ts-comment.fail.ts", count: 2, pass: ["server/src/shapes/ts-comment.pass.ts"] },
   { rule: "no-warning-comments", fail: "server/src/shapes/warning-comments.fail.ts", count: 2, pass: ["server/src/shapes/warning-comments.pass.ts"] },
   { rule: "no-console", fail: "server/src/shapes/console.fail.ts", pass: ["server/src/cli.ts", "scripts/report.ts", "scripts/tool.mjs"] },
+  { rule: "no-undef", area: ".cjs files see CommonJS globals, other names stay undefined", fail: "scripts/undefined-global.fail.cjs", pass: ["scripts/commonjs.pass.cjs"] },
   { rule: "import-x/no-default-export", fail: "server/src/shapes/default-export.fail.ts", pass: ["vite.config.ts", "web/src/routes/home.tsx"] },
 ];
 

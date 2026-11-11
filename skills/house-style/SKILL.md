@@ -68,9 +68,10 @@ at it. A reviewer skips anything rules 1-19 already enforce.
 
 Escapes are rare and say why: `// eslint-disable-next-line <rule> -- <reason>`,
 or `// @ts-expect-error <reason>`. A tsconfig flag a repo can't take yet is
-turned off in its own tsconfig with a dated comment naming the brief that
-turns it on (imbatranimOS's NestJS backend keeps parameter properties and
-`emitDecoratorMetadata` this way).
+turned off in its own tsconfig with a dated comment that says what turns it
+on (never a brief number: the estate's corpus rules keep those out of code).
+imbatranimOS's NestJS backend keeps parameter properties and
+`emitDecoratorMetadata` this way.
 
 ## What an adopted repo has
 
@@ -91,7 +92,7 @@ turns it on (imbatranimOS's NestJS backend keeps parameter properties and
 | Script | What it runs |
 |---|---|
 | `check` | `typecheck`, `lint`, `format:check`, `check:conventions`, `test`. Run before every hand-back |
-| `check:fast` | `tsc -b` (incremental), then ESLint on the changed and untracked files, from a small Node script in `scripts/`. Never tests. Target 15 s, up to about 30 s |
+| `check:fast` | `npm run typecheck`, then ESLint on the changed and untracked files, from a small Node script in `scripts/` (`npm run typecheck && node scripts/check-fast.mjs`: `tsc -b` alone misses web type errors when the web project sits outside its graph). Never tests. Target 15 s, up to about 30 s |
 | `format`, `format:check` | `prettier --write .`, `prettier --check .` |
 | `check:conventions` | knip, `depcruise` on the source folders, then `node vendor/house-style/bin/check-base-ui.mjs` and `node vendor/house-style/bin/check-structure.mjs`, each `--warn-only` until the repo's own Base UI or server brief drops it. Roots come from `conventions.json` |
 | `house-style:sync` | `node vendor/house-style/bin/sync.mjs` |
@@ -126,7 +127,9 @@ the traps each step hit in the repo briefs.
    `format:check`, and commit that alone.
 4. **The reformat.** `npm run format`, committed alone as
    `style: format with Prettier`. Its acceptance is the esbuild bundle compare:
-   bundle every file before and after, and list and explain each difference.
+   bundle every file before and after (CSS through esbuild's `css` loader,
+   JSON compared parsed), and list and explain each difference. The expected
+   one is JSX text Prettier splits with `{" "}`, which renders the same.
    Then put the commit's full hash in `.git-blame-ignore-revs`, in its own
    commit. `git config blame.ignoreRevsFile .git-blame-ignore-revs` is an
    owner step.

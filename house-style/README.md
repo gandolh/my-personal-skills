@@ -200,6 +200,11 @@ and its paths are from the repo root wherever it sits.
    export default { ...preset, entry: ["scripts/*.ts"] };
    ```
 
+   In a repo with npm workspaces, the repo's own entries go under
+   `workspaces: { ".": { entry: [...] } }`: a top-level `entry` gives knip
+   6.44.2 a configuration hint there. A package folder that isn't a workspace
+   (a docs site with its own lockfile) goes in `ignore`.
+
    ```js
    // .dependency-cruiser.cjs
    module.exports = { extends: "./vendor/house-style/.dependency-cruiser.cjs" };
@@ -209,6 +214,11 @@ and its paths are from the repo root wherever it sits.
    // tsconfig.base.json
    { "extends": "./vendor/house-style/tsconfig.base.json", "compilerOptions": { "types": ["node"] } }
    ```
+
+   When a Dockerfile stage copies only the repo's `tsconfig.base.json`,
+   extending the vendored file breaks the image build, so that repo keeps the
+   house flags in its own base file (see the Docker note in the `house-style`
+   skill's [adoption reference](../skills/house-style/references/adoption.md)).
 
 3. `.prettierignore` lists `*.md` and `vendor/`. The ESLint config and the
    knip preset ignore `vendor/` already.
@@ -229,10 +239,10 @@ globs from the repo root.
 | `root` | the working directory | The repo root, for typed linting and the Tailwind entry |
 | `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
 | `server` | none | Node folders; no rule is scoped to them in 1.0.0 |
-| `scripts` | `["scripts"]` | Folders of scripts, where `console` and `process.env` are allowed |
+| `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say), where `console` and `process.env` are allowed |
 | `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` |
-| `console` | none | CLI entry files, where `console` is allowed. They read the environment through `config.ts`, like the rest of the app |
+| `console` | none | CLI entry files inside the app (a server entry, a seed command), where `console` is allowed. They read the environment through `config.ts`, like the rest of the app |
 | `tailwind` | none | `{ css, order }`: the CSS entry, and whether the class order is enforced yet |
 | `vitest` | `true` | `false` for a repo whose tests run on `node:test` |
 | `typed` | `projectService` | `{ allowDefaultProject }`, or `{ project: true }` where `project` measures faster |
@@ -245,10 +255,12 @@ options rather than merging them, so a repo that sets its own
 `no-restricted-syntax` spreads the exported `restrictedSyntax` first. A repo
 that starts a rule as a warning (`n/no-process-env` before its server moves
 every read into `config.ts`) sets it in its own block, with a dated comment
-naming the brief that turns it back.
+that says what turns it back, never a brief number: `// A warning for now
+(2026-11-11): these files still read the environment themselves. When the
+server takes its settings from config.ts, this goes.`
 
 JavaScript files and `*.config.*` files are linted without type information,
-and see Node's globals.
+and see Node's globals; `.cjs` files see CommonJS's too (`module`, `require`).
 
 ## The devDependencies a repo pins
 

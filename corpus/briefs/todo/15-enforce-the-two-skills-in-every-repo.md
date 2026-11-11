@@ -42,8 +42,9 @@ Decided 2026-11-10:
   until its own brief. Matches the skill's `references/adoption.md`.)*
 - **dependency-cruiser is in `check:conventions` from day one** (2026-11-11,
   the controller's call): a rule a repo can't pass yet is lowered to `warn`
-  by name in its `.dependency-cruiser.cjs`, with a dated comment naming the
-  server brief that turns it back on. Repo briefs that stage dependency-cruiser
+  by name in its `.dependency-cruiser.cjs`, with a dated comment saying what removes it
+  (never a brief number; changed 2026-11-11, the estate's corpus rules keep
+  them out of code comments). The server brief turns it back on. Repo briefs that stage dependency-cruiser
   with the server brief (wicket 13, atrium 02) keep only the rule-lowering
   part of that staging.
 

@@ -66,7 +66,10 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 - **The Docker image.** The copy needs no git in the build. But a Dockerfile
   that copies only some files before `tsc` must also copy
   `vendor/house-style/tsconfig.base.json` once the repo's base extends it
-  (one more `COPY` line), or keep the flags in the repo's own base.
+  (one more `COPY` line), or keep the flags in the repo's own base. When a
+  stage copies only the repo's `tsconfig.base.json`, extending the vendored
+  file breaks the image build, so that repo keeps the house flags in its own
+  base file.
 - A Docusaurus workspace stays out of the harness: it breaks the exact-pin
   rule (`^` ranges, `~` TypeScript) and has its own build.
 
@@ -99,10 +102,13 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
 - The outliers move to double quotes and semicolons in this same commit:
   Newspapper, ro-housing, sports-app, imbatranim-apps, just-a-bot, Churchix,
   the todo app and imbatranimOS's web packages.
-- **Acceptance: the bundle compare.** Minify every source file with esbuild
-  before and after the reformat and compare the output; Vite repos already
-  have esbuild. List each file that differs with its reason (4 of 1,476 in
-  game-engine: two generated glyph files, a docs component and a test).
+- **Acceptance: the bundle compare.** Bundle every file with esbuild before
+  and after the reformat and compare the output; Vite repos already have
+  esbuild. CSS goes through esbuild's `css` loader and JSON is compared
+  parsed. `git diff -w` is no substitute: rewrapped lines show up under it.
+  List every difference with its reason (4 of 1,476 in game-engine: two
+  generated glyph files, a docs component and a test). The expected one is JSX
+  text that Prettier splits with `{" "}`, which renders the same.
 
   ```js
   // node minify-all.mjs <out-dir>, before and after; then diff -r the two
@@ -141,7 +147,7 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
   saying why.
 - A missing `strict` is added (comercial-website's frontend: 0 errors).
 - Where `noUncheckedIndexedAccess` is off, it stays off with a dated comment
-  naming the later brief, which records its count. With it off,
+  saying what turns it on later and where its count is recorded. With it off,
   `no-unnecessary-type-assertion` flags most `!` (608 in atrium).
 - `exactOptionalPropertyTypes` is not added. Count it for the later brief.
 - **NestJS carve-out.** imbatranimOS's backend needs parameter properties and
@@ -195,7 +201,15 @@ paths from the repo root; the rest are globs.
 
 Repo-specific rules go after the house config (Postern's
 `no-restricted-imports` for its `jmap` boundary), and so does a rule a repo
-starts as a warning, with a dated comment naming the brief that turns it back.
+starts as a warning, with a dated comment that says what turns it back (never
+a brief number), for example `// A warning for now (2026-11-11): these files
+still read the environment themselves. When the server takes its settings from
+config.ts, this goes.`
+
+A folder of scripts run by hand that isn't `scripts/` (docs capture helpers,
+say) goes in the `scripts` option: it may print and read the environment. A CLI
+inside the app (a server entry, a seed command) goes in `console`: it may
+print, and its environment reads move into `config.ts`.
 Typed lint goes through `projectService`; fall back to `project: true` only
 for Astro or where it measures faster.
 
@@ -248,7 +262,7 @@ Traps the repo briefs hit:
 
 ```json
 "check": "npm run typecheck && npm run lint && npm run format:check && npm run check:conventions && npm test",
-"check:fast": "tsc -b && node scripts/check-fast.mjs",
+"check:fast": "npm run typecheck && node scripts/check-fast.mjs",
 "check:conventions": "knip && depcruise server/src web/src shared/src && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
 ```
 
@@ -266,6 +280,11 @@ checkers; they say there is nothing to check.
   export default { ...preset, entry: ["scripts/*.ts"] };
   ```
 
+  In a repo with npm workspaces, the repo's own entries go under
+  `workspaces: { ".": { entry: ["scripts/*.ts"] } }`: a top-level `entry` gives
+  knip 6.44.2 a configuration hint there. A package folder that isn't a
+  workspace (a docs site with its own lockfile) goes in `ignore`.
+
   The preset ignores `vendor/`, fails on unused files and dependencies, and
   warns on unused exports and types. knip follows the root ESLint config into
   the copy, so the plugins count as used.
@@ -280,10 +299,17 @@ checkers; they say there is nothing to check.
   ```
 
   A rule that fails before the repo's server brief is lowered to a warning by
-  its name, with a dated comment naming the brief that raises it again, the
-  way ESLint's `n/no-process-env` is: `forbidden: [{ name: "no-circular",
-  severity: "warn" }]`. Warnings don't fail the run. Wicket had no finding on
-  2026-11-11.
+  its name, with a dated comment that says what raises it again (never a brief
+  number), the way ESLint's `n/no-process-env` is: `forbidden: [{ name:
+  "no-circular", severity: "warn" }]`. Warnings don't fail the run. Wicket had
+  no finding on 2026-11-11.
+  A route file that imports a type from `app.ts` (`import type {
+  FeatureContext } from "../app.js"`, Almanac's shape today) is a `no-circular`
+  error under the preset. The fix belongs to the repo's server brief, which
+  gives each feature its own options type (the code-structure skill's
+  `references/migrating-a-server.md`, step 3). Until that brief, the harness
+  brief lowers `no-circular` to `warn` by name in the repo's
+  `.dependency-cruiser.cjs`, with a dated comment saying what removes it.
 - **The checkers** read the repo's roots from `conventions.json`. The repo
   briefs put it in `scripts/` (the root and `tools/` work too, one of the
   three), and its paths are from the repo root wherever it sits. A repo's first
