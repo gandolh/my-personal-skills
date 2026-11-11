@@ -83,6 +83,8 @@ turns it on (imbatranimOS's NestJS backend keeps parameter properties and
   has no `extends`), `.dependency-cruiser.cjs` extending its preset, and a
   `.prettierignore` listing `*.md` and `vendor/house-style/`. A Tailwind
   stylesheet has `@source not` for `vendor/`.
+- `scripts/conventions.json`: the source folders the two checkers walk, and
+  any finding the repo accepts, each with its reason.
 - `.git-blame-ignore-revs` with the one reformat commit.
 - These scripts in the root `package.json`:
 
@@ -91,7 +93,7 @@ turns it on (imbatranimOS's NestJS backend keeps parameter properties and
 | `check` | `typecheck`, `lint`, `format:check`, `check:conventions`, `test`. Run before every hand-back |
 | `check:fast` | `tsc -b` (incremental), then ESLint on the changed and untracked files, from a small Node script in `scripts/`. Never tests. Target 15 s, up to about 30 s |
 | `format`, `format:check` | `prettier --write .`, `prettier --check .` |
-| `check:conventions` | knip, then `node vendor/house-style/bin/check-base-ui.mjs` and `node vendor/house-style/bin/check-structure.mjs`, `--warn-only` until the repo's own Tailwind or server brief drops it. Roots come from `conventions.json` |
+| `check:conventions` | knip, `depcruise` on the source folders, then `node vendor/house-style/bin/check-base-ui.mjs` and `node vendor/house-style/bin/check-structure.mjs`, each `--warn-only` until the repo's own Base UI or server brief drops it. Roots come from `conventions.json` |
 | `house-style:sync` | `node vendor/house-style/bin/sync.mjs` |
 | `test:clean` | Only where the tests would read a production `.env`: the tests, in a copy without `.env*`. `check` calls it instead of `test` |
 

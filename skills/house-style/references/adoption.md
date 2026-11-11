@@ -55,7 +55,7 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
   | `typescript-eslint` | `8.72.2` |
 
   The ESLint config imports every plugin, so a repo without React or Tailwind
-  pins them too. dependency-cruiser can wait for the repo's server brief.
+  pins them too, and dependency-cruiser, which `check:conventions` runs.
 - **Node.** The tools want `^22.13.0 || ^24.0.0 || >=26.0.0`: ESLint 10 skips
   Node 23 and dependency-cruiser 18 skips 25. The sync alone runs on 22.6.
 - **TypeScript first.** `erasableSyntaxOnly` needs TypeScript 5.8, and
@@ -249,11 +249,13 @@ Traps the repo briefs hit:
 ```json
 "check": "npm run typecheck && npm run lint && npm run format:check && npm run check:conventions && npm test",
 "check:fast": "tsc -b && node scripts/check-fast.mjs",
-"check:conventions": "knip && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
+"check:conventions": "knip && depcruise server/src web/src shared/src && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
 ```
 
-The two checkers ship in house-style's next minor version. Until a repo syncs
-it, `check:conventions` is `knip` alone.
+`check:conventions` runs four tools, each failing on its own errors: knip,
+dependency-cruiser on the repo's source folders, and the two checkers that ship
+in house-style 1.0.0. A repo without a web app or a server still runs both
+checkers; they say there is nothing to check.
 
 - **knip** has no `extends`, so `knip.config.js` spreads the preset and adds
   the repo's entries:
@@ -267,10 +269,50 @@ it, `check:conventions` is `knip` alone.
   The preset ignores `vendor/`, fails on unused files and dependencies, and
   warns on unused exports and types. knip follows the root ESLint config into
   the copy, so the plugins count as used.
-- **dependency-cruiser** joins with the repo's server brief:
-  `module.exports = { extends: "./vendor/house-style/.dependency-cruiser.cjs" };`.
-  The preset forbids cycles, unresolvable imports, a feature reached past its
-  `index`, and Fastify in `lib/`.
+- **dependency-cruiser** runs from the harness on. The preset forbids cycles,
+  unresolvable imports, a feature reached past its `index`, and Fastify in
+  `lib/`, and the repo's `.dependency-cruiser.cjs` names its tsconfig so `.js`
+  suffixes resolve to `.ts` files:
+
+  ```js
+  module.exports = {
+    extends: "./vendor/house-style/.dependency-cruiser.cjs",
+    options: { tsConfig: { fileName: "tsconfig.json" } },
+  };
+  ```
+
+  A rule that fails before the repo's server brief is lowered to a warning by
+  its name, with a dated comment naming the brief that raises it again, the
+  way ESLint's `n/no-process-env` is: `forbidden: [{ name: "no-circular",
+  severity: "warn" }]`. Warnings don't fail the run. Wicket had no finding on
+  2026-11-11.
+- **The checkers** read the repo's roots from `conventions.json`. The repo
+  briefs put it in `scripts/` (the root and `tools/` work too, one of the
+  three), and its paths are from the repo root wherever it sits. A repo's first
+  one names its source folders and nothing else; exceptions come with the
+  briefs that decide them, each with its reason:
+
+  ```json
+  {
+    "$schema": "../vendor/house-style/conventions.schema.json",
+    "web": ["web/src"],
+    "server": ["server/src"],
+    "shared": ["shared/src"]
+  }
+  ```
+
+  Roots are source folders, as in `eslint.config.js`: `apps/web/src`, not
+  `apps/web`. A root may use `*` within a folder name (`apps/*/src`), and `[]`
+  means none. A web root's stylesheet is `styles/index.css` unless
+  `"stylesheet"` names the one it keeps (`"styles.css"`), and Base UI may be
+  imported under `**/components/ui` and `**/features/*/ui` unless `"ui"` says
+  otherwise. The house-style README has the format, the exceptions and the
+  rules each checker reports.
+- **`--warn-only`** stays on a checker until the repo brief that fixes its
+  findings drops it: `check-base-ui`'s with the repo's Base UI or Tailwind
+  brief, `check-structure`'s with its server brief. A checker that already
+  reports nothing runs strict from the start (ro-housing's `check-base-ui`). A
+  malformed `conventions.json` fails the run even with `--warn-only`.
 
 `scripts/check-fast.mjs` lints the files changed against `HEAD` and the
 untracked ones, and nothing else:
