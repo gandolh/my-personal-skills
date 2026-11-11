@@ -119,13 +119,14 @@ describe(".dependency-cruiser.cjs", () => {
     "src/lib/server.ts": 'import fastify from "fastify";\nexport const f = fastify;\n',
     "src/lib/pure.ts": 'import { a } from "../features/a/index.js";\nexport const p = a;\n',
     "src/virtual.ts": 'import routes from "virtual:routes";\nexport const r = routes;\n',
+    "src/content.ts": 'import { getCollection } from "astro:content";\nexport const c = getCollection;\n',
     "src/routes/home.ts": 'import type { Route } from "./+types/home";\nexport type Props = Route.ComponentProps;\n',
     "src/missing.ts": 'import { gone } from "./gone.js";\nexport const m = gone;\n',
     "vendor/house-style/cycle-a.js": 'import "./cycle-b.js";\n',
     "vendor/house-style/cycle-b.js": 'import "./cycle-a.js";\n',
   });
 
-  it("reports cycles, unresolvable imports (but not a Vite `virtual:` module or React Router's `./+types/` route types), a feature's insides and Fastify in lib/, and nothing else", () => {
+  it("reports cycles, unresolvable imports (but not a Vite `virtual:` module, an Astro `astro:` module or React Router's `./+types/` route types), a feature's insides and Fastify in lib/, and nothing else", () => {
     const run = spawnSync(process.execPath, [bin("depcruise"), "src", "vendor", "--output-type", "json"], {
       cwd: root,
       encoding: "utf8",
