@@ -77,6 +77,11 @@ npm run house-style:sync -- --check                     # compare with the heade
   differs from the table below, in the target folder's `package.json`, each
   workspace, and (without workspaces) each first-level subfolder's
   `package.json`, so a project in a subfolder shows its pin drift too.
+- What it can't see: a hand-kept base tsconfig (the Docker and Bundler cases
+  below), so `--check` doesn't notice a base-flag change, and the CHANGELOG
+  names every one. It reports a `^` range in a workspace's `package.json` but
+  can't fix it, so the adopter edits that by hand. It reports a missing
+  `save-exact=true` in `.npmrc` and doesn't write it.
 - Plain Node (22.6 or later) and git; no dependencies.
 
 The first time, the copy doesn't exist yet: run the library checkout's
@@ -111,7 +116,17 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 - Warnings never fail the run. `--warn-only` shows every error as a warning, so
   a repo runs a checker from its harness brief on and drops the flag once its
   Base UI or server brief is done.
-- `repo-root` defaults to the working directory.
+- `repo-root` defaults to the working directory. It is the repo's root, never a
+  source folder: `check-structure.mjs jmap/src` treats `jmap/src` as the repo
+  and checks nothing.
+- A default root that doesn't exist is skipped (a root the file names that
+  matches nothing is an error), so a repo with no server runs the checkers as
+  they are. A Node app with no HTTP server (a gateway bot, a
+  protocol library) lists its folders under `shared`, where rules 3 and 11
+  apply (rules 1, 2 and 6 are for `server` roots). Postern, a webmail client
+  with a protocol library and no server, adds `"shared": ["jmap/src"]` to its
+  `conventions.json` and `&& node vendor/house-style/bin/check-structure.mjs`
+  to `check:conventions`. There is no `node` root kind.
 
 | Checker | Rule | What it reports |
 |---|---|---|
@@ -125,7 +140,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
 | | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
-| | 3 | `process.env` outside `config.ts`, and any `NODE_ENV`, in server and shared roots (tests excepted) |
+| | 3 | `process.env` outside the env reader (`config.ts`, or the files `"env"` names in `conventions.json`), and any `NODE_ENV`, in server and shared roots (tests excepted) |
 | | 6 | Request input parsed by hand (`schema.parse(request.body)`, a helper given `req.query`), and a route registered with no `schema` (a heuristic) |
 | | 11 | A file over 400 lines, in any root, test files excepted (a warning) |
 
@@ -136,10 +151,10 @@ Rules 9 and 10 see the parts by their own names, `<X.Trigger>` and
 `<Select.Root>` (under whatever name the file imports Select by). A wrapper
 that re-exports a part under a new name (`export const DialogTrigger =
 Dialog.Trigger`) hides its call sites from them, so review covers those. A
-test is `*.test.*`, `*.spec.*`, or a file under a `test`, `tests`,
-`__tests__`, `testing` or `e2e` folder. Comments, strings and regexes are
-masked before the source rules look, so a rule's text in a comment isn't a
-finding.
+test is `*.test.*`, `*.spec.*`, jest's `*-spec.*` (NestJS's `app.e2e-spec.ts`),
+or a file under a `test`, `tests`, `__tests__`, `testing` or `e2e` folder.
+Comments, strings and regexes are masked before the source rules look, so a
+rule's text in a comment isn't a finding.
 
 ## conventions.json
 
@@ -170,6 +185,7 @@ and its paths are from the repo root wherever it sits.
 | `web`, `server`, `shared` | `web/src`, `server/src`, `shared/src`, where they exist | Source folders, as in `eslint.config.js` (`web/src`, not `web`). `*` matches within a folder name (`apps/*/src`); a root that matches nothing is an error. `[]` means none |
 | `ui` | `["**/components/ui", "**/features/*/ui"]` | Inside each web root, where Base UI may be imported. `*` and `**` |
 | `stylesheet` | `styles/index.css` | Inside each web root, the one stylesheet (`styles.css` in a repo that keeps that name) |
+| `env` | any `config.{ts,js,mts,cts,mjs,cjs}` | Globs from the repo root of the files `check-structure`'s rule 3 lets read `process.env`. It replaces the default, as ESLint's `env` option does, and `NODE_ENV` stays a finding everywhere. Only `*` and `**` are globs (no braces, `?` or `[]`), and a plain path also covers what is under it, so an ESLint `env` list doesn't always copy over verbatim. Keep the two lists the same |
 | `exceptions` | none | Findings the repo accepts: `check` (`base-ui`, `structure`, or `house-style` for a lint rule's record), `rule` (its number in that skill), `path` (a file or folder; `*` and `**`), an optional `match` (text the finding's line or message contains, to accept one finding of several in a file), and a `reason` |
 
 - An exception without a `reason`, an unknown key, a rule number past the
@@ -179,6 +195,13 @@ and its paths are from the repo root wherever it sits.
   that holds data or a test helper's name, so one that covers no finding is
   fine. One whose `path` names nothing in the repo is a warning.
 - A repo without the file gets a message and the default roots that exist.
+- With `env` set, rule 3's message reads "outside the env reader (<globs>)",
+  so an exception whose `match` says "outside config.ts" stops matching.
+  Both checkers exit 2 on a malformed `env`.
+- No checker reads a tsconfig's `module` setting, so a choice such as
+  `module: bundler` has no rule number to except. Write it in the repo's
+  decisions page, not in `conventions.json`. (A `check: "house-style"`
+  exception for it is valid, but nothing reads it back.)
 - [conventions.schema.json](conventions.schema.json) describes the same format
   for editors; a test keeps it in step with `bin/conventions.mjs`.
 
@@ -201,9 +224,15 @@ and its paths are from the repo root wherever it sits.
    ```
 
    ```js
-   // prettier.config.js
+   // prettier.config.mjs (`.js` in a root with "type": "module")
    export { default } from "./vendor/house-style/prettier.config.js";
    ```
+
+   In a root without `"type": "module"`, a `prettier.config.js` with this
+   export warns `MODULE_TYPELESS_PACKAGE_JSON` on every run, so it is `.mjs`
+   there. The formatter hook walks up from the saved file to the nearest
+   Prettier config, which may be the root's, and runs Prettier from that
+   folder.
 
    ```js
    // knip.config.js: knip has no `extends`, so the repo spreads the preset.
@@ -221,8 +250,23 @@ and its paths are from the repo root wherever it sits.
    `entry` as soon as the repo sets `workspaces`, and a repo that sets its own
    `entry` replaces it anyway. So the repo lists `scripts/*.{js,mjs,ts}` itself
    (as above), or `scripts/check-fast.mjs` is reported as an unused file.
-   knip reads `knip.config.js`, not `.mjs`, in a root without
-   `"type": "module"` (ESLint and Prettier configs can be `.mjs` there). A
+   In a root without `"type": "module"`, knip reads `knip.config.js` and
+   ignores `.mjs` and `.cjs` (ESLint and Prettier configs can be `.mjs` there),
+   so write the file as CommonJS under the `.js` name:
+
+   ```js
+   // knip.config.js, in a root without "type": "module"
+   const preset = require("./vendor/house-style/knip.json");
+
+   module.exports = { ...preset, entry: ["scripts/*.{js,mjs,ts}"] };
+   ```
+
+   A package folder that isn't a workspace, and a Docusaurus workspace the
+   harness leaves out, go in `ignoreWorkspaces` (`ignoreWorkspaces:
+   ["sites/*/docs-site"]`). A project below the root whose scripts call
+   `eslint`, `prettier` or `knip` needs `ignoreBinaries` for the ones it
+   calls (with no such script knip says to remove them), and its own knip
+   config spreads the preset so `**/vendor/**` stays in `ignore`. A
    dependency declared before anything uses it, or one a group build resolves
    from its own folder, goes in that workspace's `ignoreDependencies`.
    After a knip cleanup, run `tsc`: `noUnusedLocals` catches the types knip's
@@ -238,18 +282,27 @@ and its paths are from the repo root wherever it sits.
    { "extends": "./vendor/house-style/tsconfig.base.json", "compilerOptions": { "types": ["node"] } }
    ```
 
-   A repo keeps its own base file instead of extending the vendored one in two
-   cases: its Dockerfile copies only that file (extending the vendored file
-   breaks the image build), or it can't take `noUncheckedIndexedAccess` yet,
-   which the house base turns on. See the `house-style` skill's
+   A repo keeps its own base file instead of extending the vendored one in
+   three cases: its Dockerfile copies only that file (extending the vendored
+   file breaks the image build), it can't take `noUncheckedIndexedAccess` yet,
+   which the house base turns on, or it is a Bundler or extensionless repo
+   (the house base is `NodeNext`, which wants real suffixes on relative
+   imports). `sync --check` can't see drift in such a file, so the CHANGELOG
+   names every flag change in the base. See the `house-style` skill's
    [adoption reference](../skills/house-style/references/adoption.md).
 
-3. `.prettierignore` lists `*.md` and `vendor/`. The ESLint config and the
-   knip preset ignore `vendor/` already. Anchor root folders (`/data/`,
+3. `.prettierignore` lists `*.md` and `vendor/`, and `.claude/settings.local.json`
+   (Prettier doesn't read `core.excludesFile`, so a gitignored file still gets
+   checked). The ESLint config and the knip preset ignore `vendor/` already. Anchor root folders (`/data/`,
    `/uploads/`, `/output/`): an unanchored `uploads/` also hides
    `src/uploads/`.
 4. A Tailwind repo adds `@source not` for `vendor/` to its stylesheet:
    Tailwind 4 scans every committed file for class names.
+
+Two orders matter. The knip preset's config goes in before the first
+measurement, or the count is of unconfigured knip. The dependency-cruiser
+preset and `check:conventions` land in one commit, because knip reports
+`dependency-cruiser` as an unused devDependency until a script runs it.
 
 The import is the named `houseStyle`. The file's default export is a config
 that ignores everything, because ESLint 10 loads the nearest config for each
@@ -265,18 +318,33 @@ globs from the repo root.
 | `root` | the working directory | The repo root, for typed linting and the Tailwind entry |
 | `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
 | `server` | none | Node folders; no rule is scoped to them yet |
-| `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say): they print and read the environment |
-| `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed. The default reaches Playwright specs too: a repo with Playwright passes `tests` without its e2e folder, or turns the vitest rules off for it in its own block |
-| `playwright` | none | Globs of Playwright specs (`["web/e2e/**"]`): they get the test relaxations, and the vitest block ignores them |
+| `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say): they print and read the environment. Folder paths, or folder globs (`games/*/scripts`), not file globs: each becomes `<folder>/**` |
+| `tests` | `**/*.test.*`, `**/*.spec.*` | The files the vitest rules apply to. Write the globs with extensions (`**/*.test.{ts,tsx}`): `**/*.test.*` also matches `tsconfig.test.json`, which ESLint then parses as JavaScript. The test relaxations (below) reach these and more |
+| `playwright` | `[]` | Globs of Playwright specs (`["web/e2e/**"]`): they get the test relaxations, and the vitest block ignores them. A repo that doesn't pass it sees no change |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` and `*.d.ts` (an ambient `declare module` has no other form) |
 | `console` | none | App files allowed to print: a CLI entry, or a module that logs before the logger exists. Their `process.env` reads are still errors |
-| `env` | `["**/config.ts"]` | Where `n/no-process-env` is off: the repo's env reader. A repo whose reader is `config/env.ts` passes `["server/src/config/env.ts"]` instead of writing its own block. Tests, scripts and `*.config.*` stay exempt |
+| `env` | `["**/config.ts"]` | Where `n/no-process-env` is off: the repo's env reader. A repo whose reader is `config/env.ts` passes `["server/src/config/env.ts"]` instead of writing its own block. A CLI entry that hands its environment to child commands goes here too. Tests, scripts and `*.config.*` stay exempt. Mirror the list in `conventions.json`'s `env` key |
 | `assertFunctionNames` | `["expect", "expectTypeOf"]` | The names `vitest/expect-expect` counts as assertions. A repo adds its helpers (`expectError`, `expectPoint`) |
 | `tailwind` | none | `{ css, order }`: the CSS entry, and whether the class order is enforced yet |
 | `vitest` | `true` | `false` for a repo whose tests run on `node:test` |
-| `typed` | `projectService` | `{ allowDefaultProject }`. `projectService` is the one that works with a Vite solution `tsconfig.json` (`files: []` plus references); `project: true` fails there. List tsconfigs under `typed.project` only when tests sit in a tsconfig `projectService` can't find (`tsconfig.tests.json`) |
+| `typed` | `projectService` | `{ allowDefaultProject }`. `projectService` is the one that works with a Vite solution `tsconfig.json` (`files: []` plus references); `project: true` fails there. List tsconfigs under `typed.project` only when tests sit in a tsconfig `projectService` can't find: a `tsconfig.test.json` (or `tsconfig.tests.json`) beside a `tsconfig.json` that excludes the tests. Then list both, the main one too |
 | `untyped` | none | TypeScript files no tsconfig covers, linted without types |
 | `ignores` | vendor, dist, coverage | More folders ESLint skips |
+
+**Two widths of a test file.** The test relaxations (`house-style/tests`: `!`
+is a warning, `n/no-process-env` and `no-console` are off) reach everything the
+checkers count as a test or a test helper: `*.test.*`, `*.spec.*`, jest's
+`*-spec.*`, and every file under a `test`, `tests`, `__tests__`, `testing` or
+`e2e` folder, plus the `tests` and `playwright` options. The vitest block
+applies to `tests` alone, minus `playwright`: a helper in a test folder isn't a
+test file, and a Playwright spec isn't a vitest file. A test keeps the two
+definitions in step. A repo whose jest specs sit in `apps/backend/test/` needs
+no `tests` entry for the relaxations, and an entry would also put the vitest
+rules on those specs.
+
+An empty `files` list drops its block: `scripts: []` leaves out the scripts
+block, `tests: []` the vitest block, and the console block stays only when
+`console` names files.
 
 An unknown option is an error, so a typo can't switch a rule off. Rules of the
 repo's own go after the house config in its array. ESLint replaces a rule's
@@ -301,6 +369,25 @@ Notes that come with the rules:
 - `vitest/no-disabled-tests` warns on `skipIf`-style guards, and that is
   expected.
 - `vitest/valid-title` flags a variable title; a template literal clears it.
+- `vitest/no-standalone-expect` counts `beforeAll`, `beforeEach`, `afterAll`
+  and `afterEach` as test blocks, so an `expect` in a hook is fine, and so is
+  one in a plain function or an arrow helper. An `expect` in a class method is
+  still flagged: write an assertion helper as a plain function. After syncing
+  1.2.0, delete every `vitest/no-standalone-expect` disable comment ESLint
+  reports as unused.
+- `valid-expect` and `no-unnecessary-type-assertion` have autofixes that
+  break code; run `tsc` after any `eslint --fix` (the
+  [adoption reference](../skills/house-style/references/adoption.md) lists how).
+- A `/* global */` comment in an `.mjs` file hits `no-redeclare`: the house
+  gives `.mjs` files Node's globals, so delete the comment.
+- `res.json() as T`, where `json` is generic (Fastify's `inject()` response),
+  is flagged by `no-unnecessary-type-assertion` ("The type arguments for this
+  generic call may be inferred from the assertion"). It has no autofix: write
+  `res.json<T>()`.
+- ESLint 10's recommended set adds `no-useless-assignment` (a value no later
+  statement reads: drop the initial value, `let n: number;`, when every branch
+  assigns) and `preserve-caught-error` (an error thrown inside a `catch` takes
+  the caught one as its cause: `new Error("bad json", { cause: error })`).
 - `react-hooks` 7.1.1's recommended set includes `refs`,
   `set-state-in-effect` and `immutability`. Lowering them means naming each.
 - `@typescript-eslint/no-import-type-side-effects` is on beside
@@ -323,7 +410,21 @@ Notes that come with the rules:
   `name` merges with the preset's rule. That is how a rule is lowered to
   `warn` (`{ name: "no-circular", severity: "warn" }`) or given an exempt path
   (`{ name: "no-circular", to: { circular: true, pathNot: "^src/legacy/" } }`).
-  `not-to-unresolvable` allows `virtual:` module ids (Vite virtual modules).
+  `not-to-unresolvable` allows `virtual:` module ids (Vite virtual modules)
+  and React Router's generated `./+types/<route>` imports.
+- A repo's own `options.exclude` **replaces** the preset's
+  `(^|/)(vendor|dist|coverage)/`, so a repo that adds a pattern repeats that
+  one. In a repo with several projects, `options.tsConfig` points at the
+  project with the path aliases. `lib-without-fastify` counts a type-only
+  `import type` from Fastify on purpose: a type is still a coupling. 18.7.2
+  pins `semver` 7.8.6 and `acorn` 8.19.0 exactly, and npm can hoist those over
+  an app's runtime copies: read the lockfile diff after the install.
+
+Per-folder changes (`no-console` allowing `warn` and `error` in a client,
+`n/no-process-env` off in one folder, `recommendedTypeChecked` for a NestJS
+folder), `eslint-plugin-react-refresh` and an Astro repo's whole setup go in
+the repo's own blocks after `houseStyle()`: the `house-style` skill's
+[recipes](../skills/house-style/references/recipes.md) give each one, run once.
 
 JavaScript files and `*.config.*` files are linted without type information,
 and see Node's globals; `.cjs` files see CommonJS's too (`module`, `require`).
@@ -354,6 +455,9 @@ reads; the tests run on the same versions.
 - `@vitest/eslint-plugin` 1.6.28 wants TypeScript 6 as an optional peer, so
   npm refuses it next to TypeScript 5.x: bump TypeScript first.
 - `typescript-eslint` 8.72.2 supports TypeScript below 6.1.
+- The pins cost an image where a Docker image keeps devDependencies: just-a-bot's
+  `node_modules` went from 87 to 197 MB. Install with `npm ci --omit=dev` in
+  the image's runtime stage.
 - The ESLint config imports every plugin, so a repo without React or Tailwind
   pins them too. `eslint-plugin-better-tailwindcss` brings `tailwindcss` as a
   peer; a Tailwind repo pins its own version.

@@ -18,7 +18,8 @@ It has two layers:
   the deploy. `npm run check:fast` is its fast subset.
 - **The Claude Code layer.** This plugin's hooks format each saved file and run
   `check:fast` before an agent can end its turn. `.claude/rules/web.md` and
-  `server.md` carry the area rules, and a short root `CLAUDE.md` names the
+  `server.md` carry the area rules (the names are examples: a repo names its
+  rules files after its own folders), and a short root `CLAUDE.md` names the
   commands.
 
 The configs live in the library's `house-style/` folder, with its own version
@@ -48,12 +49,12 @@ rule's entry in the shipped config carries its reason as a comment.
 | 11 | No non-null `!` in source: narrow with a guard. Tests may use it | `!` is an unchecked claim; a guard is a checked one | `@typescript-eslint/no-non-null-assertion` (warning in tests) |
 | 12 | No `@ts-ignore`; `@ts-expect-error` only, with its reason | A suppression must fail once the error is gone, and say why | `@typescript-eslint/ban-ts-comment` |
 | 13 | No `TODO` or `FIXME` comments | Todos live in `corpus/todos/`, where someone reads them | `no-warning-comments` |
-| 14 | No `console` outside scripts and CLIs | Services log through their logger | `no-console` |
-| 15 | App code reads `process.env` only in its env reader (`config.ts`, or the files the `env` option names). Tests, tool configs (`*.config.*`) and scripts aren't app code and may read it. A file allowed to print (a server entry, a seed CLI inside the app) still reads it through the reader | One place says what the app needs and fails early | `n/no-process-env` (off in tests, `*.config.*`, `scripts` and the `env` files; on in the `console` globs) |
+| 14 | No `console` outside scripts and CLIs. Tests stub and assert on it, so they may | Services log through their logger | `no-console` (off in tests, `scripts` and the `console` files) |
+| 15 | App code reads `process.env` only in its env reader (`config.ts`, or the files the `env` option and `conventions.json`'s `env` key name, kept the same). Tests, tool configs (`*.config.*`) and scripts aren't app code and may read it. A file allowed to print (a server entry, a seed CLI inside the app) still reads it through the reader | One place says what the app needs and fails early | `n/no-process-env` (off in tests, `*.config.*`, `scripts` and the `env` files; on in the `console` globs) |
 | 16 | Named exports. A default export only where a framework or a runtime contract needs one (configs, route modules, scenes read as `mod.default`) | Names survive renames and search; imports agree | `import-x/no-default-export` |
 | 17 | React follows the rules of hooks and the compiler rules | Mirrored state and impure renders are bugs the type checker can't see | `react-hooks` `recommended` (on `web` only) |
 | 18 | Tailwind classes exist in the theme and aren't deprecated; class order is consistent once a repo has migrated | A typo'd class renders nothing and fails nowhere else | `better-tailwindcss/no-unknown-classes`, `better-tailwindcss/no-deprecated-classes`, `better-tailwindcss/enforce-consistent-class-order` (with `tailwind.order`) |
-| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine, and so is an `expect` inside a `catch` | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`), `vitest/expect-expect` (helpers named in `assertFunctionNames`), without `vitest/no-conditional-expect` |
+| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine, and so is an `expect` inside a `catch` or a hook | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`), `vitest/expect-expect` (helpers named in `assertFunctionNames`), `vitest/no-standalone-expect` (hooks count as test blocks; an assertion helper is a plain function, not a class method), without `vitest/no-conditional-expect` |
 | 20 | Stores and services are factory functions returning a documented `interface`; classes only for `Error` subclasses | The interface is the contract, and a fake is a plain object | review |
 | 21 | `interface` for object shapes, `type` for unions and mapped types | One way to say each thing | review |
 | 22 | PascalCase component files; lowercase or kebab-case modules | A file name says what it holds | review |
@@ -74,6 +75,9 @@ A repo without `noUncheckedIndexedAccess` (the house base turns it on) also
 turns `@typescript-eslint/no-unnecessary-type-assertion` off until the flag
 lands: without the flag the rule flags every `!` on an indexed read, and its
 autofix strips them, so the flag's brief would have to put them back.
+After any `eslint --fix` run `tsc`: `no-unnecessary-type-assertion`'s autofix
+broke code in four ways, and `vitest/valid-expect`'s can hang a fake-timer test
+([the adoption reference](references/adoption.md) lists them).
 imbatranimOS's NestJS backend keeps parameter properties and
 `emitDecoratorMetadata` this way.
 
@@ -82,7 +86,8 @@ imbatranimOS's NestJS backend keeps parameter properties and
 - `vendor/house-style/`: the generated copy, with `README.md` as its header
   (version, source commit, and where the upgrade notes are). ESLint, Prettier
   and knip ignore it.
-- Root configs that extend the copy: `prettier.config.js`, `tsconfig.base.json`,
+- Root configs that extend the copy: `prettier.config.js` (`.mjs` in a root
+  without `"type": "module"`), `tsconfig.base.json`,
   `eslint.config.js` (calling the copy's named export `houseStyle`, a function
   of the repo's folders), a `knip.config.js` that spreads the knip preset (knip
   has no `extends`), `.dependency-cruiser.cjs` extending its preset, and a
@@ -120,15 +125,19 @@ imbatranimOS's NestJS backend keeps parameter properties and
 
 One commit per step, on `main`, each with typecheck, tests, lint and build
 green. [references/adoption.md](references/adoption.md) has the commands and
-the traps each step hit in the repo briefs.
+the traps each step hit in the repo briefs, and
+[references/recipes.md](references/recipes.md) the recipes the house leaves to
+a repo's own block: a folder's `no-console` or `n/no-process-env`, a NestJS
+folder on `recommendedTypeChecked`, `react-refresh`, and an Astro repo.
 
 1. **Measure.** Run the house configs on a scratch copy and record the counts.
    A rule with more than about 20 real findings, or mostly false ones, goes to
    the owner with its counts before it is turned on. Don't loosen it quietly.
-2. **Vendor.** `npm run house-style:sync -- house-style-v1.1.0` copies the
+   Put the knip preset's config in before the first measurement.
+2. **Vendor.** `npm run house-style:sync -- house-style-v1.2.0` copies the
    library's `house-style/` folder at that tag into `vendor/house-style/`
    (the first time, before the copy exists, run the library checkout's
-   `house-style/bin/sync.mjs house-style-v1.1.0` from the repo root, or from
+   `house-style/bin/sync.mjs house-style-v1.2.0` from the repo root, or from
    the app's folder in a multi-project repo: the copy goes to the nearest
    `package.json`). Pin the
    devDependencies the house-style README lists; the sync reports any pin that
@@ -138,7 +147,7 @@ the traps each step hit in the repo briefs.
 4. **The reformat.** `npm run format`, committed alone as
    `style: format with Prettier`. Its acceptance is the esbuild bundle compare:
    bundle every file before and after (CSS through esbuild's `css` loader,
-   JSON compared parsed), and list and explain each difference. The expected
+   JSON and YAML compared parsed), and list and explain each difference. The expected
    one is JSX text Prettier splits with `{" "}`, which renders the same.
    Then put the commit's full hash in `.git-blame-ignore-revs`, in its own
    commit. `git config blame.ignoreRevsFile .git-blame-ignore-revs` is an
@@ -148,7 +157,9 @@ the traps each step hit in the repo briefs.
    finding or list it in the outcome note with its reason.
 7. **The gate.** Add `check`, `check:fast`, `check:conventions`,
    `house-style:sync`, and `test:clean` or `pretest` where needed. Time
-   `check:fast` warm with one changed file, and `check` in full.
+   `check:fast` warm with one changed file, and `check` in full. The
+   dependency-cruiser preset and `check:conventions` land in one commit: knip
+   reports dependency-cruiser as unused until a script runs it.
 8. **The Claude Code layer.** The root `CLAUDE.md`, the two rules files, the
    `.gitignore` line.
 
@@ -159,7 +170,8 @@ files they look for, and nothing is committed to `.claude/settings.json`.
 
 - **After `Edit` or `Write`:** if the repo has a Prettier config and an
   installed Prettier, the saved file is formatted with that Prettier, from the
-  config's folder, so `.prettierignore` applies. A formatter error never fails
+  config's folder (the nearest one up from the file, which may be the root's),
+  so that folder's `.prettierignore` applies. A formatter error never fails
   the edit.
 - **At `Stop`:** for each code file this session saved, the nearest
   `package.json` with a `check:fast` script, from the file's folder up to the
