@@ -22,33 +22,156 @@ const OPTIONS = {
 
 /** One row per rule: the fixture that breaks it, the ones that keep to it, and the severity expected. */
 const CASES = [
-  { rule: "no-debugger", area: "@eslint/js recommended", fail: "server/src/base/eslint-recommended.fail.ts", pass: ["server/src/base/eslint-recommended.pass.ts"] },
-  { rule: "@typescript-eslint/no-empty-object-type", area: "typescript-eslint recommended", fail: "server/src/base/typescript-eslint-recommended.fail.ts", pass: ["server/src/base/typescript-eslint-recommended.pass.ts"] },
-  { rule: "@typescript-eslint/no-unused-vars", fail: "server/src/base/no-unused-vars.fail.ts", pass: ["server/src/base/no-unused-vars.pass.ts"] },
-  { rule: "@typescript-eslint/no-floating-promises", fail: "server/src/typed/no-floating-promises.fail.ts", pass: ["server/src/typed/no-floating-promises.pass.ts", "server/src/typed/node-test-calls.pass.ts"] },
-  { rule: "@typescript-eslint/no-misused-promises", fail: "server/src/typed/no-misused-promises.fail.ts", pass: ["server/src/typed/no-misused-promises.pass.ts"] },
-  { rule: "@typescript-eslint/await-thenable", fail: "server/src/typed/await-thenable.fail.ts", pass: ["server/src/typed/await-thenable.pass.ts"] },
-  { rule: "@typescript-eslint/switch-exhaustiveness-check", fail: "server/src/typed/switch-exhaustiveness-check.fail.ts", pass: ["server/src/typed/switch-exhaustiveness-check.pass.ts"] },
-  { rule: "@typescript-eslint/no-unnecessary-type-assertion", fail: "server/src/typed/no-unnecessary-type-assertion.fail.ts", pass: ["server/src/typed/no-unnecessary-type-assertion.pass.ts"] },
-  { rule: "@typescript-eslint/consistent-type-imports", fail: "server/src/typed/consistent-type-imports.fail.ts", pass: ["server/src/typed/consistent-type-imports.pass.ts"] },
-  { rule: "react-hooks/rules-of-hooks", area: "react-hooks recommended, on web only", fail: "web/src/react/hooks.fail.tsx", pass: ["web/src/react/hooks.pass.tsx", "server/src/scope/hooks-outside-web.pass.ts"] },
-  { rule: "better-tailwindcss/no-unknown-classes", fail: "web/src/tailwind/no-unknown-classes.fail.tsx", pass: ["web/src/tailwind/no-unknown-classes.pass.tsx"] },
-  { rule: "better-tailwindcss/no-deprecated-classes", fail: "web/src/tailwind/no-deprecated-classes.fail.tsx", pass: ["web/src/tailwind/no-deprecated-classes.pass.tsx"] },
-  { rule: "n/no-process-env", fail: "server/src/node/env-reader.fail.ts", pass: ["server/src/node/config.ts", "server/src/tests/env-in-tests.pass.test.ts", "web/vite.config.ts", "scripts/env-script.ts"] },
+  {
+    rule: "no-debugger",
+    area: "@eslint/js recommended",
+    fail: "server/src/base/eslint-recommended.fail.ts",
+    pass: ["server/src/base/eslint-recommended.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-empty-object-type",
+    area: "typescript-eslint recommended",
+    fail: "server/src/base/typescript-eslint-recommended.fail.ts",
+    pass: ["server/src/base/typescript-eslint-recommended.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-unused-vars",
+    fail: "server/src/base/no-unused-vars.fail.ts",
+    pass: ["server/src/base/no-unused-vars.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-floating-promises",
+    fail: "server/src/typed/no-floating-promises.fail.ts",
+    pass: ["server/src/typed/no-floating-promises.pass.ts", "server/src/typed/node-test-calls.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-misused-promises",
+    fail: "server/src/typed/no-misused-promises.fail.ts",
+    pass: ["server/src/typed/no-misused-promises.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/await-thenable",
+    fail: "server/src/typed/await-thenable.fail.ts",
+    pass: ["server/src/typed/await-thenable.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/switch-exhaustiveness-check",
+    fail: "server/src/typed/switch-exhaustiveness-check.fail.ts",
+    pass: ["server/src/typed/switch-exhaustiveness-check.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-unnecessary-type-assertion",
+    fail: "server/src/typed/no-unnecessary-type-assertion.fail.ts",
+    pass: ["server/src/typed/no-unnecessary-type-assertion.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/consistent-type-imports",
+    fail: "server/src/typed/consistent-type-imports.fail.ts",
+    pass: ["server/src/typed/consistent-type-imports.pass.ts"],
+  },
+  {
+    rule: "react-hooks/rules-of-hooks",
+    area: "react-hooks recommended, on web only",
+    fail: "web/src/react/hooks.fail.tsx",
+    pass: ["web/src/react/hooks.pass.tsx", "server/src/scope/hooks-outside-web.pass.ts"],
+  },
+  {
+    rule: "better-tailwindcss/no-unknown-classes",
+    fail: "web/src/tailwind/no-unknown-classes.fail.tsx",
+    pass: ["web/src/tailwind/no-unknown-classes.pass.tsx"],
+  },
+  {
+    rule: "better-tailwindcss/no-deprecated-classes",
+    fail: "web/src/tailwind/no-deprecated-classes.fail.tsx",
+    pass: ["web/src/tailwind/no-deprecated-classes.pass.tsx"],
+  },
+  {
+    rule: "n/no-process-env",
+    fail: "server/src/node/env-reader.fail.ts",
+    pass: [
+      "server/src/node/config.ts",
+      "server/src/tests/env-in-tests.pass.test.ts",
+      "web/vite.config.ts",
+      "scripts/env-script.ts",
+    ],
+  },
   { rule: "n/no-process-env", area: "still on in the console globs", fail: "server/src/cli-env.fail.ts", pass: [] },
-  { rule: "vitest/expect-expect", area: "@vitest/eslint-plugin recommended", fail: "server/src/tests/expect-expect.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
-  { rule: "vitest/no-focused-tests", area: "@vitest/eslint-plugin recommended", fail: "server/src/tests/focused.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
-  { rule: "vitest/valid-expect", area: "maxArgs 2", fail: "server/src/tests/valid-expect.fail.test.ts", pass: ["server/src/tests/labelled.pass.test.ts"] },
-  { rule: "vitest/no-conditional-expect", area: "off: the house asserts inside a catch", fail: null, pass: ["server/src/tests/conditional-expect.pass.test.ts"] },
-  { rule: "no-restricted-syntax", area: "enum", fail: "server/src/shapes/enum.fail.ts", pass: ["server/src/shapes/enum.pass.ts"] },
-  { rule: "@typescript-eslint/no-explicit-any", fail: "server/src/shapes/explicit-any.fail.ts", pass: ["server/src/shapes/explicit-any.pass.ts"] },
-  { rule: "@typescript-eslint/no-non-null-assertion", area: "error in source", fail: "server/src/shapes/non-null.fail.ts", pass: ["server/src/shapes/non-null.pass.ts"] },
-  { rule: "@typescript-eslint/no-non-null-assertion", area: "warning in tests", severity: 1, fail: "server/src/shapes/non-null-in-tests.test.ts", pass: [] },
-  { rule: "@typescript-eslint/ban-ts-comment", fail: "server/src/shapes/ts-comment.fail.ts", count: 2, pass: ["server/src/shapes/ts-comment.pass.ts"] },
-  { rule: "no-warning-comments", fail: "server/src/shapes/warning-comments.fail.ts", count: 2, pass: ["server/src/shapes/warning-comments.pass.ts"] },
-  { rule: "no-console", fail: "server/src/shapes/console.fail.ts", pass: ["server/src/cli.ts", "scripts/report.ts", "scripts/tool.mjs"] },
-  { rule: "no-undef", area: ".cjs files see CommonJS globals, other names stay undefined", fail: "scripts/undefined-global.fail.cjs", pass: ["scripts/commonjs.pass.cjs"] },
-  { rule: "import-x/no-default-export", fail: "server/src/shapes/default-export.fail.ts", pass: ["vite.config.ts", "web/src/routes/home.tsx"] },
+  {
+    rule: "vitest/expect-expect",
+    area: "@vitest/eslint-plugin recommended",
+    fail: "server/src/tests/expect-expect.fail.test.ts",
+    pass: ["server/src/tests/labelled.pass.test.ts"],
+  },
+  {
+    rule: "vitest/no-focused-tests",
+    area: "@vitest/eslint-plugin recommended",
+    fail: "server/src/tests/focused.fail.test.ts",
+    pass: ["server/src/tests/labelled.pass.test.ts"],
+  },
+  {
+    rule: "vitest/valid-expect",
+    area: "maxArgs 2",
+    fail: "server/src/tests/valid-expect.fail.test.ts",
+    pass: ["server/src/tests/labelled.pass.test.ts"],
+  },
+  {
+    rule: "vitest/no-conditional-expect",
+    area: "off: the house asserts inside a catch",
+    fail: null,
+    pass: ["server/src/tests/conditional-expect.pass.test.ts"],
+  },
+  {
+    rule: "no-restricted-syntax",
+    area: "enum",
+    fail: "server/src/shapes/enum.fail.ts",
+    pass: ["server/src/shapes/enum.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-explicit-any",
+    fail: "server/src/shapes/explicit-any.fail.ts",
+    pass: ["server/src/shapes/explicit-any.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-non-null-assertion",
+    area: "error in source",
+    fail: "server/src/shapes/non-null.fail.ts",
+    pass: ["server/src/shapes/non-null.pass.ts"],
+  },
+  {
+    rule: "@typescript-eslint/no-non-null-assertion",
+    area: "warning in tests",
+    severity: 1,
+    fail: "server/src/shapes/non-null-in-tests.test.ts",
+    pass: [],
+  },
+  {
+    rule: "@typescript-eslint/ban-ts-comment",
+    fail: "server/src/shapes/ts-comment.fail.ts",
+    count: 2,
+    pass: ["server/src/shapes/ts-comment.pass.ts"],
+  },
+  {
+    rule: "no-warning-comments",
+    fail: "server/src/shapes/warning-comments.fail.ts",
+    count: 2,
+    pass: ["server/src/shapes/warning-comments.pass.ts"],
+  },
+  {
+    rule: "no-console",
+    fail: "server/src/shapes/console.fail.ts",
+    pass: ["server/src/cli.ts", "scripts/report.ts", "scripts/tool.mjs"],
+  },
+  {
+    rule: "no-undef",
+    area: ".cjs files see CommonJS globals, other names stay undefined",
+    fail: "scripts/undefined-global.fail.cjs",
+    pass: ["scripts/commonjs.pass.cjs"],
+  },
+  {
+    rule: "import-x/no-default-export",
+    fail: "server/src/shapes/default-export.fail.ts",
+    pass: ["vite.config.ts", "web/src/routes/home.tsx"],
+  },
 ];
 
 /** The class order is linted only once a repo turns it on, so it has its own run. */
@@ -85,7 +208,11 @@ function assertFails(results, { rule, fail, severity = 2, count }) {
   const messages = results.get(fail);
   assert.ok(messages, `${fail} was not linted`);
   assert.ok(messages.length > 0, `${fail} should report ${rule}, and reports nothing`);
-  assert.deepEqual([...new Set(messages.map((m) => m.ruleId))], [rule], `${fail} should report only ${rule}:\n${summary(messages)}`);
+  assert.deepEqual(
+    [...new Set(messages.map((m) => m.ruleId))],
+    [rule],
+    `${fail} should report only ${rule}:\n${summary(messages)}`,
+  );
   for (const m of messages) assert.equal(m.severity, severity, `${fail}: ${rule} should have severity ${severity}`);
   if (count !== undefined) assert.equal(messages.length, count, `${fail}: expected ${count} findings`);
 }
@@ -121,7 +248,11 @@ describe("the house rules", () => {
     const named = new Set([...SUPPORT, ...[...CASES, ORDER_CASE].flatMap((c) => [c.fail, ...c.pass]).filter(Boolean)]);
     const strays = fixtureFiles().filter((file) => !named.has(file));
     assert.deepEqual(strays, [], "a fixture no case names would hide whatever it reports");
-    assert.deepEqual([...results.keys()].sort(), fixtureFiles(), "ESLint linted a different set of files than the fixtures");
+    assert.deepEqual(
+      [...results.keys()].sort(),
+      fixtureFiles(),
+      "ESLint linted a different set of files than the fixtures",
+    );
   });
 });
 

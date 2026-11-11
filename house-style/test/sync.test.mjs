@@ -100,7 +100,21 @@ describe("the first sync", () => {
     const run = sync(bootstrap, ["house-style-v1.0.0"]);
     assert.equal(run.status, 0, run.out);
     assert.match(run.out, new RegExp(`wrote house-style ${pkg.version} at ${v1}`));
-    for (const path of ["package.json", "eslint.config.js", "prettier.config.js", "tsconfig.base.json", "knip.json", ".dependency-cruiser.cjs", "conventions.schema.json", "bin/sync.mjs", "bin/check-base-ui.mjs", "bin/check-structure.mjs", "bin/conventions.mjs", "CHANGELOG.md", "LICENSE"]) {
+    for (const path of [
+      "package.json",
+      "eslint.config.js",
+      "prettier.config.js",
+      "tsconfig.base.json",
+      "knip.json",
+      ".dependency-cruiser.cjs",
+      "conventions.schema.json",
+      "bin/sync.mjs",
+      "bin/check-base-ui.mjs",
+      "bin/check-structure.mjs",
+      "bin/conventions.mjs",
+      "CHANGELOG.md",
+      "LICENSE",
+    ]) {
       assert.deepEqual(readFileSync(join(vendor, path)), committed(v1, path), path);
     }
     assert.ok(!existsSync(join(vendor, "test")), "tests stay in the package");
@@ -119,7 +133,10 @@ describe("the first sync", () => {
 
   it("ships checkers that run from the copy", () => {
     for (const checker of ["check-base-ui", "check-structure"]) {
-      const run = spawnSync(process.execPath, [join(vendor, "bin", `${checker}.mjs`), "--warn-only"], { cwd: app, encoding: "utf8" });
+      const run = spawnSync(process.execPath, [join(vendor, "bin", `${checker}.mjs`), "--warn-only"], {
+        cwd: app,
+        encoding: "utf8",
+      });
       assert.equal(run.status, 0, `${checker}: ${run.stdout}${run.stderr}`);
       assert.match(run.stdout, /found no conventions\.json/);
     }
@@ -177,9 +194,18 @@ describe("a newer version", () => {
   let v2;
   before(() => {
     const script = join(checkout, "house-style", "bin", "sync.mjs");
-    writeFileSync(script, readFileSync(script, "utf8").replace("This directory is a copy of house-style", "This folder is a copy of house-style"));
+    writeFileSync(
+      script,
+      readFileSync(script, "utf8").replace(
+        "This directory is a copy of house-style",
+        "This folder is a copy of house-style",
+      ),
+    );
     const manifest = join(checkout, "house-style", "package.json");
-    writeFileSync(manifest, readFileSync(manifest, "utf8").replace(`"version": "${pkg.version}"`, '"version": "9.9.9"'));
+    writeFileSync(
+      manifest,
+      readFileSync(manifest, "utf8").replace(`"version": "${pkg.version}"`, '"version": "9.9.9"'),
+    );
     git(["commit", "-q", "-am", "house-style 9.9.9"]);
     git(["tag", "house-style-v9.9.9"]);
     v2 = git(["rev-parse", "HEAD"]);
@@ -210,7 +236,10 @@ describe("the pins", () => {
     const run = sync(vendored, ["--check"]);
     assert.equal(run.status, 0, "pins never change the exit code");
     assert.match(run.out, /pin prettier: package\.json has 3\.8\.1, house-style 1\.0\.0 lists 3\.9\.10/);
-    assert.match(run.out, /pin typescript: packages\/web\/package\.json has \^6\.0\.3, house-style 1\.0\.0 lists 6\.0\.3/);
+    assert.match(
+      run.out,
+      /pin typescript: packages\/web\/package\.json has \^6\.0\.3, house-style 1\.0\.0 lists 6\.0\.3/,
+    );
     assert.match(run.out, /not pinned in this repo: .*knip/);
     assert.doesNotMatch(run.out, /pin eslint:/, "a matching pin is not reported");
     assert.deepEqual(readFileSync(join(app, "package.json")), before);

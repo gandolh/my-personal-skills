@@ -1,0 +1,5 @@
+*.md
+node_modules
+package-lock.json
+# Fixtures are the text the rules and checkers read; their line numbers and shapes are the tests.
+test/fixtures

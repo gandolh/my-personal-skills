@@ -57,7 +57,10 @@ describe("tsconfig.base.json", () => {
     const file = join(import.meta.dirname, "fixtures", "repo", "tsconfig.json");
     const read = ts.readConfigFile(file, ts.sys.readFile);
     const parsed = ts.parseJsonConfigFileContent(read.config, ts.sys, dirname(file));
-    assert.deepEqual(parsed.errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, "\n")), []);
+    assert.deepEqual(
+      parsed.errors.map((e) => ts.flattenDiagnosticMessageText(e.messageText, "\n")),
+      [],
+    );
     assert.equal(parsed.options.erasableSyntaxOnly, true);
   });
 
@@ -109,7 +112,8 @@ describe(".dependency-cruiser.cjs", () => {
     ".dependency-cruiser.cjs": `module.exports = { extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))} };\n`,
     "src/features/a/index.ts": "export const a = 1;\n",
     "src/features/a/internal/x.ts": "export const x = 1;\n",
-    "src/features/b/index.ts": 'import { a } from "../a/index.js";\nimport { x } from "../a/internal/x.js";\nexport const b = a + x;\n',
+    "src/features/b/index.ts":
+      'import { a } from "../a/index.js";\nimport { x } from "../a/internal/x.js";\nexport const b = a + x;\n',
     "src/c1.ts": 'import { c2 } from "./c2.js";\nexport const c1 = (): unknown => c2;\n',
     "src/c2.ts": 'import { c1 } from "./c1.js";\nexport const c2 = (): unknown => c1;\n',
     "src/lib/server.ts": 'import fastify from "fastify";\nexport const f = fastify;\n',
@@ -174,7 +178,12 @@ describe(".dependency-cruiser.cjs", () => {
 describe("knip.json", () => {
   const root = join(scratch, "knip");
   writeTree(root, {
-    "package.json": JSON.stringify({ name: "fixture", type: "module", private: true, dependencies: { "left-pad": "1.3.0" } }),
+    "package.json": JSON.stringify({
+      name: "fixture",
+      type: "module",
+      private: true,
+      dependencies: { "left-pad": "1.3.0" },
+    }),
     "knip.config.js": `import preset from ${JSON.stringify(join(PACKAGE, "knip.json"))} with { type: "json" };\nexport default { ...preset, entry: ["src/index.ts"] };\n`,
     "src/index.ts": 'import { used } from "./a.js";\nexport const shown = used;\n',
     "src/a.ts": "export const used = 1;\nexport const unused = 2;\n",
