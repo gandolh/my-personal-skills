@@ -174,3 +174,15 @@ redesign preset retired, and `orchestrate` routes a redesign to
 `/hallmark redesign|audit <path>` and the estate redesign board (brief 28).
 `decisions.md` revisits "Vendor third-party skills, with pins". See
 [the brief](briefs/done/24-vendor-hallmark-and-adopt-taste-skill-ideas.md).
+
+## [2026-11-11] done | house-style 1.1.0, from the eight adopting repos
+
+house-style 1.1.0 and plugin v0.41.0 fold in the findings of the eight repos
+that adopted 1.0.0 (wicket, mini-projects' todo app, 3D-sandbox,
+imbatranim-apps, Lantern, SocialEvents, Satchel, Newspapper): the sync's
+target is the nearest `package.json`; the `env` and `assertFunctionNames`
+options; `no-import-type-side-effects`; `*.d.ts` default exports; `virtual:`
+imports; rule 11 skips tests; rule 5 names the `"stylesheet"` key; the Stop
+hook finds `check:fast` from the saved files; and 14 documentation notes. The
+knip preset can't carry a `scripts/` entry, so the README says so. No board
+ticket. The owner tags `house-style-v1.1.0`.

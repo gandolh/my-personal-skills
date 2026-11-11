@@ -168,3 +168,11 @@ checked against a plain grep or `find` of the same thing.
 - **dependency-cruiser** with the house preset on wicket's checkout (read
   only): no violation in 55 modules.
 
+## Version 1.1.0 (2026-11-11)
+
+Eight repos adopted 1.0.0 on 2026-11-11: wicket, the todo app in
+mini-projects, 3D-sandbox, imbatranim-apps, Lantern, SocialEvents, Satchel and
+Newspapper. 1.1.0 folds their findings in: the `env` and `assertFunctionNames`
+options, `no-import-type-side-effects`, the sync's target, the Stop hook's
+lookup, and the documentation notes. The upgrade steps are in
+`house-style/CHANGELOG.md`.
