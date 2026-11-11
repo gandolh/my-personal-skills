@@ -90,7 +90,7 @@ two long descriptions in the brief were already under 1,024 characters. See
   `vendor/house-style/`, at the next minor version.
 - **Left:** the `house-style/` folder, its tag and Wicket's proof run. The
   brief stays in `todo/`. See
-  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+  [the brief](briefs/done/27-a-house-style-and-a-quality-harness.md).
 
 ## [2026-11-11] progress | Brief 27, the house-style package
 
@@ -107,7 +107,7 @@ two long descriptions in the brief were already under 1,024 characters. See
   named `houseStyle` import, the real Tailwind rule id, the env rule's scope,
   the options, the pins, and the knip, dependency-cruiser and Tailwind lines.
 - **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
-  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+  [the brief](briefs/done/27-a-house-style-and-a-quality-harness.md).
 
 ## [2026-11-11] progress | Brief 27, the convention checkers
 
@@ -126,7 +126,7 @@ two long descriptions in the brief were already under 1,024 characters. See
   dependency-cruiser and both checkers, `--warn-only` until the repo's Base UI
   or server brief.
 - **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
-  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+  [the brief](briefs/done/27-a-house-style-and-a-quality-harness.md).
 
 ## [2026-11-11] done | Brief 02 - a base-ui skill, styled with Tailwind
 
