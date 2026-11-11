@@ -6,15 +6,15 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 /orchestrate add dark mode to the settings page
 ```
 
-`/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, questions to the wiki. It routes; it never does the work itself.
+`/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.39.0, 29 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.40.0, 29 skills.
 
 ## What it does
 
 - Keeps each project's knowledge in an LLM-maintained wiki (`corpus/`) with a glossary, a decisions log and a todos → briefs → done lifecycle.
 - Splits implementation across models: Opus plans and reviews, Sonnet does most chunks, with a review gate before anything counts as done.
-- Gives design work a vocabulary and a build engine (impeccable, the taste presets, 74 brand `DESIGN.md` references) instead of one-off styling.
+- Gives design work a vocabulary and a build engine (Hallmark for every redesign, impeccable, 74 brand `DESIGN.md` references, the taste presets on request) instead of one-off styling.
 - Sets one standard for READMEs, docs sites, diagrams and prose across every repo.
 - Keeps TypeScript repos to one house style: shared configs vendored into each repo, `npm run check` as the gate, and two hooks that format each saved file and run the repo's fast check before an agent can finish.
 
@@ -28,6 +28,7 @@ flowchart LR
   orch -->|capture| cf["corpus-flow<br/>wiki, todos, briefs"]
   orch -->|build| psd["plan-split-dispatch<br/>Opus plans, Sonnet builds"]
   orch -->|audit| imp["improve<br/>ranked findings → briefs"]
+  orch -->|redesign| hm["hallmark<br/>redesign or audit by path"]
   orch -->|question| wiki["corpus/wiki"]
   cf --> psd
   imp --> cf
@@ -70,9 +71,10 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 
 | Skill | What it does |
 |---|---|
+| `hallmark` | The design skill every web UI's redesign uses: a Floor of 16 rules no page ships without, a tiered browser lint, themes dealt per page, credited Wikimedia photographs; `/hallmark redesign <path>` or `audit <path>` (MIT) |
 | `impeccable` | The design build engine: 23 sub-commands, an anti-pattern detector, live browser iteration (Apache-2.0) |
 | `design-taste-frontend` + `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | Anti-slop frontend direction and presets, held at their 2026-08 pin and run only when called by name; each defers to impeccable on conflict (MIT) |
-| `design-md-library` | 74 real-brand `DESIGN.md` references and the method for adapting one into your own tokens |
+| `design-md-library` | 74 real-brand `DESIGN.md` references and the method for adapting one into your own tokens, plus palettes and type dealt by trade and a copy layer for Hallmark runs |
 | `base-ui` | React UI on Base UI with Tailwind: 17 numbered rules, each with its `check-base-ui` id or review, copy-ready wrappers compiled against Base UI 1.9.0, the Light / Dark / System switch, and the method for moving an app from plain CSS to Tailwind |
 | `web-design-guidelines` | UI review against Vercel's Web Interface Guidelines, fetched fresh each run (MIT) |
 | `vercel-react-best-practices`, `vercel-composition-patterns`, `vercel-react-view-transitions`, `vercel-react-native-skills` | Vercel Engineering's React, component-API and animation guidance (MIT) |

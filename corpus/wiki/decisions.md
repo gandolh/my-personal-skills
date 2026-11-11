@@ -14,6 +14,23 @@ v0.24.0 to v0.26.0. It left the owner without a design layer, and the upstream
 work was good enough to carry whole. The reason to pin is that an upstream
 change then arrives only when someone updates the pin on purpose.
 
+**Revisited 2026-11-11** (v0.40.0, brief 24), for Hallmark and the taste
+suite. Hallmark (Nutlope/hallmark, `407fa68`, MIT) is vendored as its skill
+folder, verbatim, except `scripts/install-hook.mjs` and `scripts/install.mjs`.
+Both write outside the project being designed (Claude Code's settings, a second
+copy of the skill), so they are left out for safety, and ATTRIBUTION.md names
+them. Its `imagegen.mjs` stays behind a written guard: it sends a description
+of the page to Together AI when `TOGETHER_API_KEY` is set, so the key stays
+unset and the script runs only when the owner asks. The taste suite stays at
+`72e2995` and is not re-pinned. Its four presets gained one frontmatter line,
+`disable-model-invocation: true`, so they run only when called by name, and
+`redesign-existing-projects` retired. Rejected: re-pinning the classics from
+taste-skill-classics (the brief's first default), vendoring taste-skill 2.5.1
+(40 MB, and the owner chose Hallmark), and vendoring Hallmark with its
+installers. The rule now reads: vendor verbatim and pinned, leave out any
+upstream file that writes outside the project it works on, and record each
+exclusion or local line in ATTRIBUTION.md.
+
 ## Adopt ideas, copy no text, when a source is not vendored
 _2026-08-20_ (v0.26.0, v0.30.0) - `improve`, the review gate in
 `plan-split-dispatch` and `readme-docs` took ideas from shadcn/improve,
