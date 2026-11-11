@@ -58,8 +58,12 @@ npm run house-style:sync -- house-style-v1.0.0 --check  # compare only
 npm run house-style:sync -- --check                     # compare with the header's commit
 ```
 
-- It copies into the git work tree it runs in (outside git, the nearest folder
-  up with a `package.json`), wherever in the repo it starts.
+- It copies into the folder of the nearest `package.json` at or above the
+  working directory, without going above the git toplevel. For a repo whose
+  `package.json` is at its root, that is the repo root, wherever in the repo
+  the sync starts. For an app in a subfolder of a multi-project repo, running
+  it from that folder takes the copy there, with no `GIT_CEILING_DIRECTORIES`
+  wrapper. Outside git it is the nearest `package.json` at any height.
 - `<ref>` is a tag or a commit. The sync reads the `house-style/` folder at
   that commit from git objects, never the checkout's working tree, so the copy
   is exactly what the commit holds, whatever is checked out or uncommitted.
@@ -69,14 +73,22 @@ npm run house-style:sync -- --check                     # compare with the heade
   to that one, so each version writes its own copy and header.
 - `--check` writes nothing. It exits 1 and lists each difference when the copy
   is not the commit byte for byte, and 0 when it is.
-- It also lists, without changing anything or the exit code, every pin in the
-  repo (the root `package.json` and each workspace) that differs from the
-  table below.
+- It also lists, without changing anything or the exit code, every pin that
+  differs from the table below, in the target folder's `package.json`, each
+  workspace, and (without workspaces) each first-level subfolder's
+  `package.json`, so a project in a subfolder shows its pin drift too.
 - Plain Node (22.6 or later) and git; no dependencies.
 
 The first time, the copy doesn't exist yet: run the library checkout's
-`house-style/bin/sync.mjs <ref>` once from inside the repo, then add the npm
-script. It refuses to run with the library checkout itself as the repo.
+`house-style/bin/sync.mjs <ref>` once from inside the repo (or the app folder),
+then add the npm script. It refuses to run inside the library checkout itself.
+
+A repo with two projects in subfolders (an `api/` and a `web/`) that wants one
+copy keeps the copy and the tool pins in the folder that holds
+`vendor/house-style/`, because the vendored ESLint config resolves its plugins
+from where it sits. A project inside that folder with its own `package.json`
+needs knip's `ignoreBinaries` (`eslint`, `prettier`, `knip`) for the tools that
+come from the parent.
 
 ## The checkers
 
@@ -106,7 +118,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | `check-base-ui` | 1 | `@base-ui/react` not pinned exactly to `--version` (default 1.9.0), in each `package.json` from a web root up to the repo root |
 | | 2 | An import from the `@base-ui/react` root instead of a part's subpath |
 | | 3 | A Base UI import outside the `ui` folders (tests excepted) |
-| | 5 | A stylesheet other than the one, a CSS module, and the one without `@import "tailwindcss"` |
+| | 5 | A stylesheet other than the one, a CSS module, and the one without `@import "tailwindcss"`. When the repo's one stylesheet is somewhere other than `styles/index.css`, the message names the `"stylesheet"` key in `conventions.json` as the way to declare it |
 | | 6 | An arbitrary colour in a class name: `bg-[#…]`, `text-[rgb(…)]`, `border-[hsl(…)]`, … |
 | | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
 | | 10 | A `<Select.Root>` without `items` (a warning) |
@@ -115,7 +127,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
 | | 3 | `process.env` outside `config.ts`, and any `NODE_ENV`, in server and shared roots (tests excepted) |
 | | 6 | Request input parsed by hand (`schema.parse(request.body)`, a helper given `req.query`), and a route registered with no `schema` (a heuristic) |
-| | 11 | A file over 400 lines, in any root (a warning) |
+| | 11 | A file over 400 lines, in any root, test files excepted (a warning) |
 
 The other rules of the two skills are for review, except `code-structure`'s 5
 and 7 (a feature used through its index, no Fastify in `lib/`), which are the
@@ -197,13 +209,24 @@ and its paths are from the repo root wherever it sits.
    // knip.config.js: knip has no `extends`, so the repo spreads the preset.
    import preset from "./vendor/house-style/knip.json" with { type: "json" };
 
-   export default { ...preset, entry: ["scripts/*.ts"] };
+   export default { ...preset, entry: ["scripts/*.{js,mjs,ts}"] };
    ```
 
    In a repo with npm workspaces, the repo's own entries go under
    `workspaces: { ".": { entry: [...] } }`: a top-level `entry` gives knip
    6.44.2 a configuration hint there. A package folder that isn't a workspace
    (a docs site with its own lockfile) goes in `ignore`.
+
+   The preset sets no `entry` of its own: knip drops a preset's top-level
+   `entry` as soon as the repo sets `workspaces`, and a repo that sets its own
+   `entry` replaces it anyway. So the repo lists `scripts/*.{js,mjs,ts}` itself
+   (as above), or `scripts/check-fast.mjs` is reported as an unused file.
+   knip reads `knip.config.js`, not `.mjs`, in a root without
+   `"type": "module"` (ESLint and Prettier configs can be `.mjs` there). A
+   dependency declared before anything uses it, or one a group build resolves
+   from its own folder, goes in that workspace's `ignoreDependencies`.
+   After a knip cleanup, run `tsc`: `noUnusedLocals` catches the types knip's
+   removals left unused.
 
    ```js
    // .dependency-cruiser.cjs
@@ -215,13 +238,16 @@ and its paths are from the repo root wherever it sits.
    { "extends": "./vendor/house-style/tsconfig.base.json", "compilerOptions": { "types": ["node"] } }
    ```
 
-   When a Dockerfile stage copies only the repo's `tsconfig.base.json`,
-   extending the vendored file breaks the image build, so that repo keeps the
-   house flags in its own base file (see the Docker note in the `house-style`
-   skill's [adoption reference](../skills/house-style/references/adoption.md)).
+   A repo keeps its own base file instead of extending the vendored one in two
+   cases: its Dockerfile copies only that file (extending the vendored file
+   breaks the image build), or it can't take `noUncheckedIndexedAccess` yet,
+   which the house base turns on. See the `house-style` skill's
+   [adoption reference](../skills/house-style/references/adoption.md).
 
 3. `.prettierignore` lists `*.md` and `vendor/`. The ESLint config and the
-   knip preset ignore `vendor/` already.
+   knip preset ignore `vendor/` already. Anchor root folders (`/data/`,
+   `/uploads/`, `/output/`): an unanchored `uploads/` also hides
+   `src/uploads/`.
 4. A Tailwind repo adds `@source not` for `vendor/` to its stylesheet:
    Tailwind 4 scans every committed file for class names.
 
@@ -238,14 +264,16 @@ globs from the repo root.
 |---|---|---|
 | `root` | the working directory | The repo root, for typed linting and the Tailwind entry |
 | `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
-| `server` | none | Node folders; no rule is scoped to them in 1.0.0 |
-| `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say), where `console` and `process.env` are allowed |
-| `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed |
-| `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` |
-| `console` | none | CLI entry files inside the app (a server entry, a seed command), where `console` is allowed. They read the environment through `config.ts`, like the rest of the app |
+| `server` | none | Node folders; no rule is scoped to them yet |
+| `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say): they print and read the environment |
+| `tests` | `**/*.test.*`, `**/*.spec.*` | Test files: the vitest rules, `!` as a warning, and `process.env` allowed. The default reaches Playwright specs too: a repo with Playwright passes `tests` without its e2e folder, or turns the vitest rules off for it in its own block |
+| `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` and `*.d.ts` (an ambient `declare module` has no other form) |
+| `console` | none | App files allowed to print: a CLI entry, or a module that logs before the logger exists. Their `process.env` reads are still errors |
+| `env` | `["**/config.ts"]` | Where `n/no-process-env` is off: the repo's env reader. A repo whose reader is `config/env.ts` passes `["server/src/config/env.ts"]` instead of writing its own block. Tests, scripts and `*.config.*` stay exempt |
+| `assertFunctionNames` | `["expect", "expectTypeOf"]` | The names `vitest/expect-expect` counts as assertions. A repo adds its helpers (`expectError`, `expectPoint`) |
 | `tailwind` | none | `{ css, order }`: the CSS entry, and whether the class order is enforced yet |
 | `vitest` | `true` | `false` for a repo whose tests run on `node:test` |
-| `typed` | `projectService` | `{ allowDefaultProject }`, or `{ project: true }` where `project` measures faster |
+| `typed` | `projectService` | `{ allowDefaultProject }`. `projectService` is the one that works with a Vite solution `tsconfig.json` (`files: []` plus references); `project: true` fails there. List tsconfigs under `typed.project` only when tests sit in a tsconfig `projectService` can't find (`tsconfig.tests.json`) |
 | `untyped` | none | TypeScript files no tsconfig covers, linted without types |
 | `ignores` | vendor, dist, coverage | More folders ESLint skips |
 
@@ -258,6 +286,43 @@ every read into `config.ts`) sets it in its own block, with a dated comment
 that says what turns it back, never a brief number: `// A warning for now
 (2026-11-11): these files still read the environment themselves. When the
 server takes its settings from config.ts, this goes.`
+
+`console`, `scripts` and `env` are three different exemptions. `scripts` is for
+folders of scripts run by hand: they print and read the environment. `console`
+is for app files allowed to print, such as a CLI entry or a module that logs
+before the logger exists: their env reads are still errors. `env` moves the
+env exemption to the repo's reader. `check-structure`'s rule 3 counts
+`process.env` reads even where ESLint lowers them, so a harness brief that
+lowers one states both.
+
+Notes that come with the rules:
+
+- `vitest/no-disabled-tests` warns on `skipIf`-style guards, and that is
+  expected.
+- `vitest/valid-title` flags a variable title; a template literal clears it.
+- `react-hooks` 7.1.1's recommended set includes `refs`,
+  `set-state-in-effect` and `immutability`. Lowering them means naming each.
+- `@typescript-eslint/no-import-type-side-effects` is on beside
+  `consistent-type-imports`: with `verbatimModuleSyntax`,
+  `import { type X } from "./a.js"` still emits `import {} from "./a.js"`.
+  `eslint --fix` turns it into `import type`.
+- `eslint-plugin-jsx-a11y` 6.10.2 does not support ESLint 10, so no a11y rules
+  ship. A repo that needs two of them writes `no-restricted-syntax` selectors
+  (spread `restrictedSyntax` first):
+
+  ```js
+  { selector: "JSXAttribute[name.name='autoFocus']", message: "Don't set autoFocus: it moves focus without the user asking." },
+  {
+    selector: "JSXOpeningElement[name.name='button']:not(:has(JSXAttribute[name.name='type']))",
+    message: 'Give every <button> a type: "button", "submit" or "reset".',
+  },
+  ```
+
+- A repo's own `forbidden` entry in `.dependency-cruiser.cjs` with the same
+  `name` merges with the preset's rule. That is how a rule is lowered to
+  `warn` (`{ name: "no-circular", severity: "warn" }`) or given an exempt path
+  (`{ name: "no-circular", to: { circular: true, pathNot: "^src/legacy/" } }`).
+  `not-to-unresolvable` allows `virtual:` module ids (Vite virtual modules).
 
 JavaScript files and `*.config.*` files are linted without type information,
 and see Node's globals; `.cjs` files see CommonJS's too (`module`, `require`).

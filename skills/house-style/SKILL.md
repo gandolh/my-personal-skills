@@ -37,7 +37,7 @@ rule's entry in the shipped config carries its reason as a comment.
 |---|---|---|---|
 | 1 | Every package extends one `tsconfig.base.json`: `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `isolatedModules`, `noUnusedLocals`, `noFallthroughCasesInSwitch`, `NodeNext` | The compiler catches the most for the least config | `tsc`, from `vendor/house-style/tsconfig.base.json` |
 | 2 | Only erasable TypeScript: no `enum` (a string-literal union or an `as const` object), no `namespace`, no parameter properties (declare the field) | Every file can run under Node's type stripping; unions narrow | `tsc` (`erasableSyntaxOnly`), `no-restricted-syntax` (`TSEnumDeclaration`) |
-| 3 | Type-only imports say `type`; relative imports carry their real suffix | Erased imports must be visible to the reader and the bundler | `tsc` (`verbatimModuleSyntax`), `@typescript-eslint/consistent-type-imports` |
+| 3 | Type-only imports say `type`; relative imports carry their real suffix | Erased imports must be visible to the reader and the bundler | `tsc` (`verbatimModuleSyntax`), `@typescript-eslint/consistent-type-imports`, `@typescript-eslint/no-import-type-side-effects` (an all-inline `import { type X }` still leaves `import {}` behind) |
 | 4 | Prettier at 120 columns, trailing commas everywhere, double quotes, semicolons. Markdown stays out | The house already writes this; a formatter makes it free | `prettier --check` (`format:check`), the formatter hook |
 | 5 | `_`-prefixed names are deliberately unused; nothing else is | Says "unused on purpose" without a comment | `@typescript-eslint/no-unused-vars` |
 | 6 | Every promise is awaited, returned or `void`ed, and no async function goes where a void callback is expected | A handler that forgets `await` returns before its write lands | `@typescript-eslint/no-floating-promises`, `@typescript-eslint/no-misused-promises` |
@@ -49,11 +49,11 @@ rule's entry in the shipped config carries its reason as a comment.
 | 12 | No `@ts-ignore`; `@ts-expect-error` only, with its reason | A suppression must fail once the error is gone, and say why | `@typescript-eslint/ban-ts-comment` |
 | 13 | No `TODO` or `FIXME` comments | Todos live in `corpus/todos/`, where someone reads them | `no-warning-comments` |
 | 14 | No `console` outside scripts and CLIs | Services log through their logger | `no-console` |
-| 15 | App code reads `process.env` only in `config.ts`. Tests, tool configs (`*.config.*`) and scripts aren't app code and may read it. A file allowed to print (a server entry, a seed CLI inside the app) still reads it through `config.ts` | One place says what the app needs and fails early | `n/no-process-env` (off in tests, `*.config.*` and `scripts`; on in the `console` globs) |
+| 15 | App code reads `process.env` only in its env reader (`config.ts`, or the files the `env` option names). Tests, tool configs (`*.config.*`) and scripts aren't app code and may read it. A file allowed to print (a server entry, a seed CLI inside the app) still reads it through the reader | One place says what the app needs and fails early | `n/no-process-env` (off in tests, `*.config.*`, `scripts` and the `env` files; on in the `console` globs) |
 | 16 | Named exports. A default export only where a framework or a runtime contract needs one (configs, route modules, scenes read as `mod.default`) | Names survive renames and search; imports agree | `import-x/no-default-export` |
 | 17 | React follows the rules of hooks and the compiler rules | Mirrored state and impure renders are bugs the type checker can't see | `react-hooks` `recommended` (on `web` only) |
 | 18 | Tailwind classes exist in the theme and aren't deprecated; class order is consistent once a repo has migrated | A typo'd class renders nothing and fails nowhere else | `better-tailwindcss/no-unknown-classes`, `better-tailwindcss/no-deprecated-classes`, `better-tailwindcss/enforce-consistent-class-order` (with `tailwind.order`) |
-| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine, and so is an `expect` inside a `catch` | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`), without `vitest/no-conditional-expect` |
+| 19 | Tests: no committed `.only`, every test asserts, `expect(value, "why")` is fine, and so is an `expect` inside a `catch` | A focused or empty test passes for nothing | `@vitest/eslint-plugin` `recommended`, `vitest/valid-expect` (`maxArgs: 2`), `vitest/expect-expect` (helpers named in `assertFunctionNames`), without `vitest/no-conditional-expect` |
 | 20 | Stores and services are factory functions returning a documented `interface`; classes only for `Error` subclasses | The interface is the contract, and a fake is a plain object | review |
 | 21 | `interface` for object shapes, `type` for unions and mapped types | One way to say each thing | review |
 | 22 | PascalCase component files; lowercase or kebab-case modules | A file name says what it holds | review |
@@ -70,6 +70,10 @@ Escapes are rare and say why: `// eslint-disable-next-line <rule> -- <reason>`,
 or `// @ts-expect-error <reason>`. A tsconfig flag a repo can't take yet is
 turned off in its own tsconfig with a dated comment that says what turns it
 on (never a brief number: the estate's corpus rules keep those out of code).
+A repo without `noUncheckedIndexedAccess` (the house base turns it on) also
+turns `@typescript-eslint/no-unnecessary-type-assertion` off until the flag
+lands: without the flag the rule flags every `!` on an indexed read, and its
+autofix strips them, so the flag's brief would have to put them back.
 imbatranimOS's NestJS backend keeps parameter properties and
 `emitDecoratorMetadata` this way.
 
@@ -105,8 +109,12 @@ imbatranimOS's NestJS backend keeps parameter properties and
   glob (`web/src/**`, `server/src/**`), under about 40 lines, carrying the
   base-ui and code-structure rules where they apply. A `.gitignore` that
   ignores `.claude` or `.claude/*` gets a `!.claude/rules/` line.
-- A repo with two npm projects and no root `package.json` gets a scripts-only
-  root `package.json`, so the Stop hook finds `check:fast`.
+- A repo with two npm projects keeps the tool pins in the `package.json` of the
+  folder that holds `vendor/house-style/` (the vendored ESLint config resolves
+  its plugins from where it sits), and a project inside that folder with its
+  own `package.json` gives knip `ignoreBinaries` for `eslint`, `prettier` and
+  `knip`. The Stop hook finds each project's `check:fast` from the files saved
+  in it.
 
 ## Adopting it
 
@@ -117,10 +125,12 @@ the traps each step hit in the repo briefs.
 1. **Measure.** Run the house configs on a scratch copy and record the counts.
    A rule with more than about 20 real findings, or mostly false ones, goes to
    the owner with its counts before it is turned on. Don't loosen it quietly.
-2. **Vendor.** `npm run house-style:sync -- house-style-v1.0.0` copies the
+2. **Vendor.** `npm run house-style:sync -- house-style-v1.1.0` copies the
    library's `house-style/` folder at that tag into `vendor/house-style/`
    (the first time, before the copy exists, run the library checkout's
-   `house-style/bin/sync.mjs house-style-v1.0.0` from the repo root). Pin the
+   `house-style/bin/sync.mjs house-style-v1.1.0` from the repo root, or from
+   the app's folder in a multi-project repo: the copy goes to the nearest
+   `package.json`). Pin the
    devDependencies the house-style README lists; the sync reports any pin that
    differs.
 3. **Prettier.** Add the config, `.prettierignore`, `format` and
@@ -151,9 +161,11 @@ files they look for, and nothing is committed to `.claude/settings.json`.
   installed Prettier, the saved file is formatted with that Prettier, from the
   config's folder, so `.prettierignore` applies. A formatter error never fails
   the edit.
-- **At `Stop`:** the nearest `package.json` with a `check:fast` script, from
-  the session's folder up to the repo root, is run, but only when this session
-  saved a code file in that package since its last green run. On a failure the
+- **At `Stop`:** for each code file this session saved, the nearest
+  `package.json` with a `check:fast` script, from the file's folder up to the
+  repo root, is run (each distinct one once), but only for a package where
+  this session saved a code file since its last green run. Only when no saved
+  file leads to one does it fall back to the session's folder, as it always did. On a failure the
   tail of the output goes back to Claude, which keeps working. It blocks again
   only while the failure changes, at most four times a turn; then the turn
   ends with a note to the user. It never runs a `check:fast` whose scripts run
