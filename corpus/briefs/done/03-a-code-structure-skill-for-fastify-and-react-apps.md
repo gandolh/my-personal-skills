@@ -430,3 +430,72 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
   note, for brief 16's table.
 - `bash corpus/lint.sh` passes, and both plugin files read the next minor
   version.
+
+## Outcome (2026-11-11, v0.38.0)
+
+Built `skills/code-structure/`: SKILL.md (225 lines) with 11 numbered
+rules, each with its reason, its source and its enforcer
+(`check-structure` rule, dependency-cruiser rule or "review"), and five
+references.
+
+- **Rules.** 1-11 as step 1 lists them. The decisions of 2026-11-10 sit
+  inside them rather than as new numbers, because `conventions.json`
+  exceptions stop at structure rule 11: Q25 and Q53 in 6, Q28 and Q55 in 6,
+  Q43 in 8, Q24 and Q56 in 2, 4 and 9, Q26 and Q27 in 9, Q54 in 7, import-time
+  config in 3, the NestJS carve-out in the opening. Rules 1, 2, 3, 6 and 11
+  are `check-structure`'s; 5, 7 and 10 lean on the preset's
+  `feature-through-index`, `lib-without-fastify` and `no-circular` (which
+  match web `features/` paths too, measured); 4, 8 and 9 are review.
+- **References.** `server-skeleton.md`, `zod-type-provider.md`,
+  `web-skeleton.md`, `migrating-a-server.md` (step 4's order, ending with
+  `--warn-only` dropped and lowered dependency-cruiser rules raised), and
+  `research.md` (the sources pinned and dated, credited with
+  `ATTRIBUTION.md`).
+- **Skeleton check (acceptance 2).** In a scratch folder with fastify
+  5.12.8, `@fastify/type-provider-zod` 1.0.3, zod 4.6.7, its peers,
+  `fastify-plugin` 6.0.1, `close-with-grace` 2.5.0, `@fastify/rate-limit`
+  11.2.2, TypeScript 6.0.3 and vitest 4.1.12: all 23 TypeScript blocks,
+  each a whole module, extracted from the references; `tsc --noEmit` with
+  the house flags (plus `noUnusedParameters`) over the 20 server and shared
+  files (NodeNext) exit 0, and over the 6 web and shared files (bundler,
+  DOM) exit 0; vitest, 12 tests in 4 files through `buildTestApp` and
+  `inject()`, exit 0; `check-structure` strict, `depcruise` with the preset
+  and the house ESLint config, no finding; Prettier clean. A string assigned
+  to a number in `app.ts` made `tsc` exit 2. `server.ts` ran under tsx:
+  it served, exited 0 on SIGTERM, exited 1 naming a missing `DATA_DIR`, and
+  kept an environment variable over `.env`.
+- **Checker (acceptance 3 to 5).** Built in brief 27's run and not changed
+  here; house-style's `npm test` passes (188). The counts for brief 16's
+  table, from 2026-11-11 on
+  [house-style-part-2.md](../../wiki/house-style-part-2.md),
+  `check-structure --warn-only`, each exit 0: Almanac 36 (rule 1: 1, 2: 0,
+  3: 4, 6: 26, 11: 5), atrium 136 (1, 0, 6, 87, 42), wicket 21 (1, 0, 4, 15,
+  1).
+- **Measured.** A `.transform()` or a `.strict()` object in a response
+  schema answers 500; `z.looseObject({})` and `z.record` pass JSON through;
+  a declared 401 the guard answers differently is a 500; a `preHandler`
+  guard runs after validation; `@fastify/rate-limit`'s 429 reaches the error
+  handler. A feature that imports `type FeatureContext` from `app.ts` (as
+  Almanac's do) is a `no-circular` error, because the preset counts
+  type-only imports.
+- **Deviations.**
+  - `plugins/` holds no db plugin: the handle travels in the
+    `FeatureContext` (decision 2), opened and closed in `buildApp`.
+  - `ApiError` lives in `lib/`, since it imports nothing from Fastify.
+  - Each feature's plugin names its own options type instead of taking
+    `FeatureContext`, to avoid the cycle above.
+  - A missing `.env` file isn't fatal (a container has none); the loud
+    failure is the parse of the required settings, and `server.ts` logs
+    which file it read.
+  - The pins are the versions checked, not a bump: a server on Fastify
+    5.12.7 needn't move for this skill.
+  - Extra modules beyond step 2's list: `config.test.ts`, a second feature
+    (`lookup`) for the provider page, and `compareReplies` with its test.
+  - `ATTRIBUTION.md` gained an Influences bullet, outside the files listed
+    above.
+- **Left for the owner.** The house-style skill (SKILL.md, adoption.md),
+  the house-style README and brief 15 say a lowered rule's comment names
+  the brief that raises it; the controller's ruling of 2026-11-11 forbids
+  brief numbers in code comments. This skill's examples follow the ruling.
+- **Not checked here:** the skill being listed by its description in a live
+  session, which needs the plugin updated to 0.38.0 (an owner step).

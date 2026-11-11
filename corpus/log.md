@@ -138,3 +138,16 @@ library". House-style's checker takes exceptions for rules 1-17 and stops
 rule 9 warning on a trigger's own parts; ro-housing still reports 0. The
 vendor layer sits after `base`, measured. See
 [the brief](briefs/done/02-a-base-ui-skill-styled-with-tailwind.md).
+
+## [2026-11-11] done | Brief 03 - a code-structure skill for the Fastify and React apps
+
+`skills/code-structure/` (v0.38.0): 11 numbered rules for the Fastify
+servers and their React apps, each with its source and its
+`check-structure` rule, dependency-cruiser rule or review, and five
+references whose 23 TypeScript blocks compile and whose 12 tests pass
+against fastify 5.12.8, the zod type provider 1.0.3 and zod 4.6.7.
+`decisions.md` records the four structure decisions with their rejected
+alternatives. The checker was not changed; its Almanac, atrium and wicket
+counts stand. A feature that type-imports `FeatureContext` from `app.ts` is
+a dependency-cruiser cycle, so features name their own options type. See
+[the brief](briefs/done/03-a-code-structure-skill-for-fastify-and-react-apps.md).
