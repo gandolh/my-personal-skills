@@ -6,6 +6,10 @@ only its Base UI parts: the owner chose "whole apps to Tailwind" on
 the-board, lantern, Satchel, ward-auth, Almanac, Shelfmark, Postern, then
 Newspapper.
 
+A repo that writes its Base UI wrappers before this brief uses plain classes
+and state through `[data-*]` selectors in its one stylesheet, because `cn()`
+and the tokens don't exist yet; this migration converts them.
+
 Checked against `tailwindcss` 4.3.5 and `@tailwindcss/vite` 4.3.5 on
 2026-11-11.
 

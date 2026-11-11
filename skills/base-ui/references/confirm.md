@@ -25,15 +25,25 @@ A dialog that only says something ("Saved") is a toast
 ```tsx
 // src/components/ui/Confirm.tsx
 import { AlertDialog } from "@base-ui/react/alert-dialog";
-import { useCallback, useRef, useState, type ReactElement, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactElement, type ReactNode, type RefObject } from "react";
 import { Button } from "./Button";
 
-/** The alert's panel: centred at every width, small, title then text then actions. */
-function AlertPanel({ title, description, actions }: { title: ReactNode; description?: ReactNode; actions: ReactNode }) {
+/** The alert's panel: centred at every width, small, title then text then actions. Cancel, through `cancelRef`, has focus. */
+function AlertPanel({
+  title,
+  description,
+  actions,
+  cancelRef,
+}: {
+  title: ReactNode;
+  description?: ReactNode;
+  actions: ReactNode;
+  cancelRef: RefObject<HTMLButtonElement | null>;
+}) {
   return (
     <AlertDialog.Portal>
       <AlertDialog.Backdrop className="fixed inset-0 z-overlay bg-scrim motion-safe:transition-opacity motion-safe:duration-150 data-starting-style:opacity-0 data-ending-style:opacity-0" />
-      <AlertDialog.Popup className="fixed top-1/2 left-1/2 z-dialog w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-dialog bg-raised p-5 text-ink shadow-dialog outline-none motion-safe:transition-[opacity,scale] motion-safe:duration-150 data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0">
+      <AlertDialog.Popup initialFocus={cancelRef} className="fixed top-1/2 left-1/2 z-dialog w-[min(26rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-dialog bg-raised p-5 text-ink shadow-dialog outline-none motion-safe:transition-[opacity,scale] motion-safe:duration-150 data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0">
         <AlertDialog.Title className="text-title font-semibold">{title}</AlertDialog.Title>
         {description && (
           <AlertDialog.Description render={<div />} className="mt-1 text-body text-ink-muted">
@@ -58,13 +68,14 @@ export interface ConfirmActionProps {
 }
 
 /**
- * A button that asks first. Cancel comes first, so it has focus; the action
+ * A button that asks first. Cancel has focus (`initialFocus`); the action
  * runs once and shows "Working…"; a failure keeps the dialog open and says so.
  */
 export function ConfirmAction({ label, title, description, confirmLabel, danger = false, run }: ConfirmActionProps) {
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const runAction = () => {
     if (pending) return;
@@ -93,6 +104,7 @@ export function ConfirmAction({ label, title, description, confirmLabel, danger 
     >
       <AlertDialog.Trigger render={<Button variant={danger ? "danger" : "default"} />}>{label}</AlertDialog.Trigger>
       <AlertPanel
+        cancelRef={cancelRef}
         title={title}
         description={
           <>
@@ -106,7 +118,7 @@ export function ConfirmAction({ label, title, description, confirmLabel, danger 
         }
         actions={
           <>
-            <AlertDialog.Close render={<Button />} disabled={pending}>
+            <AlertDialog.Close ref={cancelRef} render={<Button />} disabled={pending}>
               Cancel
             </AlertDialog.Close>
             <Button variant={danger ? "danger" : "primary"} disabled={pending} onClick={runAction}>
@@ -138,6 +150,7 @@ export function useConfirm(): {
   const [request, setRequest] = useState<ConfirmRequest | null>(null);
   const [open, setOpen] = useState(false);
   const answer = useRef<(yes: boolean) => void>(() => undefined);
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const confirm = useCallback(
     (next: ConfirmRequest) =>
@@ -167,11 +180,14 @@ export function useConfirm(): {
       }}
     >
       <AlertPanel
+        cancelRef={cancelRef}
         title={request?.title}
         description={request?.description}
         actions={
           <>
-            <AlertDialog.Close render={<Button />}>Cancel</AlertDialog.Close>
+            <AlertDialog.Close ref={cancelRef} render={<Button />}>
+              Cancel
+            </AlertDialog.Close>
             <Button variant={request?.danger ? "danger" : "primary"} onClick={() => settle(true)}>
               {request?.confirmLabel ?? "Confirm"}
             </Button>
@@ -240,10 +256,21 @@ export function NoteActions({
 - **An alert dialog doesn't close on an outside press**, by design; Esc and
   Cancel close it. While `ConfirmAction` runs, neither does: `onOpenChange`
   returns early, and Cancel is disabled.
+- **Cancel has focus by name.** The popup's `initialFocus={cancelRef}` points
+  at the Cancel button, so the safe answer has focus however the actions are
+  ordered. Without it, "Cancel has focus" would hold only because Cancel is
+  the first tabbable element (Base UI 1.9.0).
 - **The page reports success.** The dialog closes when `run` resolves; the
   caller's own state (a row gone, a toast) says it worked.
 - **Description as a `<div>`.** `AlertDialog.Description` renders a `<p>`;
   `render={<div />}` lets it hold a paragraph of its own.
+- **A jsdom test of the confirm (rule 17).** Put a `// @vitest-environment
+  jsdom` docblock on the test file. Use `@testing-library/react` with
+  `@testing-library/user-event`, and find the dialog with
+  `findByRole("alertdialog", { name })`. Hold the action with a manual promise
+  (`new Promise<void>((resolve) => { release = resolve; })`) so the pending
+  state can be read, then assert on `document.activeElement` and the button's
+  `.disabled`; no `jest-dom` is needed.
 - **`check-base-ui` and the name `confirm`.** Rule 11 skips a `confirm` the
   file binds itself, as the `const { confirm } = useConfirm()` above, so the
   hook's call sites aren't findings.

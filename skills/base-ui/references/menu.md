@@ -154,4 +154,5 @@ export function BookMenu({ title, remove }: { title: string; remove: () => Promi
   holds the only copy.
 - **Submenus** are `Menu.SubmenuRoot` and `Menu.SubmenuTrigger`; they open
   on hover and on the arrow key.
-- **jsdom.** A menu opens a tick after the click; tests use `findByRole`.
+- **jsdom.** A menu opens a tick after the click; tests use `findByRole`. The
+  recipe for a wrapper's test is in [confirm.md](confirm.md) under Notes.

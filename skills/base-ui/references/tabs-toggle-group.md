@@ -113,6 +113,9 @@ export function RadioGroup<Value extends string>({
 }
 ```
 
+A wrapper may ship both looks (`list` and `segmented`) while the app uses
+only one.
+
 A filter, in feature code:
 
 ```tsx

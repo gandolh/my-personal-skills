@@ -37,6 +37,11 @@ node vendor/house-style/bin/check-base-ui.mjs [--warn-only] [--version 1.9.0] [r
 
 - `check:conventions` runs it, with `--warn-only` from the repo's harness
   brief until its own Base UI brief is done.
+- What it counts: errors are rules 1, 2, 3, 5, 6 (arbitrary colours only) and
+  11; warnings are 9 and 10. Rules 4 and 7, inline `style` under 5, and
+  radius, shadow and z literals under 6 are review only. A repo brief's
+  "record the counts for rules 4-7" means counts found in review, not checker
+  output.
 - Each finding is one line, `file:line rule-N error|warning: message`. Exit
   0 when no error is left, 1 when one is, 2 when it can't check (a bad flag,
   a malformed `conventions.json`). Warnings never fail the run.
@@ -153,6 +158,10 @@ or an attribute there, never from memory.
 A repo meets this skill through two briefs of its own, in the owner's order
 (Q20):
 
+- **Before its Tailwind brief**, a repo not yet on Tailwind writes the
+  wrappers with plain classes and state through `[data-*]` selectors in its
+  one stylesheet: `cn()` and the tokens don't exist yet. Its Tailwind brief
+  then converts them.
 - **Its Tailwind brief** follows
   [migrating-from-plain-css.md](references/migrating-from-plain-css.md)
   step by step. A repo already on Tailwind (ro-housing) skips to the token

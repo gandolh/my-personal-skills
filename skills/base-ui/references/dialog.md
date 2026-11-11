@@ -237,7 +237,8 @@ export function RenameBook({ title, rename }: { title: string; rename: (title: s
 - **Static rendering.** Portals render nothing under `renderToStaticMarkup`;
   a test that renders statically mocks `@base-ui/react/dialog` (Almanac has
   a stub for it).
-- **jsdom.** While a modal is open, the page behind it is hidden from
+- **jsdom.** A recipe for a wrapper's test is in [confirm.md](confirm.md)
+  under Notes. While a modal is open, the page behind it is hidden from
   `getByRole`; pass `{ hidden: true }` to reach it.
 - **A phone menu is a Drawer, not a positioned Dialog** (rule 15,
   [drawer.md](drawer.md)).
