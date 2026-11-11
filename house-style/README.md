@@ -24,6 +24,10 @@ here.
 | `tsconfig.base.json` | The compiler flags every package extends |
 | `knip.json` | Unused files and dependencies are errors; unused exports and types are warnings |
 | `.dependency-cruiser.cjs` | No cycles, no unresolvable imports, a feature used through its index only, no Fastify in `lib/` |
+| `bin/check-base-ui.mjs` | The Base UI and Tailwind checker, rules numbered as the `base-ui` skill's |
+| `bin/check-structure.mjs` | The code-structure checker, rules numbered as the `code-structure` skill's |
+| `bin/conventions.mjs` | What the two checkers share: reading `conventions.json`, walking the roots, the report |
+| `conventions.schema.json` | The JSON Schema of `conventions.json`, for editors |
 | `bin/sync.mjs` | The sync, run as `npm run house-style:sync` |
 | `CHANGELOG.md` | The upgrade notes |
 | `LICENSE` | MIT |
@@ -42,9 +46,9 @@ In the copy, `README.md` is a generated header in place of this page.
 - **The tags:** `house-style-v<version>`, such as `house-style-v1.0.0`.
 - **The sync:** `npm run house-style:sync -- <ref> [--check]`, with the npm
   script `"house-style:sync": "node vendor/house-style/bin/sync.mjs"`.
-- **The checkers** (not shipped yet): `bin/check-base-ui.mjs` and
-  `bin/check-structure.mjs`, run as `node vendor/house-style/bin/<name>.mjs`,
-  with their roots in a `conventions.json` at the repo root.
+- **The checkers:** `bin/check-base-ui.mjs` and `bin/check-structure.mjs`,
+  run as `node vendor/house-style/bin/<name>.mjs` from `check:conventions`,
+  with the repo's roots and exceptions in its `conventions.json`.
 
 ## The sync
 
@@ -73,6 +77,94 @@ npm run house-style:sync -- --check                     # compare with the heade
 The first time, the copy doesn't exist yet: run the library checkout's
 `house-style/bin/sync.mjs <ref>` once from inside the repo, then add the npm
 script. It refuses to run with the library checkout itself as the repo.
+
+## The checkers
+
+Two zero-dependency Node scripts check what a linter can't: where code lives and
+what it imports. Each reads the repo's `conventions.json`, walks its roots, and
+prints one line per finding, numbered as the skill that holds the rule numbers
+it:
+
+```
+web/src/ConfirmAction.tsx:1 rule-3 error: imports @base-ui/react/alert-dialog outside a ui folder (**/components/ui, **/features/*/ui): use or add the wrapper there
+```
+
+```sh
+node vendor/house-style/bin/check-base-ui.mjs [--warn-only] [--version 1.9.0] [repo-root]
+node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
+```
+
+- Exit 0 when no error is left, 1 when one is, and 2 when it can't check: a bad
+  flag, or a malformed `conventions.json` (with `--warn-only` too).
+- Warnings never fail the run. `--warn-only` shows every error as a warning, so
+  a repo runs a checker from its harness brief on and drops the flag once its
+  Base UI or server brief is done.
+- `repo-root` defaults to the working directory.
+
+| Checker | Rule | What it reports |
+|---|---|---|
+| `check-base-ui` | 1 | `@base-ui/react` not pinned exactly to `--version` (default 1.9.0), in each `package.json` from a web root up to the repo root |
+| | 2 | An import from the `@base-ui/react` root instead of a part's subpath |
+| | 3 | A Base UI import outside the `ui` folders (tests excepted) |
+| | 5 | A stylesheet other than the one, a CSS module, and the one without `@import "tailwindcss"` |
+| | 6 | An arbitrary colour in a class name: `bg-[#…]`, `text-[rgb(…)]`, `border-[hsl(…)]`, … |
+| | 9 | A `<X.Trigger>` whose first child is a component and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
+| | 10 | A `<Select.Root>` without `items` (a warning) |
+| | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
+| `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
+| | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
+| | 3 | `process.env` outside `config.ts`, and any `NODE_ENV`, in server and shared roots (tests excepted) |
+| | 6 | Request input parsed by hand (`schema.parse(request.body)`, a helper given `req.query`), and a route registered with no `schema` (a heuristic) |
+| | 11 | A file over 400 lines, in any root (a warning) |
+
+The other rules of the two skills are for review, except `code-structure`'s 5
+and 7 (a feature used through its index, no Fastify in `lib/`), which are the
+dependency-cruiser preset's, and unused files and dependencies, which are knip's.
+A test is `*.test.*`, `*.spec.*`, or a file under a `test`, `tests`,
+`__tests__`, `testing` or `e2e` folder. Comments, strings and regexes are
+masked before the source rules look, so a rule's text in a comment isn't a
+finding.
+
+## conventions.json
+
+One small file says where a repo's code is and which findings it accepts. It
+sits at the repo root, or in `scripts/` or `tools/` (two of them are an error),
+and its paths are from the repo root wherever it sits.
+
+```json
+{
+  "$schema": "./vendor/house-style/conventions.schema.json",
+  "web": ["web/src"],
+  "server": ["server/src"],
+  "shared": ["shared/src"],
+  "exceptions": [
+    {
+      "check": "structure",
+      "rule": 6,
+      "path": "server/src/app.ts",
+      "match": "\"/\"",
+      "reason": "GET / redirects to the web app and has no body to describe."
+    }
+  ]
+}
+```
+
+| Key | Default | What it is |
+|---|---|---|
+| `web`, `server`, `shared` | `web/src`, `server/src`, `shared/src`, where they exist | Source folders, as in `eslint.config.js` (`web/src`, not `web`). `*` matches within a folder name (`apps/*/src`); a root that matches nothing is an error. `[]` means none |
+| `ui` | `["**/components/ui", "**/features/*/ui"]` | Inside each web root, where Base UI may be imported. `*` and `**` |
+| `stylesheet` | `styles/index.css` | Inside each web root, the one stylesheet (`styles.css` in a repo that keeps that name) |
+| `exceptions` | none | Findings the repo accepts: `check` (`base-ui`, `structure`, or `house-style` for a lint rule's record), `rule` (its number in that skill), `path` (a file or folder; `*` and `**`), an optional `match` (text the finding's line or message contains, to accept one finding of several in a file), and a `reason` |
+
+- An exception without a `reason`, an unknown key, a rule number past the
+  check's last, or a path outside the repo is an error: the checker exits 2 and
+  names the file and line.
+- An exception may record a case no checker reports, such as an inline style
+  that holds data or a test helper's name, so one that covers no finding is
+  fine. One whose `path` names nothing in the repo is a warning.
+- A repo without the file gets a message and the default roots that exist.
+- [conventions.schema.json](conventions.schema.json) describes the same format
+  for editors; a test keeps it in step with `bin/conventions.mjs`.
 
 ## Adopting it
 
@@ -212,5 +304,8 @@ npm test
 
 `npm test` lints a small fixture repo (`test/fixtures/repo`, with its own
 tsconfig for the typed rules): each rule has a failing fixture that must report
-exactly that rule and a passing one that must report nothing. It also runs the
-presets on scratch projects and the sync against a scratch checkout.
+exactly that rule and a passing one that must report nothing. The checkers get
+the same, on `test/fixtures/base-ui` and `test/fixtures/structure`, plus every
+way `conventions.json` can be malformed. It also runs the presets on scratch
+projects (dependency-cruiser fails a boundary tree and passes a clean one) and
+the sync against a scratch checkout.

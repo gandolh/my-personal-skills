@@ -12,6 +12,7 @@
     "tsconfig.base.json",
     "knip.json",
     ".dependency-cruiser.cjs",
+    "conventions.schema.json",
     "CHANGELOG.md",
     "LICENSE"
   ],

@@ -34,6 +34,17 @@ and the pins below in one go (the `house-style` skill has the steps).
   `skipLibCheck`.
 - **knip** and **dependency-cruiser** presets.
 - **The sync**, `bin/sync.mjs`.
+- **The convention checkers**, run by `check:conventions`:
+  `bin/check-base-ui.mjs` (the `base-ui` skill's rules 1, 2, 3, 5, 6 and 11 as
+  errors, 9 and 10 as warnings; `--version` sets the Base UI pin, 1.9.0 by
+  default) and `bin/check-structure.mjs` (the `code-structure` skill's rules 1,
+  2, 3 and 6 as errors, 11 as a warning; 5 and 7 are the dependency-cruiser
+  preset's). Both take `--warn-only`, print `file:line rule-N severity: message`,
+  exit 1 on an error left and 2 when they can't check.
+- **`conventions.json`**, read by both checkers from the repo root, `scripts/`
+  or `tools/`: the `web`, `server` and `shared` roots, the `ui` folders, the
+  one `stylesheet`, and `exceptions`, each with its check, rule, path and a
+  required reason. `conventions.schema.json` describes it for editors.
 - **Pins**: ESLint 10.9.1, `@eslint/js` 10.0.1, `typescript-eslint` 8.72.2,
   TypeScript 6.0.3, `eslint-plugin-react-hooks` 7.1.1,
   `eslint-plugin-better-tailwindcss` 4.10.0, `eslint-plugin-n` 18.5.0,

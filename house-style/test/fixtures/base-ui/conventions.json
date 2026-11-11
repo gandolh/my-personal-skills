@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../conventions.schema.json",
+  "web": ["app/src", "*-pin/src", "plain-css/src"],
+  "server": [],
+  "shared": []
+}

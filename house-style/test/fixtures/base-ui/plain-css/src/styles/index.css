@@ -1,0 +1,4 @@
+/* @import "tailwindcss"; in a comment doesn't count. */
+:root {
+  --color-ink: #1a1a1a;
+}

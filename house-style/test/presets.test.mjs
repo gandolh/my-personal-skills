@@ -135,6 +135,40 @@ describe(".dependency-cruiser.cjs", () => {
       "not-to-unresolvable: src/missing.ts -> ./gone.js",
     ]);
   });
+
+  it("fails that tree with a non-zero exit", () => {
+    const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: root, encoding: "utf8" });
+    assert.notEqual(run.status, 0, run.stdout);
+  });
+
+  it("passes a clean tree: a feature used through its index, its own insides, and lib/ without Fastify", () => {
+    const clean = join(scratch, "depcruise-clean");
+    writeTree(clean, {
+      "package.json": JSON.stringify({ name: "fixture", type: "module" }),
+      ".dependency-cruiser.cjs": `module.exports = { extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))} };\n`,
+      "src/features/a/index.ts": 'import { x } from "./internal/x.js";\nexport const a = x;\n',
+      "src/features/a/internal/x.ts": "export const x = 1;\n",
+      "src/features/b/index.ts":
+        'import { a } from "../a/index.js";\nimport { pure } from "../../lib/pure.js";\nexport const b = a + pure;\n',
+      "src/lib/pure.ts": "export const pure = 2;\n",
+    });
+    const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: clean, encoding: "utf8" });
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    assert.match(run.stdout, /no dependency violations found/);
+  });
+
+  it("lets a repo lower one rule to a warning by its name, which then doesn't fail the run", () => {
+    const staged = join(scratch, "depcruise-staged");
+    writeTree(staged, {
+      "package.json": JSON.stringify({ name: "fixture", type: "module" }),
+      ".dependency-cruiser.cjs": `module.exports = {\n  extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))},\n  forbidden: [{ name: "no-circular", severity: "warn" }],\n};\n`,
+      "src/c1.ts": 'import { c2 } from "./c2.js";\nexport const c1 = (): unknown => c2;\n',
+      "src/c2.ts": 'import { c1 } from "./c1.js";\nexport const c2 = (): unknown => c1;\n',
+    });
+    const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: staged, encoding: "utf8" });
+    assert.equal(run.status, 0, run.stdout + run.stderr);
+    assert.match(run.stdout, /warn no-circular/);
+  });
 });
 
 describe("knip.json", () => {

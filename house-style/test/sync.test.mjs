@@ -100,7 +100,7 @@ describe("the first sync", () => {
     const run = sync(bootstrap, ["house-style-v1.0.0"]);
     assert.equal(run.status, 0, run.out);
     assert.match(run.out, new RegExp(`wrote house-style ${pkg.version} at ${v1}`));
-    for (const path of ["package.json", "eslint.config.js", "prettier.config.js", "tsconfig.base.json", "knip.json", ".dependency-cruiser.cjs", "bin/sync.mjs", "CHANGELOG.md", "LICENSE"]) {
+    for (const path of ["package.json", "eslint.config.js", "prettier.config.js", "tsconfig.base.json", "knip.json", ".dependency-cruiser.cjs", "conventions.schema.json", "bin/sync.mjs", "bin/check-base-ui.mjs", "bin/check-structure.mjs", "bin/conventions.mjs", "CHANGELOG.md", "LICENSE"]) {
       assert.deepEqual(readFileSync(join(vendor, path)), committed(v1, path), path);
     }
     assert.ok(!existsSync(join(vendor, "test")), "tests stay in the package");
@@ -115,6 +115,14 @@ describe("the first sync", () => {
     assert.match(header, /^- \*\*Upgrade notes:\*\* `house-style\/CHANGELOG\.md` in the same repository/m);
     assert.ok(!header.includes(scratch), "the header names no machine path");
     assert.ok(!/\| `[^`]+` \| Shipped with house-style \|/.test(header), "every shipped file has a description");
+  });
+
+  it("ships checkers that run from the copy", () => {
+    for (const checker of ["check-base-ui", "check-structure"]) {
+      const run = spawnSync(process.execPath, [join(vendor, "bin", `${checker}.mjs`), "--warn-only"], { cwd: app, encoding: "utf8" });
+      assert.equal(run.status, 0, `${checker}: ${run.stdout}${run.stderr}`);
+      assert.match(run.stdout, /found no conventions\.json/);
+    }
   });
 
   it("--check exits 0 after, with the tag or with the header's commit", () => {

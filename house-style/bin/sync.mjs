@@ -57,6 +57,10 @@ const DESCRIPTIONS = {
   "knip.json": "The knip preset: unused files and dependencies are errors, unused exports warnings",
   ".dependency-cruiser.cjs": "The dependency-cruiser preset: cycles, unresolvable imports, feature boundaries",
   "bin/sync.mjs": "This sync (`npm run house-style:sync`)",
+  "bin/check-base-ui.mjs": "The Base UI and Tailwind checker, run by `check:conventions`",
+  "bin/check-structure.mjs": "The code-structure checker, run by `check:conventions`",
+  "bin/conventions.mjs": "What the two checkers share: reading `conventions.json`, walking the roots, the report",
+  "conventions.schema.json": "The JSON Schema of `conventions.json`, for editors",
   "CHANGELOG.md": "The upgrade notes, one section per version",
   LICENSE: "MIT",
 };

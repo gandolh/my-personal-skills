@@ -1,0 +1,7 @@
+{
+  "name": "loose-pin",
+  "private": true,
+  "dependencies": {
+    "@base-ui/react": "^1.9.0"
+  }
+}

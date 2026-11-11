@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../conventions.schema.json",
+  "server": ["server/src", "rule-1/src", "rule-2/src", "rule-2-missing/src", "rule-3/src"],
+  "web": ["web/src"],
+  "shared": ["shared/src"]
+}
