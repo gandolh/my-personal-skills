@@ -381,6 +381,12 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
    `node --test` file under `house-style/`. Warnings don't fail the run, and
    `--warn-only` turns errors into warnings.
 
+   **Built 2026-11-11, inside brief 27's run (agent `house-style-h2`): don't
+   redo this step.** `house-style/bin/check-base-ui.mjs` with its fixtures and
+   tests, `conventions.json` and its schema are in house-style 1.0.0 (the
+   package README has the format). The ro-housing acceptance line below was
+   run then: 0 findings. This brief's skill names the checker's rule ids.
+
 6. **Wire it up.** Add a row to the README skills table and a
    `docs/history.md` entry, bump the version to the next minor version
    (2026-11-10: 0.35.0 and 0.36.0 are taken) in both plugin files, and update `corpus/wiki/status.md` and `log.md`. Add a

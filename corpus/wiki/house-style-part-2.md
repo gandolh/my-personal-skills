@@ -1,5 +1,5 @@
 ---
-summary: Part 2 of the house-style measurements (brief 27), collated from the repo harness briefs - each repo's lint findings for the typed rules and the house shapes, the timings of tsc, ESLint (projectService against project), Prettier and the tests, the knip results, and what no brief measured.
+summary: Part 2 of the house-style measurements (brief 27), collated from the repo harness briefs - each repo's lint findings for the typed rules and the house shapes, the timings of tsc, ESLint (projectService against project), Prettier and the tests, the knip results, what no brief measured, and the two convention checkers' counts per rule on ro-housing, Almanac, atrium and wicket (2026-11-11, for brief 16's table).
 updated: 2026-11-11
 ---
 
@@ -116,3 +116,51 @@ unused files.
 - A commit for the measurement, except ward-auth (`d92ea13`, ESLint at
   `5234256`). The rest are dated 2026-11-10, Almanac and Postern 2026-11-09.
 - A Docker build after the change, anywhere.
+
+## The convention checkers on four repos (2026-11-11)
+
+Measured, not collated: house-style's `check-base-ui` and `check-structure`
+on scratch copies (no `node_modules`, `.env*`, `data/` or `*.db`), each with a
+`conventions.json` written in the copy. Every rule's count was checked against
+a plain grep of the same thing.
+
+`check-base-ui`:
+
+| Repo | Roots | Findings | Exit |
+|---|---|---|---|
+| ro-housing (strict) | `web/src`, `"stylesheet": "styles.css"` | 0 | 0 |
+| wicket (`--warn-only`) | `web/src` | rule 3: 1 (`ConfirmAction.tsx`), rule 5: 1 (`styles.css`) | 0 (strict: 1) |
+| atrium (`--warn-only`) | `apps/web/src`, `"stylesheet": "styles/globals.css"` | rule 3: 7, rule 9: 1 | 0 |
+
+- ro-housing has nothing to spot-check: its 7 Base UI imports are all in
+  `components/ui/`, `Select.Root` is only re-exported, and it has no trigger
+  with a component child, native dialog or arbitrary colour. Without the
+  `stylesheet` key it reports 1, rule 5 on `styles.css`.
+- atrium's rule 3 findings are the 7 feature files its brief 03 moves behind
+  wrappers. Its rule 9 finding is false: `CoverCard.tsx`'s `Menu.Trigger`
+  holds a `DotsGlyph` icon, and the heuristic can't tell an icon from a button.
+  Rule 9 is a warning for that reason.
+
+`check-structure --warn-only`, for brief 16's table:
+
+| Repo | Roots (server; web; shared) | 1 | 2 | 3 | 6 (no schema + by hand) | 11 | All | Exit |
+|---|---|---|---|---|---|---|---|---|
+| Almanac | `server/src`; `web/src`; `shared/src` | 1 | 0 | 4 | 26 (16 + 10) | 5 | 36 | 0 |
+| atrium | `apps/api/src`; `apps/web/src`; `packages/*/src` | 1 | 0 | 6 | 87 (62 + 25) | 42 | 136 | 0 |
+| wicket | `server/src`; `web/src`; `shared/src` | 1 | 0 | 4 | 15 (10 + 5) | 1 | 21 | 0 |
+
+- **Rule 1** is each entry file, `index.ts`, calling `listen`: the rename to
+  `server.ts` is each server brief's.
+- **Rule 3:** `loadConfig(process.env)` in `index.ts` and the seed CLI's three
+  reads in Almanac and wicket; in atrium, `NODE_ENV` and a proxy read in
+  `index.ts:97-98`, `calibre.service.ts:19` (spreads the environment into a
+  child process's) and `scripts/seed-user.ts` ×3.
+- **Rule 6** equals the grep of route registrations with a literal path and
+  of `.parse(request.` and `.safeParse(request.`. atrium's 11 stream and binary
+  routes and wicket's `GET /` redirect are among them, as exceptions to come.
+- **Rule 11:** atrium's 42 are 17 in `packages/`, 16 in `apps/web`, 9 in
+  `apps/api`; Almanac's 5 include 2 tests; wicket's one is `app.ts` at 404
+  lines, before the reformat.
+- **dependency-cruiser** with the house preset on wicket's checkout (read
+  only): no violation in 55 modules.
+

@@ -389,6 +389,14 @@ Detail and evidence are in brief 16's "Server facts" section. The skill and
    `check:conventions` runs all three. Prove each rule bites with a
    deliberate violation in the fixtures.
 
+   **Built 2026-11-11, inside brief 27's run (agent `house-style-h2`): don't
+   redo this step.** `house-style/bin/check-structure.mjs` with its fixtures
+   and tests, `conventions.json` and its schema are in house-style 1.0.0, and
+   house-style's tests prove the dependency-cruiser preset fails a boundary tree
+   and passes a clean one, and that knip with its preset flags an unused
+   dependency. The Almanac and atrium acceptance lines below were run then;
+   the counts are on [house-style-part-2.md](../../wiki/house-style-part-2.md).
+
 4. **`migrating-a-server.md`.** The order is chosen so that each step leaves
    the server working:
    1. `config.ts` and the `server.ts` / `app.ts` split.

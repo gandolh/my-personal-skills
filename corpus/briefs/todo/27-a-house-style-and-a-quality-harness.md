@@ -520,3 +520,14 @@ Work happens on `main` with no PRs (Q4).
   [house-style.md](../../wiki/house-style.md) for the calls on four rules).
   The skill's adoption reference now matches it. Left: the tag and Wicket's
   proof run.
+- **2026-11-11, the convention checkers (agent `house-style-h2`).** Briefs 02
+  and 03's checker steps, built here so Wicket's proof run can wire them:
+  `house-style/bin/check-base-ui.mjs` and `bin/check-structure.mjs`, the
+  `conventions.json` they read (with `conventions.schema.json`), and their
+  fixtures and tests under house-style's `npm test`, which also shows the
+  dependency-cruiser preset failing a boundary tree and passing a clean one.
+  The adoption reference's `check:conventions` runs knip, dependency-cruiser
+  and both checkers. Counts on four real repos are on
+  [house-style-part-2.md](../../wiki/house-style-part-2.md). Left: the tag and
+  Wicket's proof run.
+

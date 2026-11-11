@@ -109,3 +109,22 @@ two long descriptions in the brief were already under 1,024 characters. See
 - **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
   [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
 
+## [2026-11-11] progress | Brief 27, the convention checkers
+
+- **Checkers.** `house-style/bin/check-base-ui.mjs` and
+  `bin/check-structure.mjs` are built, the checker steps of briefs 02 and 03,
+  in house-style 1.0.0 (unreleased). Both read a repo's roots and accepted
+  findings from `conventions.json` (root, `scripts/` or `tools/`), which a
+  shipped JSON Schema describes; an exception without a reason is an error.
+  `npm test` runs a failing and a passing fixture per rule, every malformed
+  `conventions.json`, `--warn-only`, and dependency-cruiser on a boundary tree
+  and a clean one.
+- **Real repos.** ro-housing's `check-base-ui`: 0. `check-structure
+  --warn-only`: Almanac 36, atrium 136, wicket 21, each exiting 0. The counts
+  per rule are on [house-style-part-2.md](wiki/house-style-part-2.md).
+- **Skill.** The adoption reference's `check:conventions` is knip,
+  dependency-cruiser and both checkers, `--warn-only` until the repo's Base UI
+  or server brief.
+- **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
+  [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
+
