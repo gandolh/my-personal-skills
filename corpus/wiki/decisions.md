@@ -1,5 +1,5 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10).
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09).
 updated: 2026-11-11
 ---
 
@@ -112,3 +112,45 @@ tsconfig with a dated comment; imbatranimOS's NestJS backend is exempt from
 scaffold and imbatranim-apps' server already run on Node's type stripping),
 and taking every strict flag at once (thousands of errors for no behaviour
 gained).
+
+## Server code grouped in `features/<name>/` folders
+_2026-11-09_ (v0.38.0, brief 03; Q23) - Each server groups its code by
+domain: `features/<name>/` holds the feature's `routes.ts`, `store.ts`, an
+optional `service.ts`, its tests, and the `index.ts` its callers import
+through. The folder is named `features`, after Almanac's `FeatureContext`.
+Rejected: the split by technical layer most servers have (`routes/`,
+`store/`, `db/`), which spreads one change over three folders, and
+`modules/`, atrium's name. The reason: the research agrees on grouping by
+domain (the Fastify demo's routes README, Collina), and atrium and
+comercial-website already did. A store too big to split stays whole in
+`db/` (Q54).
+
+## Dependencies as typed plugin options, not decorators
+_2026-11-09_ (v0.38.0, brief 03; Q24, Q56) - `app.ts` builds one
+`FeatureContext` and passes it to each feature's plugin as its options. A
+decorator holds only a request-scoped value (`request.user`), and tests
+pass fakes in the context. Rejected: the demo's decorator per repository,
+merged into `declare module "fastify"`: global, harder to grep, and a new
+habit in every repo. Found building it: a feature that imports
+`type FeatureContext` from `app.ts` closes an import cycle the house
+dependency-cruiser preset reports, so each feature names the part it takes
+in its own options type.
+
+## Explicit registration, no autoload
+_2026-11-09_ (v0.38.0, brief 03; Q24) - `app.ts` imports and registers each
+plugin and feature by name, in a fixed order: external plugins, the app's
+plugins, the features. Rejected: `@fastify/autoload`, the demo's choice. A
+feature registered because its file exists can't be found with grep, and
+loses its option types.
+
+## Zod route schemas through the official type provider
+_2026-11-09_ (v0.38.0, brief 03; Q25, Q28, Q53) - Every route declares its
+`params`, `querystring` and `body`, and a `response` schema for each status
+its handler sends, as zod schemas (from `shared/` when the client imports
+them) through `@fastify/type-provider-zod`. No handler parses request
+input. Rejected: TypeBox, the demo's and Collina's default, which would put
+a second schema beside each zod schema the web forms already use; and the
+hand parsing in 12 servers, which serialised every reply with
+`JSON.stringify`, so a field added to a row reached the client. Streams and
+binary replies are exempt with a `conventions.json` entry, and sports-app
+keeps TypeBox for its existing contract.

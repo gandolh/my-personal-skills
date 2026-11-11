@@ -1,5 +1,5 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), and brief 02's base-ui skill at version 0.37.0 (2026-11-11).
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, and brief 03's code-structure skill at version 0.38.0 (2026-11-11).
 updated: 2026-11-11
 ---
 
@@ -15,7 +15,7 @@ anything is built. The questions for it are in
 |---|---|---|
 | 01 The corpus skills learn blocked briefs and todos | | built, v0.34.0 |
 | 02 A base-ui skill, styled with Tailwind | conventions, patterns, checker | built, v0.37.0 |
-| 03 A code-structure skill for Fastify + React | layout, zod route schemas, boundaries | todo |
+| 03 A code-structure skill for Fastify + React | layout, zod route schemas, boundaries | built, v0.38.0 |
 | 04 Every repo on Base UI 1.9.0 | version bump across the estate | todo |
 | 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | todo |
 | 15 Enforce the two skills in every repo | checkers, rules files, gates | todo |
@@ -87,3 +87,16 @@ copy, every TypeScript block compiled against the 1.9.0 types. House-style
 9 no longer warns on a trigger's own parts. Each app's Tailwind and Base UI
 briefs now have the skill to follow, in the owner's Q20 order. Owner step:
 update the plugin to 0.37.0.
+
+## 2026-11-11: brief 03, the code-structure skill, v0.38.0
+
+The library is at v0.38.0, with 29 skills. Brief 03 is done:
+`code-structure` states 11 numbered rules for the Fastify servers and their
+React apps, each with its source and its `check-structure` rule,
+dependency-cruiser rule or "review", and five references: a server skeleton
+and a web API client whose 22 TypeScript blocks compile and whose tests
+pass against Fastify 5.12.8 and the zod type provider, the provider's
+measured behaviour, the research, and `migrating-a-server.md`, the order
+each repo's server brief follows (brief 16 tracks them; wicket's brief 13 is the
+first to use it). The checker was already built in house-style 1.0.0 and was not
+changed. Owner step: update the plugin to 0.38.0.
