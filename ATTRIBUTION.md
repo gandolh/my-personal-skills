@@ -16,6 +16,7 @@ credited in [Influences](#influences) at the bottom.
 
 | Skill(s) | Upstream | License | Pinned at |
 |---|---|---|---|
+| `hallmark` (v2.0.0) | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | MIT | `407fa68` (2026-11-05) |
 | `impeccable` (v4.1.1) + the 4 `impeccable-*` agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | `56f4452` (2026-08-22) |
 | `design-taste-frontend`, `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design`, `redesign-existing-projects` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) · [tasteskill.dev](https://www.tasteskill.dev/) | MIT | `72e2995` (2026-08-22) |
 | `unslop`, `thermo-nuclear-review` | [cursor/plugins](https://github.com/cursor/plugins) | MIT | `4612556` (2026-08-20) |
@@ -23,11 +24,49 @@ credited in [Influences](#influences) at the bottom.
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
 | `web-design-guidelines`, `writing-guidelines`, `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills`, `vercel-react-view-transitions` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
 
-License texts: [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
+License texts: [LICENSE-hallmark](LICENSE-hallmark) (also kept as `skills/hallmark/LICENSE`), [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
 [LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
 and `skills/impeccable/LICENSE` + `skills/impeccable/NOTICE.md` (Apache-2.0 requires both be retained).
 
 ### Notes per source
+
+**hallmark** (MIT) - the design skill every web UI in the estate is redesigned with (the
+owner's call of 2026-11-10). It brings the Floor (16 rules a page never ships without:
+tokens, focus, reduced motion, no invented facts, a phone layout that holds, and more), a
+tiered browser lint (`scripts/sloplint.mjs`, a static tier and a render tier), themes dealt
+per page, pages built from the business's job, and credited, openly licensed photographs.
+`skills/hallmark/` is upstream's skill folder at `407fa68`, copied verbatim; its folder name
+already matches its frontmatter `name`. 185 files, 7.2 MB.
+
+- **Left out:** the rest of the upstream repo (`site/`, 57 MB, the project's website;
+  `docs/`, `eval/`, its README, roadmap and plugin manifests). No photographs are bundled:
+  `scripts/photos.json` indexes 755 Wikimedia Commons files (CC0, public domain, CC BY,
+  CC BY-SA) by link. The 5 MB of JPEGs in `references/themes/` are the 50 theme previews
+  the deal step looks at, so they stay.
+- **Excluded for safety:** `scripts/install-hook.mjs`, which rewrites Claude Code's
+  `settings.json` (the project's, or the user's with `--global`) to add a PostToolUse hook,
+  and `scripts/install.mjs`, which copies the skill into `~/.claude/skills/` and other
+  agents' folders, beside the plugin's own copy. Skills are installed only through this
+  plugin, and the plugin's hooks do the edit-time work. `references/flow.md` (Edit-time
+  linting, the harness table) still names `install-hook.mjs`; the file is absent, which is
+  harmless. `scripts/lint-hook.mjs` stays: it runs only when something calls it.
+- **The guard:** `scripts/imagegen.mjs` stays. Whenever `TOGETHER_API_KEY` is set, the
+  comp step (signal 9) sends a description of the planned first screen to Together AI's
+  image API. The estate does not set the key, and setting it is the owner's choice alone.
+  Never set `TOGETHER_API_KEY`, never run `imagegen.mjs` unless the owner asks, never
+  install anything globally, and keep `puppeteer-core` and Chrome per repo (the skill's
+  own text offers `npm i -g puppeteer-core`; install it in the repo instead).
+- **Needs:** Node 18 or later and no packages for the static tier. The render tier
+  (`sloplint --render`, `capture.mjs`) needs `puppeteer-core` (in the repo, or named by
+  `HALLMARK_PUPPETEER`) and Chrome or Chromium (`CHROME_PATH` when it is somewhere
+  unusual). Its other network use is design work: `theme.mjs photos --save` downloads
+  from `upload.wikimedia.org` only, and the brand-truth step reads a named brand's
+  homepage and stylesheets under its own address checks.
+- **What it writes in a project:** a `.hallmark/` folder (pre-flight cache, build log,
+  before and after records and screenshots, its own `.gitignore`), `tokens.css` and
+  `base.css` beside the stylesheet, and a stamp comment at the top of the CSS.
+- **It runs on an existing design only when named:** `/hallmark redesign <path>` or
+  `/hallmark audit <path>` (its description keeps it off existing designs otherwise).
 
 **impeccable** (Apache-2.0) — the design build engine, 23 sub-commands and a
 deterministic anti-pattern detector. Vendored from the repo's own `plugin/` output, so
