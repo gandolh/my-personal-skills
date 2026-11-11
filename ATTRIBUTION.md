@@ -140,6 +140,12 @@ Adopted as method into first-party skills, with no code copied:
   production list behind `code-structure`; with mattpocock/skills' `setup-ts-deep-modules`
   for its import boundaries. Pins and dates are in `skills/code-structure/references/research.md`.
 
+- **[Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) 2.5.1** (`f6b7657`, MIT) -
+  palettes and type dealt by the client's trade, and its copy layer (a fact sheet before
+  the copy, a voice card per client, a budget for each rhetorical device, the rival test),
+  written fresh for Hallmark runs in `design-md-library/references/dealt-by-trade.md` and
+  `copy-layer.md`. No text, palette values or names copied; 2.5.1 itself is not vendored.
+
 - **[samber/developer-relations-skills](https://github.com/samber/developer-relations-skills)**
   (`readme-optimization`, MIT), **noffle's *Art of README***,
   **[oil-oil/beautify-github-readme](https://github.com/oil-oil/beautify-github-readme)**,

@@ -1,7 +1,7 @@
 ---
 name: design-md-library
-description: A library of 74 real-brand DESIGN.md design-system documents (Stripe, Linear, Vercel, Notion, Apple, Ferrari, Nintendo-2001, …) plus the method for using one — pick a reference brand, adapt its tokens into the project's own system, and hand the result to impeccable or the taste presets to build against. Also covers writing a DESIGN.md for a project that has no design system yet. Use when the user says "make it look like <brand>", "I want a Linear-style UI", "give me a design system", "what should the palette be", "write a DESIGN.md", "pick a visual direction", or "/design-md-library". Reference data, not a renderer — it decides the vocabulary, something else builds the screen.
-when_to_use: A frontend needs a coherent visual vocabulary — colors, type, spacing, radii, motion — and the project either has no design system or wants to borrow the feel of a known brand. Gives a concrete, agent-readable starting point instead of inventing tokens ad hoc. Not for auditing an existing UI (that is impeccable/critique) and not a licence to clone a brand wholesale — see the boundary below.
+description: A library of 74 real-brand DESIGN.md design-system documents (Stripe, Linear, Vercel, Notion, Apple, Ferrari, Nintendo-2001, …) plus the method for using one — pick a reference brand, adapt its tokens into the project's own system, and hand the result to Hallmark or impeccable to build against. Also holds palettes and type dealt by trade and a copy layer for Hallmark builds, and covers writing a DESIGN.md for a project that has no design system yet. Use when the user says "make it look like <brand>", "I want a Linear-style UI", "give me a design system", "what should the palette be", "write a DESIGN.md", "pick a visual direction", or "/design-md-library". Reference data, not a renderer — it decides the vocabulary, something else builds the screen.
+when_to_use: A frontend needs a coherent visual vocabulary — colors, type, spacing, radii, motion — and the project either has no design system or wants to borrow the feel of a known brand. Gives a concrete, agent-readable starting point instead of inventing tokens ad hoc. Not for auditing an existing UI (that is Hallmark's audit or impeccable's critique) and not a licence to clone a brand wholesale — see the boundary below.
 ---
 
 # The DESIGN.md library
@@ -59,9 +59,29 @@ and say which you chose and why.
    the reference recognisable (Vercel's mesh gradient at hero scale only; Linear's
    hairline-on-near-black; Stripe's dense tabular rhythm). Borrowing *everything*
    is how you get imitation; borrowing one move is how you get direction.
-5. **Hand off to build.** `impeccable` (`/impeccable craft`) or a taste preset
-   (`minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design`) does the
-   building. On any conflict, **impeccable's anti-slop bans win** — see its SKILL.md.
+5. **Hand off to build.** `hallmark` builds and redesigns web pages (a redesign
+   or an audit is called by name: `/hallmark redesign <path>`); `impeccable`
+   (`/impeccable craft`) covers polish and critique inside a project's own system.
+   The taste presets (`minimalist-ui`, `industrial-brutalist-ui`,
+   `high-end-visual-design`) run only when called by name. On any conflict,
+   **Hallmark's Floor wins** on a Hallmark run, and **impeccable's anti-slop bans**
+   on an impeccable one.
+
+## Dealt by trade, and the copy layer
+
+Two references carry what this library adopted from taste-skill 2.5, written
+fresh for Hallmark runs:
+
+- [`references/dealt-by-trade.md`](references/dealt-by-trade.md): name the
+  client's trade, let the trade pick the palette's material and the type group,
+  deal Hallmark's theme with the trade's words, and say in one sentence why it
+  fits. The client's own colours replace the deal.
+- [`references/copy-layer.md`](references/copy-layer.md): the fact sheet before
+  the first sentence, a voice card per client, a budget for each rhetorical
+  device, and the rival test. On a redesign the words stay unless a gate names
+  them or the owner approves a change.
+
+Hallmark's Floor wins over both.
 
 ## Writing a DESIGN.md for a project with none
 
