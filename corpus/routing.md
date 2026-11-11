@@ -25,12 +25,13 @@ is open work.
 | "let's build brief NN" | `corpus-flow` §3, then build |
 | "what does the wiki say about X" | `corpus-flow` §5 |
 | "grill me" | `grill-me` |
+| "redesign <app>", "the estate redesign board" | brief 28, with `hallmark` called by name (`/hallmark redesign <path>`, `/hallmark audit <path>`) inside each repo's redesign brief |
 
 ## READ / SKIP / SKILLS
 
 | Always READ | Always SKIP | Load SKILL |
 |---|---|---|
-| [index.md](index.md) | `skills/impeccable/`, `skills/design-md-library/references/` (vendored) | `corpus-flow` for any capture or completion |
+| [index.md](index.md) | `skills/impeccable/`, `skills/hallmark/`, `skills/design-md-library/references/design-md/` (vendored) | `corpus-flow` for any capture or completion |
 | [wiki/status.md](wiki/status.md) | `briefs/` wholesale | `readme-docs` for README.md and `docs/` |
 | [CLAUDE.md](CLAUDE.md) skill-change rules | | `unslop` for prose |
 

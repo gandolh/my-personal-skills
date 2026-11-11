@@ -102,7 +102,8 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | Ready to build, 1–2 files | build (small) | brief → implement inline |
 | Research a topic / compare options / sourced report | research | inline web search (gated — see below) |
 | "what should we work on" / audit the repo / find the debt | audit | improve (gated — returns a ranked list) |
-| Design or redesign a frontend / UI polish | design | impeccable (+ design-md-library for direction) |
+| Redesign an existing web UI / audit one by path | redesign | hallmark, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>`; in the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28) |
+| Design a new frontend / UI polish | design | impeccable (+ design-md-library for direction) |
 | Accessibility / UI-compliance check on code | design (check) | web-design-guidelines |
 | Docs or prose need a style pass | docs | writing-guidelines (+ unslop if AI-drafted) |
 | Need a diagram for docs or a design | docs | diagram-design |
@@ -183,7 +184,8 @@ generic spine:
 | Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
 | Research a topic / compare options / sourced report | **research** | inline web search, then propose options — never auto-build |
 | "what should we work on next" / audit / find the tech debt | **audit** | `improve` — survey, vet, rank; promoted findings become briefs |
-| Design or redesign a frontend, UI polish, design audit | **design** | `impeccable` — the build engine; `design-md-library` first if the visual direction is unset |
+| Redesign an existing web UI, or audit one by path | **redesign** | `hallmark`, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>` (its description keeps it off existing designs otherwise). In the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28): proposals first, code only after the owner approves the app on the board. `design-md-library`'s `dealt-by-trade.md` and `copy-layer.md` go with it. **Guard:** never set `TOGETHER_API_KEY`, never run Hallmark's `imagegen.mjs` unless the owner asks, never install anything globally; `puppeteer-core` and Chrome stay per repo |
+| Design a new frontend, UI polish, design critique | **design** | `impeccable` — the build engine; `design-md-library` first if the visual direction is unset |
 | "is this accessible" / UI compliance on source | **design (check)** | `web-design-guidelines` — static, rules fetched fresh |
 | Review docs/prose voice, tone, terminology | **docs** | `writing-guidelines`; run `unslop` first if the text was AI-drafted |
 | A diagram would explain it better than prose | **docs** | `diagram-design` |
@@ -204,7 +206,7 @@ or edit source until you have said what you intend and the user has agreed — o
 *every* path above, including the ones that look too small to bother with. "It was
 obviously what they wanted" is how a router turns into an unreviewed agent.
 
-**Research, audit and design are gated, not auto-built.** `research`, `audit` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result or an `improve` audit straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** in the main thread, not fanned out to a subagent, unless the user asks otherwise.
+**Research, audit and design are gated, not auto-built.** A `redesign` in the estate stops at the board: the proposal goes on the estate redesign board, and no code changes until the owner approves that app there. `research`, `audit` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result or an `improve` audit straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** in the main thread, not fanned out to a subagent, unless the user asks otherwise.
 
 ---
 
@@ -225,7 +227,7 @@ Output in **this exact format** and stop. Trim aggressively.
 ```
 ## Route Plan — <one-line summary>
 
-**Intent:** <capture / build (dispatched) / build (inline) / review / PR open / query / closeout>
+**Intent:** <capture / build (dispatched) / build (inline) / redesign / design / review / PR open / query / closeout>
 
 **Workspace:** corpus/ present <new this session? yes/no>
 **Context loaded:**
