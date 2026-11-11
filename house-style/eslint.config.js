@@ -271,6 +271,11 @@ export function houseStyle(options = {}) {
         "vitest/valid-expect": ["error", { maxArgs: 2 }],
         // The house asserts on a thrown error inside its `catch`, which this rule flags every time.
         "vitest/no-conditional-expect": "off",
+        // A hook that checks the state it set up is part of the test, not a stray assertion.
+        "vitest/no-standalone-expect": [
+          "error",
+          { additionalTestBlockFunctions: ["beforeAll", "beforeEach", "afterAll", "afterEach"] },
+        ],
       },
     });
   }

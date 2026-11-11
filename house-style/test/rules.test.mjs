@@ -140,6 +140,12 @@ const CASES = [
     pass: ["server/src/tests/conditional-expect.pass.test.ts"],
   },
   {
+    rule: "vitest/no-standalone-expect",
+    area: "an expect in a hook belongs to the tests it sets up",
+    fail: "server/src/tests/standalone-expect.fail.test.ts",
+    pass: ["server/src/tests/expect-in-hook.pass.test.ts"],
+  },
+  {
     rule: "no-restricted-syntax",
     area: "enum",
     fail: "server/src/shapes/enum.fail.ts",
