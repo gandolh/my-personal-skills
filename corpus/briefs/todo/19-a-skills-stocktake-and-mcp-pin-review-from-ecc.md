@@ -50,7 +50,11 @@ On-invoke costs:
 | `plan-split-dispatch` | ~8.6k |
 | `orchestrate` | ~6.2k |
 | `corpus-docs-site` | ~5.8k |
-| `redesign-existing-projects` | ~5.7k |
+
+A seventh row, the taste suite's redesign preset (~5.7k), went when brief 24
+retired it in v0.40.0. Since then the four taste skills load only when called
+by name, so `design-taste-frontend`'s ~33.7k no longer arrives by itself, and
+`hallmark` (~4.6k for its `SKILL.md`) is new.
 
 `orchestrate` is listed twice, once as the skill and once as the command
 (~120 tokens).

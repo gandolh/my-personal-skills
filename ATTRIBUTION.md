@@ -18,7 +18,7 @@ credited in [Influences](#influences) at the bottom.
 |---|---|---|---|
 | `hallmark` (v2.0.0) | [Nutlope/hallmark](https://github.com/Nutlope/hallmark) | MIT | `407fa68` (2026-11-05) |
 | `impeccable` (v4.1.1) + the 4 `impeccable-*` agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | `56f4452` (2026-08-22) |
-| `design-taste-frontend`, `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design`, `redesign-existing-projects` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) · [tasteskill.dev](https://www.tasteskill.dev/) | MIT | `72e2995` (2026-08-22) |
+| `design-taste-frontend`, `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) · [tasteskill.dev](https://www.tasteskill.dev/) | MIT | `72e2995` (2026-08-22), held; superseded upstream |
 | `unslop`, `thermo-nuclear-review` | [cursor/plugins](https://github.com/cursor/plugins) | MIT | `4612556` (2026-08-20) |
 | `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | MIT | `648c2a5` (2026-08-22) |
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
@@ -76,8 +76,17 @@ It expects `npx impeccable` for some paths and a browser for live mode.
 **taste-skill** (MIT) — vendored verbatim; directories are named for each skill's
 **frontmatter `name`** rather than its upstream folder (`taste-skill/` → `design-taste-frontend/`,
 `soft-skill/` → `high-end-visual-design/`, `brutalist-skill/` → `industrial-brutalist-ui/`,
-`minimalist-skill/` → `minimalist-ui/`, `redesign-skill/` → `redesign-existing-projects/`),
-because Claude Code resolves skills by directory. Contents are unmodified.
+`minimalist-skill/` → `minimalist-ui/`), because Claude Code resolves skills by directory.
+Contents are unmodified apart from one frontmatter line: since v0.40.0 each carries
+`disable-model-invocation: true`, so the four run only when called by name, the change
+upstream made to its classics in 2.1.x.
+
+**Held at `72e2995` on purpose** (2026-11-10). Upstream has moved on: 2.5 rebuilt
+`design-taste-frontend` as a 40 MB company-website system, and the classics moved to
+Leonxlnx/taste-skill-classics. Hallmark is now the design skill, and 2.5's useful ideas
+are adopted, not vendored (see [Influences](#influences)), so the four are kept as they
+are and not re-pinned. Upstream's `redesign-skill/` was vendored until v0.39.0 and retired
+in v0.40.0, since Hallmark redesigns and audits by path.
 
 The upstream platform-specific skills (`gpt-tasteskill`, `stitch-skill`, `image-to-code-skill`,
 `taste-skill-v1`), the image-generation skills (`imagegen-frontend-web`, `imagegen-frontend-mobile`,

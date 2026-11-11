@@ -71,7 +71,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 | Skill | What it does |
 |---|---|
 | `impeccable` | The design build engine: 23 sub-commands, an anti-pattern detector, live browser iteration (Apache-2.0) |
-| `design-taste-frontend` + `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design`, `redesign-existing-projects` | Anti-slop frontend direction and presets; each defers to impeccable on conflict (MIT) |
+| `design-taste-frontend` + `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | Anti-slop frontend direction and presets, held at their 2026-08 pin and run only when called by name; each defers to impeccable on conflict (MIT) |
 | `design-md-library` | 74 real-brand `DESIGN.md` references and the method for adapting one into your own tokens |
 | `base-ui` | React UI on Base UI with Tailwind: 17 numbered rules, each with its `check-base-ui` id or review, copy-ready wrappers compiled against Base UI 1.9.0, the Light / Dark / System switch, and the method for moving an app from plain CSS to Tailwind |
 | `web-design-guidelines` | UI review against Vercel's Web Interface Guidelines, fetched fresh each run (MIT) |
