@@ -408,3 +408,43 @@ the per-repo bumps. Work happens on `main`, with no PRs (Q4).
   checker reports only real findings. Record the count in the outcome note.
 - `bash corpus/lint.sh` passes, and both plugin files read the next minor
   version.
+
+## Outcome (2026-11-11, v0.37.0)
+
+Built `skills/base-ui/`: SKILL.md (177 lines) with 17 numbered rules, each
+with its reason and its `check-base-ui` rule or "review", and 16 references.
+
+- **Rules.** 1-13 as step 2 lists them. The owner's calls of 2026-11-10 that
+  the brief says to build as rules became 14 (the Light / Dark / System
+  switch, Q18), 15 (the phone `Drawer`, Q40), 16 (`RadioGroup` for a filter
+  or a device-only setting, a guarded `ToggleGroup` for a picker that saves,
+  Q41 and Q57) and 17 (jsdom only for wrappers with logic, role queries,
+  Q60 and Q62). The rest of the decisions sit inside rules 3, 5, 6, 11, 12
+  and 13, and in the references.
+- **References.** The twelve step 3 names, plus `drawer.md`,
+  `combobox.md` and `toolbar.md` (the components this section says the
+  references cover) and `theme.md` (rule 14's mechanism, from Postern).
+- **API check (acceptance 2).** `@base-ui/react` 1.9.0, React 19.2.6,
+  `@types/react` 19.2.15 and TypeScript 6.0.3 in a scratch folder; all 37
+  TypeScript blocks, each a whole module, compiled with `tsc --noEmit`
+  (`strict`, `jsx: react-jsx`, plus the house base flags): exit 0. A
+  misspelt prop made it exit 2. The data attributes and CSS variables in
+  class strings were checked against each part's table in the package's own
+  docs. The extracted stylesheet builds with Tailwind 4.3.5, and
+  `check-base-ui` reports nothing on the extracted tree.
+- **Checker.** Built in brief 27's run; its ro-housing run (0 findings,
+  `"stylesheet": "styles.css"`) was repeated after this brief's two changes
+  to it, still 0: `conventions.json` now takes base-ui rules 1-17 (was 13),
+  and rule 9 skips a first child that is the trigger's own part
+  (`<Select.Value>` in `<Select.Trigger>`), with a failing and a passing
+  fixture. House-style's `npm test`: 188 pass.
+- **Deviations.** `paths` adds `**/*.tsx` to the three globs above, which
+  missed 30 of the estate's 103 files that import Base UI (comercial-website,
+  public-resource-map, sports-app, trips, imbatranimOS's core). The vendor
+  layer goes after `base`, not first as the facts above say: measured in
+  Chrome, a vendor layer declared first loses its border, padding and margin
+  to Tailwind's reset. public-resource-map's brief 04 declares it first and
+  follows the skill when built; Almanac's brief 03 already puts its
+  FullCalendar layer after `base`.
+- **Not checked here:** the skill being listed by its description in a live
+  session, which needs the plugin updated to 0.37.0 (an owner step).

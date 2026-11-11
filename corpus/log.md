@@ -128,3 +128,13 @@ two long descriptions in the brief were already under 1,024 characters. See
 - **Left:** the tag `house-style-v1.0.0` and Wicket's proof run. See
   [the brief](briefs/todo/27-a-house-style-and-a-quality-harness.md).
 
+## [2026-11-11] done | Brief 02 - a base-ui skill, styled with Tailwind
+
+`skills/base-ui/` (v0.37.0): 17 numbered rules for React UI on Base UI 1.9.0
+with Tailwind 4, each with its `check-base-ui` rule or review, and 16
+references whose 37 TypeScript blocks compile against the 1.9.0 types.
+`decisions.md` records "Base UI conventions as a skill, not a shared
+library". House-style's checker takes exceptions for rules 1-17 and stops
+rule 9 warning on a trigger's own parts; ro-housing still reports 0. The
+vendor layer sits after `base`, measured. See
+[the brief](briefs/done/02-a-base-ui-skill-styled-with-tailwind.md).
