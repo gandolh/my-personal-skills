@@ -168,14 +168,17 @@ A reviewer works through these, skipping what the tools report:
 
 ## The pins
 
-Exact versions, the same in every server (`save-exact=true`):
+The versions the skeletons were checked on. Each server pins exact
+versions (`save-exact=true`); one already on another patch of the same
+minor (Fastify 5.12.7) needn't bump for this skill, and a package it adds
+takes the version below:
 
 | Package | Version | Note |
 |---|---|---|
-| `fastify` | `5.12.8` | SocialEvents moves from 5.8.5 first |
+| `fastify` | `5.12.8` | any 5.12.x; SocialEvents moves from 5.8.5 first |
 | `@fastify/type-provider-zod` | `1.0.3` | needs zod 4.2 or later |
 | `@fastify/swagger`, `openapi-types` | `9.9.3`, `12.1.3` | the provider's required peers: npm installs them, so pin them, and name them in the repo's dependency notes |
-| `zod` | `4.6.7` | atrium, comercial-website's `backend` and public-resource-map move from zod 3 first |
+| `zod` | `4.6.7` | 4.2 or later; atrium, comercial-website's `backend` and public-resource-map move from zod 3 first |
 | `fastify-plugin` | `6.0.1` | |
 | `close-with-grace` | `2.5.0` | |
 | `@fastify/rate-limit` | `11.2.2` | where a repo limits; without it the 404 handler drops its `preHandler` |

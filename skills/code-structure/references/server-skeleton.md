@@ -132,9 +132,12 @@ closeWithGrace({ delay: 10_000, logger: app.log }, async ({ signal, err }) => {
 await app.listen({ host: config.host, port: config.port });
 ```
 
-- **Only this file listens** (rule 1). It is also the one file in the server
-  allowed to print, through `houseStyle()`'s `console` option, though it
-  logs through `app.log` here.
+- **Only this file listens** (rule 1). Like a seed CLI, it may print, through
+  `houseStyle()`'s `console` option, though it logs through `app.log` here.
+- **Run on 2026-11-11** with `tsx`: it served `GET /api/books`, closed with
+  exit 0 on SIGTERM, exited 1 printing the `ConfigError` without
+  `DATA_DIR`, and kept an environment variable over the same key in
+  `.env`.
 - **The timeouts are the repo's.** `connectionTimeout` cuts a socket that
   stays silent mid-request, so a long poll must answer sooner or the value
   goes up (wicket's 25 s poll, lantern's 26 s record route, ward-auth's slow

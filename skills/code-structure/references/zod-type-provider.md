@@ -92,6 +92,12 @@ export const lookupRoutes: FastifyPluginAsyncZod<LookupOptions> = async (app, { 
 };
 ```
 
+```ts
+// server/src/features/lookup/index.ts
+// The feature's public surface, as for books: app.ts registers the routes from here.
+export { lookupRoutes, type Lookup, type LookupOptions } from "./routes.js";
+```
+
 A feature is tested alone the same way: a bare Fastify with the two
 compilers, the plugin registered with fakes for its options.
 

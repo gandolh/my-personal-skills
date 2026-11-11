@@ -94,7 +94,7 @@ The library is at v0.38.0, with 29 skills. Brief 03 is done:
 `code-structure` states 11 numbered rules for the Fastify servers and their
 React apps, each with its source and its `check-structure` rule,
 dependency-cruiser rule or "review", and five references: a server skeleton
-and a web API client whose 22 TypeScript blocks compile and whose tests
+and a web API client whose 23 TypeScript blocks compile and whose tests
 pass against Fastify 5.12.8 and the zod type provider, the provider's
 measured behaviour, the research, and `migrating-a-server.md`, the order
 each repo's server brief follows (brief 16 tracks them; wicket's brief 13 is the

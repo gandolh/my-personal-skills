@@ -15,7 +15,7 @@ Read on 2026-11-09:
 | Fastify's own docs, the [fastify repo's `docs/`](https://github.com/fastify/fastify/tree/main/docs): the Plugins guide, the Encapsulation and Type-Providers references, the Testing guide and Recommendations | `main` at `0b076ca`, 2026-11-07 | MIT | The framework's own guidance. fastify.dev was unreachable from that session, so the repo was read instead |
 | The official reference app, [fastify/demo](https://github.com/fastify/demo) | `895908e`, 2026-10-22 | MIT | A whole app: `server.ts` and `app.ts`, `plugins/external`, `plugins/app`, `routes/`, repositories as plugins, a test helper |
 | Matteo Collina's `fastify-best-practices` skill, in [mcollina/skills](https://github.com/mcollina/skills) | `c75d70d`, 2026-10-18 | MIT | A Fastify lead maintainer's rules for agents, with a list of anti-patterns |
-| Matt Pocock's `setup-ts-deep-modules`, in [mattpocock/skills](https://github.com/mattpocock/skills) | reviewed 2026-11-09 (library brief 18) | MIT | A folder's root files are its entry points, the rest is private, no cycles, and a proof that the rules bite: the design of the dependency-cruiser preset |
+| Matt Pocock's `setup-ts-deep-modules`, in [mattpocock/skills](https://github.com/mattpocock/skills) | `4ae2317`, 2026-10-31 (read for the library's brief 18) | MIT | A folder's root files are its entry points, the rest is private, no cycles, and a proof that the rules bite: the design of the dependency-cruiser preset |
 | Community write-ups | 2026-11-09 | | They agree with the above and add nothing |
 
 Rechecked on 2026-11-11 for this build: the docs as shipped in the `fastify`
