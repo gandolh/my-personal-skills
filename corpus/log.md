@@ -186,3 +186,21 @@ imports; rule 11 skips tests; rule 5 names the `"stylesheet"` key; the Stop
 hook finds `check:fast` from the saved files; and 14 documentation notes. The
 knip preset can't carry a `scripts/` entry, so the README says so. No board
 ticket. The owner tags `house-style-v1.1.0`.
+
+## [2026-11-11] done | house-style 1.2.0, from the 23 adopting repos
+
+house-style 1.2.0 and plugin v0.42.0 fold in the findings of the 23 repos that
+adopted 1.1.0. Code (two builders' first half): `scripts: []` no longer
+crashes; the test relaxations and the vitest block are two widths of one idea
+of a test file; `no-console` is off in tests; the `playwright` option;
+`vitest/no-standalone-expect` counts hooks as test blocks; dependency-cruiser
+allows React Router's `+types`; `conventions.json` gained `env`; and an early
+block sets `tsconfigRootDir`. Two findings needed no code (check-structure with
+no server root, `module: bundler`). Docs: the README, the adoption reference
+and the skill carry 30 notes from the repos' outcomes, and
+`skills/house-style/references/recipes.md` is new (per-folder blocks,
+`react-refresh`, an Astro setup whose snippets were each run once). The
+CHANGELOG lists, per repo, the blocks and exceptions the sync retires and the
+`no-standalone-expect` directives to delete. No board ticket. The controller canaries
+the candidate on three adopters, then tags `house-style-v1.2.0`. A
+todo asks corpus-flow to leave room in a brief for its outcome note.

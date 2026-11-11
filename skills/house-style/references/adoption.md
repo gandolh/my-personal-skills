@@ -118,8 +118,9 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
   root's.
 
 - `.prettierignore`: `*.md`, `vendor/house-style/` and other vendored copies,
-  `.claude/settings.local.json` (Prettier doesn't read `core.excludesFile`, so
-  a gitignored file is still checked), lockfiles, `dist/`, `coverage/`, generated files, frozen test fixtures,
+  `.claude/settings.local.json` (Prettier honours the repo's `.gitignore` but not
+  a global excludes file such as `core.excludesFile`, so a file ignored only
+  there is still checked), lockfiles, `dist/`, `coverage/`, generated files, frozen test fixtures,
   generated meta JSON, any stylesheet still in `layer(legacy)`, AssemblyScript
   sources (Prettier can't parse their decorators), sources a hash test checks
   against committed binaries, and Docusaurus workspaces. Anchor root folders
@@ -272,7 +273,7 @@ paths from the repo root; the rest are globs.
 | `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
 | `server` | none | Node folders; no rule is scoped to them yet |
 | `scripts` | `["scripts"]` | Script folders, where `console` and `process.env` are allowed. Folder paths or folder globs (`games/*/scripts`), not file globs |
-| `tests` | `**/*.test.*`, `**/*.spec.*` | The files the vitest rules apply to. Write the globs with extensions (`**/*.test.{ts,tsx}`): `**/*.test.*` also matches `tsconfig.test.json`, which ESLint then parses as JavaScript |
+| `tests` | `**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}`, and the same for `.spec` | The files the vitest rules apply to. Write the globs with extensions (`**/*.test.{ts,tsx}`): `**/*.test.*` also matches `tsconfig.test.json`, which ESLint then parses as JavaScript |
 | `playwright` | `[]` | Globs of Playwright specs: they get the test relaxations (`!` as a warning, `process.env` and `console` allowed), and the vitest block ignores them |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` and `*.d.ts` |
 | `console` | none | App files allowed to print (a CLI entry, a module that logs before the logger exists); their env reads are still errors |
@@ -296,9 +297,9 @@ checkers count as a test or a test helper (`*.test.*`, `*.spec.*`, jest's
 `*-spec.*`, and any file under `test`, `tests`, `__tests__`, `testing` or
 `e2e`) plus `tests` and `playwright`. The vitest block applies to `tests`
 alone, minus `playwright`, because a helper in a test folder isn't a test file
-and a Playwright spec isn't a vitest file. So a repo whose jest specs sit in
-`apps/backend/test/` doesn't list that folder under `tests`: that would put
-the vitest rules on them.
+and a Playwright spec isn't a vitest file. A repo whose jest specs sit in
+`apps/backend/test/` needs no `tests` entry for the relaxations, and an entry
+would also put the vitest rules on them: a choice, not a retirement.
 
 Three options, three exemptions:
 
@@ -468,9 +469,10 @@ runs it (atrium).
   `scripts/check-fast.mjs` is reported as unused.
 
   In a root without `"type": "module"`, knip reads `knip.config.js` and
-  ignores `.mjs` and `.cjs` (it reported `knip.config.cjs` as an unused file
-  and left its entries unread), while the ESLint and Prettier configs can be
-  `.mjs`. Write the `.js` file as CommonJS there (checked with knip 6.44.2):
+  ignores `.cjs` (it reported `knip.config.cjs` as an unused file and left its
+  entries unread), while the ESLint and Prettier configs can be `.mjs`. The
+  `.js` file may be ESM or CommonJS (both loaded in a typeless root); the
+  CommonJS form, checked with knip 6.44.2, is:
 
   ```js
   // knip.config.js, in a root without "type": "module"
@@ -505,8 +507,8 @@ runs it (atrium).
   it can also give the rule a `pathNot`: `forbidden: [{ name: "no-circular",
   to: { circular: true, pathNot: "^src/legacy/" } }]`. The preset lets
   `not-to-unresolvable` pass `virtual:` ids (Vite virtual modules), so a repo
-  needs no override for them, and it allows React Router's generated
-  `./+types/<route>` imports the same way. `check-structure`'s rule 3 counts `process.env`
+  needs no override for them, and it allows Astro's `astro:` modules and
+  React Router's generated `./+types/<route>` imports the same way. `check-structure`'s rule 3 counts `process.env`
   reads even where ESLint lowers `n/no-process-env`, so a harness brief states
   both.
   A route file that imports a type from `app.ts` (`import type {

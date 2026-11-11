@@ -251,8 +251,9 @@ and its paths are from the repo root wherever it sits.
    `entry` replaces it anyway. So the repo lists `scripts/*.{js,mjs,ts}` itself
    (as above), or `scripts/check-fast.mjs` is reported as an unused file.
    In a root without `"type": "module"`, knip reads `knip.config.js` and
-   ignores `.mjs` and `.cjs` (ESLint and Prettier configs can be `.mjs` there),
-   so write the file as CommonJS under the `.js` name:
+   ignores `.cjs` and `.mjs` (ESLint and Prettier configs can be `.mjs` there).
+   The `.js` file may be either form; the CommonJS one, checked with knip
+   6.44.2, is:
 
    ```js
    // knip.config.js, in a root without "type": "module"
@@ -292,7 +293,8 @@ and its paths are from the repo root wherever it sits.
    [adoption reference](../skills/house-style/references/adoption.md).
 
 3. `.prettierignore` lists `*.md` and `vendor/`, and `.claude/settings.local.json`
-   (Prettier doesn't read `core.excludesFile`, so a gitignored file still gets
+   (Prettier honours the repo's `.gitignore` but not a global excludes file
+   such as `core.excludesFile`, so a file ignored only there still gets
    checked). The ESLint config and the knip preset ignore `vendor/` already. Anchor root folders (`/data/`,
    `/uploads/`, `/output/`): an unanchored `uploads/` also hides
    `src/uploads/`.
@@ -319,7 +321,7 @@ globs from the repo root.
 | `web` | none | React folders: the hooks rules, and the Tailwind rules when `tailwind` is set |
 | `server` | none | Node folders; no rule is scoped to them yet |
 | `scripts` | `["scripts"]` | Folders of scripts run by hand (docs capture helpers, say): they print and read the environment. Folder paths, or folder globs (`games/*/scripts`), not file globs: each becomes `<folder>/**` |
-| `tests` | `**/*.test.*`, `**/*.spec.*` | The files the vitest rules apply to. Write the globs with extensions (`**/*.test.{ts,tsx}`): `**/*.test.*` also matches `tsconfig.test.json`, which ESLint then parses as JavaScript. The test relaxations (below) reach these and more |
+| `tests` | `**/*.test.{ts,tsx,mts,cts,js,jsx,mjs,cjs}`, and the same for `.spec` | The files the vitest rules apply to. Write the globs with extensions (`**/*.test.{ts,tsx}`): `**/*.test.*` also matches `tsconfig.test.json`, which ESLint then parses as JavaScript. The test relaxations (below) reach these and more |
 | `playwright` | `[]` | Globs of Playwright specs (`["web/e2e/**"]`): they get the test relaxations, and the vitest block ignores them. A repo that doesn't pass it sees no change |
 | `defaultExports` | none | Where a framework or a runtime contract reads `default`, beyond `*.config.*` and `*.d.ts` (an ambient `declare module` has no other form) |
 | `console` | none | App files allowed to print: a CLI entry, or a module that logs before the logger exists. Their `process.env` reads are still errors |
@@ -411,7 +413,8 @@ Notes that come with the rules:
   `warn` (`{ name: "no-circular", severity: "warn" }`) or given an exempt path
   (`{ name: "no-circular", to: { circular: true, pathNot: "^src/legacy/" } }`).
   `not-to-unresolvable` allows `virtual:` module ids (Vite virtual modules)
-  and React Router's generated `./+types/<route>` imports.
+  Astro's `astro:` modules and React Router's generated `./+types/<route>`
+  imports.
 - A repo's own `options.exclude` **replaces** the preset's
   `(^|/)(vendor|dist|coverage)/`, so a repo that adds a pattern repeats that
   one. In a repo with several projects, `options.tsConfig` points at the

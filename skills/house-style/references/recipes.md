@@ -187,8 +187,9 @@ if (linted.length > 0) run("npx", ["eslint", "--no-warn-ignored", ...linted]);
 ```
 
 With one changed file in one site it ran that site's typecheck and nothing
-else. presentation-sites measured `check:fast` at 11 s with one `.astro` file
-changed. Its full `typecheck` takes 32 s, which is why `check:fast` doesn't
+else. With the ESLint leg run against the scratch Astro config it exited 0 on a
+clean changed file and 1 on one with a `!`. presentation-sites measured
+`check:fast` at 11 s with one `.astro` file changed. Its full `typecheck` takes 32 s, which is why `check:fast` doesn't
 run it.
 
 **The reformat's acceptance is a `dist/` compare.** `git diff -w` is no
@@ -221,8 +222,9 @@ function outline(html) {
   const out = [];
   const visit = (node) => {
     if (node.nodeName === "#text") {
-      const text = node.value.replace(/\s+/g, " ").trim();
-      if (text) out.push(node.parentNode?.nodeName === "script" ? minify(text) : text);
+      const inScript = node.parentNode?.nodeName === "script";
+      const text = inScript ? minify(node.value) : node.value.replace(/\s+/g, " ").trim();
+      if (text) out.push(text);
     } else if (node.tagName) {
       out.push(
         `<${node.tagName} ${node.attrs
@@ -269,7 +271,8 @@ process.exit(differences === 0 ? 0 : 1);
 ```
 
 It exits 0 on a reformat that rewraps a heading and an inline script, and 1,
-naming the file, on a changed page or a changed stylesheet (both checked). On
+naming the file, on a changed page, a changed stylesheet, or an inline script
+whose code changed behind a comment (all three checked). On
 presentation-sites' five sites, the builds before and after the reformat held
 the same 414 files with every script, stylesheet, font and image identical, and
 20 HTML pages that differed only in whitespace (one `<h2>` gained a newline at

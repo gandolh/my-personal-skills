@@ -176,3 +176,15 @@ Newspapper. 1.1.0 folds their findings in: the `env` and `assertFunctionNames`
 options, `no-import-type-side-effects`, the sync's target, the Stop hook's
 lookup, and the documentation notes. The upgrade steps are in
 `house-style/CHANGELOG.md`.
+
+## Version 1.2.0 (2026-11-11)
+
+23 repos adopted 1.1.0, among them the eight above and atrium, Almanac,
+brief-board, comercial-website, game-engine, imbatranimOS, just-a-bot,
+ro-housing, Postern, public-resource-map, presentation-sites, Shelfmark,
+sports-app and wzd_auth. 1.2.0 folds their findings in: the two widths
+of a test file, `playwright`, `conventions.json`'s `env`, hooks in
+`no-standalone-expect`, `+types`, a global `tsconfigRootDir`, and about 30
+notes in the README and adoption reference, plus a recipes reference
+(per-folder blocks, `react-refresh`, Astro). Findings declined as options are
+listed in the CHANGELOG's 1.2.0 section.
