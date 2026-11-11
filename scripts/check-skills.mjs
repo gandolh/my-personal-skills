@@ -78,7 +78,7 @@ function parseFrontmatter(text) {
     } else if (rest === '') {
       // Nested map or list, or an empty value with a folded plain scalar below.
       const body = cont.map((l) => l.trim());
-      const isNested = body.some((l) => /^- /.test(l) || /^[A-Za-z0-9_-]+:(\s|$)/.test(l));
+      const isNested = body.some((l) => /^- /.test(l) || /^[A-Za-z0-9_./-]+:(\s|$)/.test(l));
       value = isNested ? cont.join('\n') : body.join(' ');
       if (!isNested) {
         for (const l of body) if (/:\s/.test(l)) errors.push(`${where}: unquoted ": " in a plain value`);
