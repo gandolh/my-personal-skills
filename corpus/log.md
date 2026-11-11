@@ -162,3 +162,15 @@ globals, where scripts go, knip workspaces, the Docker caveat, `check:fast`,
 the bundle compare, comments without brief numbers, `no-circular`, and five
 `base-ui` changes. Plugin v0.39.0. See
 [the brief](briefs/done/27-a-house-style-and-a-quality-harness.md).
+
+## [2026-11-11] done | Brief 24 - vendor Hallmark, and adopt taste-skill 2.5's ideas
+
+`skills/hallmark/` (v0.40.0) is Nutlope/hallmark at `407fa68`: 185 files
+copied verbatim, with `install-hook.mjs` and `install.mjs` left out for
+safety and `imagegen.mjs` behind a written guard (Together AI). taste-skill
+2.5's palettes dealt by trade and its copy layer are written fresh in
+`design-md-library`. The four taste skills run only when called by name, the
+redesign preset retired, and `orchestrate` routes a redesign to
+`/hallmark redesign|audit <path>` and the estate redesign board (brief 28).
+`decisions.md` revisits "Vendor third-party skills, with pins". See
+[the brief](briefs/done/24-vendor-hallmark-and-adopt-taste-skill-ideas.md).

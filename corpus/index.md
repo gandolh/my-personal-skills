@@ -20,7 +20,7 @@ Start here. Triage on the summary lines and open at most 2-3 pages.
 - [wiki/open-questions-from-the-repo-briefs.md](wiki/open-questions-from-the-repo-briefs.md) - Questions Q47-62 from the repo-local briefs (Round 8) were answered on 2026-11-10, and their facts folded into briefs 02, 03, 16 and 27. Read it only to find where.
 - [wiki/open-questions.md](wiki/open-questions.md) - Open questions Q1-46 for the grilling of 2026-11-10 are all answered; this page points at where the answers are. Read it only to find that out.
 - [wiki/overview.md](wiki/overview.md) - What the my-personal-skills library holds (one front door, a corpus workflow, design and docs layers, vendored skills), how it ships, and what it leaves out.
-- [wiki/status.md](wiki/status.md) - Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, and brief 03's code-structure skill at version 0.38.0 (2026-11-11).
+- [wiki/status.md](wiki/status.md) - Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, and brief 24's Hallmark at version 0.40.0 (2026-11-11).
 
 <!-- END CATALOG -->
 

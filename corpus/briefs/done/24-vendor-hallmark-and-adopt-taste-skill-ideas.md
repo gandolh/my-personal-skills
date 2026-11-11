@@ -141,3 +141,54 @@ taste-skill-classics and the 2.5.1 install notes are dropped.
 - `ATTRIBUTION.md` pins both upstreams and says why `design-taste-frontend`
   is held.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-11, v0.40.0)
+
+Built to the decisions of 2026-11-10 and the controller's ruling of
+2026-11-11. Commits 04f367d, 33a8199, 043809e, c53c208, 22b8fbd, 6d4589c and
+6ad4b81.
+
+- **Hallmark vendored.** `skills/hallmark/` is Nutlope/hallmark's skill
+  folder at `407fa68` (MIT, v2.0.0): 185 files, 7.2 MB, verbatim, with the
+  folder name already matching its frontmatter. `LICENSE-hallmark` copies the
+  licence, which also stays in the folder. Every file was read before it was
+  committed, by this run and four reading agents, with no injected
+  instructions found. `photos.json` was read in part and scanned whole: 755
+  Wikimedia Commons links, every licence open.
+- **Left out.** The rest of upstream (`site/` at 57 MB, `docs/`, `eval/`,
+  the README and roadmap). No photographs are bundled; the 50 theme previews
+  stay because the deal step looks at them. `scripts/install-hook.mjs`
+  (rewrites Claude Code's `settings.json` to add a hook) and
+  `scripts/install.mjs` (copies the skill beside the plugin's copy) were
+  left out for safety on the controller's ruling. `flow.md` still names the
+  first, which is harmless.
+- **The guard.** `imagegen.mjs` stays. Its comp step calls Together AI
+  whenever `TOGETHER_API_KEY` is set. The rule is in ATTRIBUTION.md and
+  orchestrate's redesign row: never set the key, never run `imagegen.mjs`
+  unless the owner asks, never install anything globally, and keep
+  `puppeteer-core` and Chrome per repo.
+- **taste-skill 2.5's ideas.** These are written fresh in `design-md-library`
+  as `references/dealt-by-trade.md` (the trade picks the palette's material
+  and type group; Hallmark's deal gets the trade's words) and
+  `references/copy-layer.md` (fact sheet, voice card, device budget, rival
+  test; on a redesign the words stay). Upstream was read at `f6b7657` and is
+  credited under Influences. No text was copied.
+- **Taste suite.** It stays at `72e2995`, marked superseded upstream. The
+  four presets gained `disable-model-invocation: true`. The redesign preset
+  retired.
+- **Routing.** `orchestrate` has a `redesign` intent:
+  `/hallmark redesign|audit <path>`, and in the estate the repo's redesign
+  brief plus the board of brief 28, with the guard. A redesign wins over an
+  older repo `routing.md` row; 21 corpora still send design to impeccable.
+- **Checks.** Corpus lint and `check-skills` exit 0 (Hallmark ok). The hook
+  tests pass 10/10 and house-style's 190/190. `diff -r` against the clone
+  shows only the two installers missing, with the same file modes. One
+  `theme.mjs deal` was run in a scratch folder (exit 0; a towing prompt
+  dealt Loom, Formwork and Brutal). Hallmark's own tests and its render
+  tier were not run.
+- **Deviations.** `check-skills.mjs` now accepts a slash in a nested
+  frontmatter key (Hallmark's `opencode/slash` was a false warning). Brief
+  19's size table drops the retired preset's row, with a note. "Design
+  audit" moved from impeccable's row to the redesign row. The name of the
+  retired preset is still found only in `docs/history.md`, the decision
+  entry, this brief and the grilling record of 2026-11-10.

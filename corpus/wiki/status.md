@@ -1,5 +1,5 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, and brief 03's code-structure skill at version 0.38.0 (2026-11-11).
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, and brief 24's Hallmark at version 0.40.0 (2026-11-11).
 updated: 2026-11-11
 ---
 
@@ -27,7 +27,7 @@ anything is built. The questions for it are in
 | 21 The Agent Skills format | from anomalyco/opencode | built, v0.35.0 |
 | 22 A second model in the review gate | from stablyai/orca | todo |
 | 23 A session-start hook on the corpus | from thedotmack/claude-mem | todo |
-| 24 Re-pin the taste suite | leonxlnx/taste-skill 2.5.1 | todo |
+| 24 Vendor Hallmark, adopt taste-skill 2.5's ideas | nutlope/hallmark, leonxlnx/taste-skill 2.5.1 | built, v0.40.0 |
 | 25 Cloudflare's security audit, on ward-auth first | cloudflare/security-audit-skill | todo |
 | 26 Model evals for the library's prompts | pingdotgg/t3code, `claude plugin eval` | todo |
 | 27 A house style and a quality harness | the measured style, lint, format, hooks | built, v0.39.0 |
@@ -108,3 +108,12 @@ The library is at v0.39.0, with 29 skills. Brief 27 is done: `house-style`
 after the closeout commit), with the findings of wicket's proof run folded
 into the package, the `house-style` skill and the `base-ui` skill. Owner
 step: update the plugin to 0.39.0.
+
+## 2026-11-11: brief 24, Hallmark, v0.40.0
+
+The library is at v0.40.0, with 29 skills. Brief 24 is done. Hallmark is
+vendored at `407fa68` without its two installers, and its Together AI comp
+step sits behind a written guard. taste-skill 2.5's trade palettes and copy
+layer are in `design-md-library`. The taste suite is opt-in at its old pin,
+and `orchestrate` routes a redesign to Hallmark. Brief 28, the estate
+redesign board, can start. Owner step: update the plugin to 0.40.0.
