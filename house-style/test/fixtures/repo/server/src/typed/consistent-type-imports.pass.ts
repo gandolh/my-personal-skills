@@ -1,4 +1,4 @@
-import { type Shape } from "./work.js";
+import type { Shape } from "./work.js";
 
 export function echo(shape: Shape): Shape {
   return shape;

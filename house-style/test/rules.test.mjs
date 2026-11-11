@@ -70,6 +70,12 @@ const CASES = [
     pass: ["server/src/typed/consistent-type-imports.pass.ts"],
   },
   {
+    rule: "@typescript-eslint/no-import-type-side-effects",
+    area: "an all-inline type import still leaves an import behind",
+    fail: "server/src/typed/no-import-type-side-effects.fail.ts",
+    pass: ["server/src/typed/no-import-type-side-effects.pass.ts", "server/src/typed/mixed-import.pass.ts"],
+  },
+  {
     rule: "react-hooks/rules-of-hooks",
     area: "react-hooks recommended, on web only",
     fail: "web/src/react/hooks.fail.tsx",
@@ -95,12 +101,24 @@ const CASES = [
       "scripts/env-script.ts",
     ],
   },
+  {
+    rule: "n/no-process-env",
+    area: "on in config/env.ts until the repo names it",
+    fail: "server/src/config/env.ts",
+    pass: [],
+  },
   { rule: "n/no-process-env", area: "still on in the console globs", fail: "server/src/cli-env.fail.ts", pass: [] },
   {
     rule: "vitest/expect-expect",
     area: "@vitest/eslint-plugin recommended",
     fail: "server/src/tests/expect-expect.fail.test.ts",
     pass: ["server/src/tests/labelled.pass.test.ts"],
+  },
+  {
+    rule: "vitest/expect-expect",
+    area: "a helper is no assertion until the repo names it",
+    fail: "server/src/tests/expect-helper.fail.test.ts",
+    pass: [],
   },
   {
     rule: "vitest/no-focused-tests",
@@ -171,6 +189,12 @@ const CASES = [
     rule: "import-x/no-default-export",
     fail: "server/src/shapes/default-export.fail.ts",
     pass: ["vite.config.ts", "web/src/routes/home.tsx"],
+  },
+  {
+    rule: "import-x/no-default-export",
+    area: "off in .d.ts files, where an ambient module has no other form",
+    fail: null,
+    pass: ["server/src/ambient.d.ts"],
   },
 ];
 
@@ -264,6 +288,33 @@ describe("the class order, once a repo turns it on", () => {
 
   it(`${ORDER_CASE.rule}: the failing fixture reports exactly this rule`, () => assertFails(results, ORDER_CASE));
   it(`${ORDER_CASE.rule}: ${ORDER_CASE.pass[0]} passes`, () => assertPasses(results, ORDER_CASE.pass[0]));
+});
+
+describe("the env and assertFunctionNames options", () => {
+  let results;
+  before(async () => {
+    results = await lintAll({
+      ...OPTIONS,
+      env: ["server/src/config/env.ts"],
+      assertFunctionNames: ["expect", "expectTypeOf", "expectEven"],
+    });
+  });
+
+  it("env moves the process.env exemption to the repo's reader", () => {
+    assertPasses(results, "server/src/config/env.ts");
+    assertFails(results, { rule: "n/no-process-env", fail: "server/src/node/config.ts" });
+  });
+
+  it("env leaves tests, scripts and tool configs exempt", () => {
+    for (const file of ["server/src/tests/env-in-tests.pass.test.ts", "scripts/env-script.ts", "web/vite.config.ts"]) {
+      assertPasses(results, file);
+    }
+  });
+
+  it("assertFunctionNames makes a named helper count as an assertion", () => {
+    assertPasses(results, "server/src/tests/expect-helper.fail.test.ts");
+    assertFails(results, { rule: "vitest/expect-expect", fail: "server/src/tests/expect-expect.fail.test.ts" });
+  });
 });
 
 describe("the options", () => {

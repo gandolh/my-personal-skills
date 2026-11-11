@@ -56,7 +56,7 @@ const CASES = [
       { file: "server/src/rule-11.fail.ts", severity: "warning" },
       { file: "web/src/rule-11.fail.tsx", severity: "warning" },
     ],
-    pass: ["server/src/rule-11.pass.ts"],
+    pass: ["server/src/rule-11.pass.ts", "server/src/rule-11.pass.test.ts"],
   },
 ];
 

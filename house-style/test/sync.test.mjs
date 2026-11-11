@@ -235,10 +235,13 @@ describe("the pins", () => {
     const before = readFileSync(join(app, "package.json"));
     const run = sync(vendored, ["--check"]);
     assert.equal(run.status, 0, "pins never change the exit code");
-    assert.match(run.out, /pin prettier: package\.json has 3\.8\.1, house-style 1\.0\.0 lists 3\.9\.10/);
-    assert.match(
+    assert.ok(
+      run.out.includes(`pin prettier: package.json has 3.8.1, house-style ${pkg.version} lists 3.9.10`),
       run.out,
-      /pin typescript: packages\/web\/package\.json has \^6\.0\.3, house-style 1\.0\.0 lists 6\.0\.3/,
+    );
+    assert.ok(
+      run.out.includes(`pin typescript: packages/web/package.json has ^6.0.3, house-style ${pkg.version} lists 6.0.3`),
+      run.out,
     );
     assert.match(run.out, /not pinned in this repo: .*knip/);
     assert.doesNotMatch(run.out, /pin eslint:/, "a matching pin is not reported");
@@ -296,10 +299,34 @@ describe("mistakes", () => {
 });
 
 describe("finding the repo", () => {
-  it("is the git work tree it runs in, even from a workspace with its own package.json", () => {
-    const run = sync(vendored, ["--check"], { cwd: join(app, "packages", "web") });
+  it("is the folder of the nearest package.json, so the root of a repo whose package.json is at its root", () => {
+    const run = sync(vendored, ["--check"], { cwd: join(app, "vendor") });
     assert.equal(run.status, 0, run.out);
-    assert.ok(!existsSync(join(app, "packages", "web", "vendor")));
+  });
+
+  it("is a subfolder app's own folder, with no ceiling variable", () => {
+    const multi = join(scratch, "multi");
+    const todo = join(multi, "todo-app");
+    mkdirSync(join(todo, "src"), { recursive: true });
+    writeFileSync(join(todo, "package.json"), "{}\n");
+    git(["init", "-q", "-b", "main"], multi);
+    const run = sync(bootstrap, ["house-style-v1.0.0"], { cwd: join(todo, "src") });
+    assert.equal(run.status, 0, run.out);
+    assert.ok(existsSync(join(todo, "vendor", "house-style", "README.md")), "the app folder took the copy");
+    assert.ok(!existsSync(join(multi, "vendor")), "the repo root took nothing");
+    assert.equal(sync(join(todo, "vendor", "house-style", "bin", "sync.mjs"), ["--check"], { cwd: todo }).status, 0);
+  });
+
+  it("does not climb above the git toplevel to find a package.json", () => {
+    const outer = join(scratch, "outer");
+    const inner = join(outer, "inner");
+    mkdirSync(inner, { recursive: true });
+    writeFileSync(join(outer, "package.json"), "{}\n");
+    git(["init", "-q", "-b", "main"], inner);
+    const run = sync(bootstrap, ["house-style-v1.0.0"], { cwd: inner });
+    assert.equal(run.status, 0, run.out);
+    assert.ok(existsSync(join(inner, "vendor", "house-style", "README.md")));
+    assert.ok(!existsSync(join(outer, "vendor")));
   });
 
   it("outside git, is the nearest folder with a package.json", () => {

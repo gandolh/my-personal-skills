@@ -37,11 +37,16 @@ export function noteSavedFile(sessionId, file) {
   writeFileSync(join(dir, `saved-${hash(file)}`), file);
 }
 
+/** Every file this session saved, as the paths the PostToolUse hook noted. */
+export function savedFiles(sessionId) {
+  return savedFilesUnder(sessionId, "").map(({ file }) => file);
+}
+
 /** The saved files that sit under `root`. */
 export function savedFilesUnder(sessionId, root) {
   const dir = sessionDir(sessionId);
   if (!existsSync(dir)) return [];
-  const prefix = root.endsWith(sep) ? root : root + sep;
+  const prefix = root === "" || root.endsWith(sep) ? root : root + sep;
   const out = [];
   for (const name of readdirSync(dir)) {
     if (!name.startsWith("saved-")) continue;

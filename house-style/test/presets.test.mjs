@@ -118,12 +118,13 @@ describe(".dependency-cruiser.cjs", () => {
     "src/c2.ts": 'import { c1 } from "./c1.js";\nexport const c2 = (): unknown => c1;\n',
     "src/lib/server.ts": 'import fastify from "fastify";\nexport const f = fastify;\n',
     "src/lib/pure.ts": 'import { a } from "../features/a/index.js";\nexport const p = a;\n',
+    "src/virtual.ts": 'import routes from "virtual:routes";\nexport const r = routes;\n',
     "src/missing.ts": 'import { gone } from "./gone.js";\nexport const m = gone;\n',
     "vendor/house-style/cycle-a.js": 'import "./cycle-b.js";\n',
     "vendor/house-style/cycle-b.js": 'import "./cycle-a.js";\n',
   });
 
-  it("reports cycles, unresolvable imports, a feature's insides and Fastify in lib/, and nothing else", () => {
+  it("reports cycles, unresolvable imports (but not a Vite `virtual:` module), a feature's insides and Fastify in lib/, and nothing else", () => {
     const run = spawnSync(process.execPath, [bin("depcruise"), "src", "vendor", "--output-type", "json"], {
       cwd: root,
       encoding: "utf8",
@@ -172,6 +173,28 @@ describe(".dependency-cruiser.cjs", () => {
     const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: staged, encoding: "utf8" });
     assert.equal(run.status, 0, run.stdout + run.stderr);
     assert.match(run.stdout, /warn no-circular/);
+  });
+});
+
+describe(".dependency-cruiser.cjs, a rule given a pathNot by the repo", () => {
+  it("merges by name, so the one exempt path stops being reported and the rest still fail", () => {
+    const staged = join(scratch, "depcruise-pathnot");
+    writeTree(staged, {
+      "package.json": JSON.stringify({ name: "fixture", type: "module" }),
+      ".dependency-cruiser.cjs": `module.exports = {\n  extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))},\n  forbidden: [{ name: "no-circular", to: { circular: true, pathNot: "^src/legacy/" } }],\n};\n`,
+      "src/legacy/l1.ts": 'import { l2 } from "./l2.js";\nexport const l1 = (): unknown => l2;\n',
+      "src/legacy/l2.ts": 'import { l1 } from "./l1.js";\nexport const l2 = (): unknown => l1;\n',
+      "src/c1.ts": 'import { c2 } from "./c2.js";\nexport const c1 = (): unknown => c2;\n',
+      "src/c2.ts": 'import { c1 } from "./c1.js";\nexport const c2 = (): unknown => c1;\n',
+    });
+    const run = spawnSync(process.execPath, [bin("depcruise"), "src", "--output-type", "json"], {
+      cwd: staged,
+      encoding: "utf8",
+    });
+    const found = JSON.parse(run.stdout)
+      .summary.violations.map((v) => `${v.rule.name}: ${v.from} -> ${v.to}`)
+      .sort();
+    assert.deepEqual(found, ["no-circular: src/c1.ts -> src/c2.ts"]);
   });
 });
 

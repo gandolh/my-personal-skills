@@ -129,6 +129,23 @@ describe("check-base-ui's conventions.json", () => {
     assert.ok(got.includes("app/src/features/books/ui/BookMenu.tsx rule-3"), "features/*/ui is not in ui any more");
   });
 
+  it("names the stylesheet key when the one stylesheet sits somewhere else", () => {
+    const dir = copy("lone-stylesheet", { web: ["plain-css/src"] });
+    rmSync(join(dir, "plain-css/src/styles"), { recursive: true });
+    writeTree(dir, { "plain-css/src/theme/app.css": '@import "tailwindcss";\n' });
+    const run = runChecker("check-base-ui", [dir]);
+    const finding = run.findings.find((f) => f.rule === 5);
+    assert.ok(finding, summary(run.findings));
+    assert.equal(finding.file, "plain-css/src/theme/app.css");
+    assert.match(finding.message, /declare it with "stylesheet": "theme\/app\.css" in conventions\.json/);
+  });
+
+  it("does not hint at the key when the declared stylesheet exists", () => {
+    const run = runChecker("check-base-ui", [ROOT]);
+    const legacy = run.findings.find((f) => f.file === "app/src/legacy.css");
+    assert.ok(legacy && !/"stylesheet"/.test(legacy.message), summary(run.findings));
+  });
+
   it("drops a finding an exception covers, by path and by match, and counts it", () => {
     const dir = copy("exceptions", {
       web: ["app/src"],

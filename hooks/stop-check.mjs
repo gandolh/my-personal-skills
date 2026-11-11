@@ -2,9 +2,12 @@
 // stop-check.mjs - the plugin's Stop hook: run the repo's `check:fast`
 // before Claude ends a turn, and send Claude back to work when it fails.
 //
-// It reads the hook event on stdin and finds the nearest package.json with a
-// `check:fast` script, from the event's `cwd` up to the repo root. It does
-// nothing, silently, when:
+// It reads the hook event on stdin and finds `check:fast` from the folders of
+// the files this session saved: for each saved file, the nearest package.json
+// with a `check:fast` script, up to the repo root. Each distinct package runs
+// once, so a session that edited two apps of one repo checks both. Only when
+// no saved file leads to one does it fall back to the event's `cwd`, as it
+// always did. It does nothing, silently, when:
 //   - there is no such script (a repo opts in by defining it);
 //   - this session saved no code file under that package since its last
 //     green run (hooks/note-saved-file.mjs records saves), so a turn that
@@ -30,13 +33,14 @@
 // (`stop_hook_active` false) starts the count again.
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
-import { basename, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { foldersUp, readEvent, readJson } from "./repo.mjs";
 import {
   clearSavedFilesUnder,
   clearStopState,
   hash,
   readStopState,
+  savedFiles,
   savedFilesUnder,
   writeStopState,
 } from "./session-state.mjs";
@@ -104,70 +108,96 @@ function tail(text) {
 // Timings change from run to run; they must not make a failure look new.
 const fingerprint = (text) => hash(text.replace(/\d+(?:\.\d+)?\s?(?:ms|s)\b/g, "<t>"));
 
-const event = await readEvent();
-if (!event || typeof event.cwd !== "string") process.exit(0);
-const found = findPackage(event.cwd);
-if (!found) process.exit(0);
-
-const { dir, pkg } = found;
-const name = typeof pkg.name === "string" ? pkg.name : basename(dir);
-const session = typeof event.session_id === "string" && event.session_id ? event.session_id : null;
-
-if (session && savedFilesUnder(session, dir).length === 0) process.exit(0);
-
-const testing = testingScript(pkg.scripts, "check:fast");
-if (testing) {
-  process.stderr.write(
-    `house-style Stop hook: skipped ${name}'s check:fast, because "${testing}" runs tests. ` +
-      `The hook never runs tests (a repo's tests may read its production .env). ` +
-      `Make check:fast a typecheck and a lint only.\n`,
-  );
-  process.exit(1);
-}
-
-const result = await run(dir);
-
-if (result.error || result.signal || result.code === null) {
-  const why = result.error ? result.error.message : `it was stopped after ${RUN_TIMEOUT_MS / 1000} s`;
-  process.stderr.write(`house-style Stop hook: check:fast in ${name} did not finish (${why}); not blocking.\n`);
-  process.exit(1);
-}
-
-if (result.code === 0) {
-  if (session) {
-    clearSavedFilesUnder(session, dir);
-    clearStopState(session, dir);
+/** The packages whose check:fast covers the files this session saved, each once, in the order found. */
+function packagesOfSavedFiles(session) {
+  const found = new Map();
+  for (const file of savedFiles(session)) {
+    const pkg = findPackage(dirname(file));
+    if (pkg && !found.has(pkg.dir)) found.set(pkg.dir, pkg);
   }
-  process.exit(0);
+  return [...found.values()];
 }
 
-const report = tail(result.output);
-const print = () => {
-  process.stderr.write(
-    `\`npm run check:fast\` failed in ${name} (${dir}), exit ${result.code}. ` +
+/**
+ * Checks one package. Returns what to tell Claude: `block` (exit 2), `warn` (exit 1, the user sees it),
+ * or `end` (a failure that did not change, shown through systemMessage), each with its text.
+ */
+async function check({ dir, pkg }, event, session) {
+  const name = typeof pkg.name === "string" ? pkg.name : basename(dir);
+
+  const testing = testingScript(pkg.scripts, "check:fast");
+  if (testing) {
+    return {
+      kind: "warn",
+      text:
+        `house-style Stop hook: skipped ${name}'s check:fast, because "${testing}" runs tests. ` +
+        `The hook never runs tests (a repo's tests may read its production .env). ` +
+        `Make check:fast a typecheck and a lint only.\n`,
+    };
+  }
+
+  const result = await run(dir);
+
+  if (result.error || result.signal || result.code === null) {
+    const why = result.error ? result.error.message : `it was stopped after ${RUN_TIMEOUT_MS / 1000} s`;
+    return { kind: "warn", text: `house-style Stop hook: check:fast in ${name} did not finish (${why}); not blocking.\n` };
+  }
+
+  if (result.code === 0) {
+    if (session) {
+      clearSavedFilesUnder(session, dir);
+      clearStopState(session, dir);
+    }
+    return { kind: "ok" };
+  }
+
+  const report = tail(result.output);
+  const block = {
+    kind: "block",
+    text:
+      `\`npm run check:fast\` failed in ${name} (${dir}), exit ${result.code}. ` +
       `It is the repo's fast gate: a typecheck, and ESLint on the changed files. ` +
       `Fix what it reports, or say why you can't, before you finish.\n\n${report}\n`,
-  );
-  process.exit(2);
-};
+  };
+  if (!session) return block;
 
-if (!session) print();
+  const now = fingerprint(report);
+  const before = event.stop_hook_active === true ? readStopState(session, dir) : null;
 
-const now = fingerprint(report);
-const before = event.stop_hook_active === true ? readStopState(session, dir) : null;
+  if (before && (before.fingerprint === now || before.blocks >= MAX_BLOCKS)) {
+    // No progress since the last block, or the cap: let the turn end.
+    clearStopState(session, dir);
+    clearSavedFilesUnder(session, dir);
+    const why = before.fingerprint === now ? "with the same output as before" : `after ${before.blocks} tries`;
+    return {
+      kind: "end",
+      text: `check:fast still fails in ${name} ${why}; the house-style Stop hook let the turn end. Run npm run check:fast there to see it.`,
+    };
+  }
 
-if (before && (before.fingerprint === now || before.blocks >= MAX_BLOCKS)) {
-  // No progress since the last block, or the cap: let the turn end.
-  clearStopState(session, dir);
-  clearSavedFilesUnder(session, dir);
-  const why = before.fingerprint === now ? "with the same output as before" : `after ${before.blocks} tries`;
-  process.stdout.write(
-    JSON.stringify({
-      systemMessage: `check:fast still fails in ${name} ${why}; the house-style Stop hook let the turn end. Run npm run check:fast there to see it.`,
-    }) + "\n",
-  );
-  process.exit(0);
+  writeStopState(session, dir, { fingerprint: now, blocks: (before?.blocks ?? 0) + 1 });
+  return block;
 }
 
-writeStopState(session, dir, { fingerprint: now, blocks: (before?.blocks ?? 0) + 1 });
-print();
+const event = await readEvent();
+if (!event || typeof event.cwd !== "string") process.exit(0);
+const session = typeof event.session_id === "string" && event.session_id ? event.session_id : null;
+
+let packages = session ? packagesOfSavedFiles(session) : [];
+if (packages.length === 0) {
+  // No saved file leads to a check:fast: the session's working directory, as before.
+  const found = findPackage(event.cwd);
+  if (!found) process.exit(0);
+  if (session && savedFilesUnder(session, found.dir).length === 0) process.exit(0);
+  packages = [found];
+}
+
+const outcomes = [];
+for (const target of packages) outcomes.push(await check(target, event, session));
+
+const kinds = (kind) => outcomes.filter((o) => o.kind === kind);
+for (const o of [...kinds("warn"), ...kinds("block")]) process.stderr.write(o.text);
+if (kinds("block").length > 0) process.exit(2);
+const ended = kinds("end");
+if (ended.length > 0) process.stdout.write(JSON.stringify({ systemMessage: ended.map((o) => o.text).join(" ") }) + "\n");
+process.exit(kinds("warn").length > 0 ? 1 : 0);

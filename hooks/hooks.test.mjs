@@ -103,8 +103,45 @@ describe("Stop hook", () => {
     assert.equal(stop(join(dir, "server"), s).code, 2);
     const inner = join(dir, "nested");
     mkdirSync(join(inner, ".git"), { recursive: true });
-    saved(s, join(inner, "x.ts"));
-    assert.equal(stop(inner, s).code, 0);
+    const t = newSession();
+    saved(t, join(inner, "x.ts"));
+    assert.equal(stop(inner, t).code, 0);
+  });
+
+  it("finds check:fast from the saved file's folder when the session opened at a root without one", () => {
+    const dir = repo({}, {
+      "app/package.json": JSON.stringify({ name: "app", scripts: FAILING }),
+      "app/check.mjs": CHECK,
+      "app/fail.txt": "app/src/a.ts(1,1): error TS9",
+      "other/package.json": "{}",
+    });
+    const s = newSession();
+    saved(s, join(dir, "app", "src", "a.ts"));
+    const red = stop(dir, s);
+    assert.equal(red.code, 2);
+    assert.match(red.stderr, /failed in app/);
+    assert.match(red.stderr, /error TS9/);
+    // A save in a folder with no check:fast leads nowhere, and the root has none either.
+    const t = newSession();
+    saved(t, join(dir, "other", "b.ts"));
+    assert.deepEqual(stop(dir, t), { code: 0, stdout: "", stderr: "" });
+  });
+
+  it("runs each distinct package once, for every app the session saved in", () => {
+    const app = (name, failing) => ({
+      [`${name}/package.json`]: JSON.stringify({ name, scripts: FAILING }),
+      [`${name}/check.mjs`]: `import { appendFileSync } from "node:fs";\nappendFileSync("../runs.txt", "${name}\\n");\nif (${failing}) { console.log("red in ${name}"); process.exit(1); }`,
+    });
+    const dir = repo({}, { ...app("one", false), ...app("two", true) });
+    const s = newSession();
+    saved(s, join(dir, "one", "a.ts"));
+    saved(s, join(dir, "one", "b.ts"));
+    saved(s, join(dir, "two", "c.ts"));
+    const red = stop(dir, s);
+    assert.equal(red.code, 2);
+    assert.match(red.stderr, /red in two/);
+    assert.ok(!/red in one/.test(red.stderr));
+    assert.deepEqual(readFileSync(join(dir, "runs.txt"), "utf8").split("\n").filter(Boolean).sort(), ["one", "two"]);
   });
 
   it("lets the turn end when the same failure comes back", () => {
