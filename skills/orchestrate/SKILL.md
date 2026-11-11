@@ -196,6 +196,8 @@ generic spine:
 | "what does the wiki say about X" | **query** | `corpus-flow` §5 — query the wiki |
 | Work finished, needs recording | **closeout** | `corpus-flow` §4 — done + log + fold into wiki |
 
+**A redesign goes to Hallmark even where the repo's `routing.md` still sends design or redesign to impeccable.** Most corpora were bootstrapped before the owner made Hallmark the redesign skill (2026-11-10); each repo's own redesign brief adds the `redesign` row. Until then this line overrides an older row.
+
 If two match, prefer the later phase. If still ambiguous, present alternatives in Step 5.
 
 **The ceremony scales with the task; the approval gate never does.** A one-line fix

@@ -49,7 +49,7 @@ already matches its frontmatter `name`. 185 files, 7.2 MB.
   agents' folders, beside the plugin's own copy. Skills are installed only through this
   plugin, and the plugin's hooks do the edit-time work. `references/flow.md` (Edit-time
   linting, the harness table) still names `install-hook.mjs`; the file is absent, which is
-  harmless. `scripts/lint-hook.mjs` stays: it runs only when something calls it.
+  harmless. No other file, script or test refers to either. `scripts/lint-hook.mjs` stays: it runs only when something calls it.
 - **The guard:** `scripts/imagegen.mjs` stays. Whenever `TOGETHER_API_KEY` is set, the
   comp step (signal 9) sends a description of the planned first screen to Together AI's
   image API. The estate does not set the key, and setting it is the owner's choice alone.

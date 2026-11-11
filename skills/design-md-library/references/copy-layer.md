@@ -12,7 +12,8 @@ synonym becomes the next tell.
 
 ## On a redesign, the words stay
 
-Hallmark's redesign keeps every word unless a gate names it (`redesign.md`,
+Hallmark's redesign keeps every word unless a gate names it
+([`hallmark/references/redesign.md`](../../hallmark/references/redesign.md),
 "The words"). Each estate redesign brief also keeps the copy's meaning until
 the owner approves a change on the redesign board. On a redesign this layer
 therefore covers three things only:
@@ -85,7 +86,8 @@ A visitor asks, in roughly this order: what is this, is it for me, why should
 I believe you, how does it work, what does it cost, what if it goes wrong, and
 what do I do now. A section exists only when the fact sheet has material for
 it. Counts follow the content: two real plans are two cards, one quote is one
-quote, and no quote is a normal page. This pairs with Hallmark's `anatomy.md`,
+quote, and no quote is a normal page. This pairs with Hallmark's
+[`anatomy.md`](../../hallmark/references/anatomy.md),
 which gives each job its own sections.
 
 ## 4. Drafting moves

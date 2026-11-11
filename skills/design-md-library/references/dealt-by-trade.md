@@ -7,7 +7,9 @@ of choosing by taste. Two bakeries then differ from each other, and both differ
 from a garage.
 
 This page is written for Hallmark builds and redesigns. Hallmark's Floor wins
-over anything here (section 6).
+over anything here (section 6). Hallmark is the `hallmark` skill beside this
+one: its files are under [`../../hallmark/`](../../hallmark/SKILL.md), and
+`<hallmark-dir>` below is that folder.
 
 ## 1. Name the trade
 
@@ -52,28 +54,35 @@ display face.
 
 The theme column lists Hallmark themes whose keywords fit the trade at the
 pinned commit. A re-pin can rename or add themes. Check
-`skills/hallmark/references/themes/index.json` before trusting a row.
+[`hallmark/references/themes/index.json`](../../hallmark/references/themes/index.json)
+before trusting a row.
 
 ## 3. Deal, don't choose
 
 1. **Put the trade's words in the deal.** `theme.mjs deal` matches the prompt
    against each theme's keywords, and with `--log` it skips what the repo's
    last builds used:
-   `node <skill-dir>/scripts/theme.mjs deal --genre <genre> --prompt "<trade>: <what the business is>" --log .hallmark/log.json`.
-2. **Take the first theme whose material the trade can carry.** Move to the next
-   only when the first clashes with the client's own colours or photographs.
-   Never re-deal for taste.
+   `node <hallmark-dir>/scripts/theme.mjs deal --genre <genre> --prompt "<trade>: <what the business is>" --log .hallmark/log.json`.
+2. **Take the first theme whose material the trade can carry.** The match is by
+   keyword, so look at the three pictures: a towing firm's deal can offer Loom,
+   a weaving workshop's theme, beside Formwork's concrete and safety orange.
+   Pass over a theme the trade's material can't carry, and past that take the
+   first. Move on from a fitting theme only when it clashes with the client's
+   own colours or photographs. Never re-deal for taste.
 3. **Say why it fits, in one sentence**, in the Picks block's Theme row, from
    what the trade really has: "a tarmac-grey ground and the amber of a tow
    truck's beacon". Never a fact the brief does not give.
 4. **The client's own colours replace the deal**: a logo, a painted shopfront,
    a van's livery, a colour the brief names. In Hallmark that is
    `theme.mjs scaffold --brand`, with values read from the project's files or
-   the brief, never from memory (`references/brand-truth.md`).
+   the brief, never from memory
+   ([`hallmark/references/brand-truth.md`](../../hallmark/references/brand-truth.md)).
 5. **Two clients in one trade never share a ground and an accent.** Hallmark's
    log sees only its own repo. When one repo holds several client sites, or two
    repos serve the same trade, compare their tokens by hand before you deal.
-6. **On a custom run** (`references/direction.md`), the trade still anchors
+6. **On a custom run**
+   ([`hallmark/references/direction.md`](../../hallmark/references/direction.md)),
+   the trade still anchors
    the colour. Start the anchor hue from the trade's material, then mix the
    scale in OKLCH.
 
@@ -95,7 +104,9 @@ Hallmark says.
 
 ## 5. App screens
 
-The estate's apps are app screens (Hallmark's `flow.md`, App screens). The theme
+The estate's apps are app screens
+([`hallmark/references/flow.md`](../../hallmark/references/flow.md), App
+screens). The theme
 lends a palette, faces, a radius and surfaces, never a layout. The trade is
 usually software, and an app keeps its role token names (`surface`, `ink`,
 `accent`, `line`, `danger`). Dealing by trade matters most for client
