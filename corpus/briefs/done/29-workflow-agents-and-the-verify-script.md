@@ -149,3 +149,38 @@ is built, its wizard can take this agent's list as input.
   `--target` on a scratch folder, twice, writes the same files.
 - `node scripts/check-skills.mjs` and `bash corpus/lint.sh` pass, and the
   version is 0.46.0 in every place.
+
+## Outcome (2026-11-12, v0.46.0)
+
+Built as specified. Commits ebb7678, e84eda8, 8ac2541, 683e299, 9a18ecf,
+9513154, aff0324, 1cd3f87, d91ec3e and 4fb12fd.
+
+- **verify-brief** works on any repo. Run on this brief's own range, its
+  diff grep caught a literal machine path in its own test fixture (fixed in
+  d91ec3e). After the fix all its checks pass.
+- **agent-guard** has 4 modes and 11 test groups. They cover every blocked
+  form named above, plus the forms that must pass: commit messages in `-m`,
+  `-F -` heredocs and `$(cat <<EOF ...)`, `tsc --build`, `process.env`,
+  `.env.example`, and `rsync --exclude .env`. The kill gate is tested with
+  real child processes: its own checkout passes, another checkout is
+  blocked, a scratch folder passes once written to, the home folder and a
+  folder of checkouts are refused, a nested checkout passes, and
+  `kill $PID`, `xargs kill` and `kill -9 -1` are blocked.
+- **The agents** use the hook in the shell-string form the subagent docs
+  show. `install-agents.mjs` was tested on scratch targets only. It writes
+  the guard to `hooks/personal-skills/` under the target, not into
+  `agents/`, because Claude Code reads that folder recursively. It keeps any
+  agent file it didn't write unless `--force` is given.
+- **Deviations:**
+  - `.env.example`, `.sample` and `.template` pass the guard.
+  - A flaky test that passes when re-run alone turns a failed gate into
+    exit 0, with a note.
+  - An offline `npm audit` counts as a skip, not a failure.
+- **Not verified:** that frontmatter hooks fire in a live subagent. That
+  needs the real install. The owner step is the smoke test: dispatch bare
+  `brief-builder` to run `git push --dry-run` in a scratch repo and expect
+  `agent-guard (builder): blocked`.
+- **For later:**
+  - brief-auditor is a draft. Keep or drop it after 5 briefs.
+  - Brief 18's `owner-steps` skill (a wizard) can take this agent's list
+    as input.

@@ -144,3 +144,12 @@ running it). Brief 04 stays open: every table row is pinned at 1.9.0, but
 websites/trips, which the table missed, declares `^1.6.0` and resolves 1.8.0.
 The UI wave's house-style findings joined the server wave's todo. Owner step:
 update the plugin to 0.44.0.
+
+## 2026-11-12: brief 29, workflow agents and verify-brief, v0.46.0
+
+The library is at v0.46.0, with 29 skills and 12 agents. Brief 29 is done:
+`verify-brief.mjs`, the `agent-guard` hook, and the `brief-builder`,
+`screen-capturer`, `brief-auditor` (draft) and `owner-steps` agents, which
+`plan-split-dispatch` now uses. Owner steps: run
+`node scripts/install-agents.mjs`, smoke-test a bare `brief-builder` in a new
+session, and update the plugin to 0.46.0.

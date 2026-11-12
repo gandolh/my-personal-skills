@@ -250,3 +250,15 @@ declares `^1.6.0` (lockfile 1.8.0) and is in no table. The UI wave's
 house-style findings are in one todo, renamed to cover both waves.
 
 ## [2026-11-12] done | brief 04 closed: trips pinned Base UI 1.9.0 (its brief 04), the last repo; every manifest in the estate now reads 1.9.0
+
+## [2026-11-12] done | Brief 29 - workflow agents and the verify script (v0.46.0)
+
+A research pass over the brief runs of 2026-11-10 to 2026-11-12 found two
+needs: the controller's repeated checks belonged in a script, and the
+builders' written rules belonged in hooks. `scripts/verify-brief.mjs` runs a
+repo's gate, sync, format, tree, diff-grep, untouched and audit checks one at
+a time. `hooks/agent-guard.mjs` enforces the rules for four new agents:
+`brief-builder`, `screen-capturer`, `brief-auditor` (a draft, trialled on 5
+briefs) and `owner-steps`. Plugin agents' hooks are ignored, so
+`scripts/install-agents.mjs` writes user-level copies. `plan-split-dispatch`
+uses them. See [the brief](briefs/done/29-workflow-agents-and-the-verify-script.md).
