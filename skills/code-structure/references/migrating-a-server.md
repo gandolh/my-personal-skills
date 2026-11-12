@@ -7,10 +7,12 @@ lint and build green, and the server starting in dev, from `dist/`, and with
 the command its container's `CMD` runs. One commit per step, and in step 4
 one per feature.
 
-`check-structure --warn-only` counted the gaps on 2026-11-11: Almanac 36,
-atrium 136, wicket 21 (the per-rule counts are on the library's
-`corpus/wiki/house-style-part-2.md`). Each step below removes a known part
-of that count.
+`check-structure --warn-only` counted the gaps before each move: from 20
+findings (wicket) to 116 (comercial-website), with rule 6 (routes with no
+schema, hand parses) about two thirds or more of every count (the table of
+all 17 is in the library's brief 16, in `corpus/briefs/done/`). Each step
+below removes a known part of it, and 17 servers followed this order to
+zero.
 
 ## Before step 1
 
@@ -19,15 +21,25 @@ of that count.
   Any dependency-cruiser rule it couldn't pass is lowered to `warn` in the
   repo's `.dependency-cruiser.cjs`, with a dated comment. This migration
   doesn't add dependency-cruiser; it raises those rules again in step 5.
-- **The versions are in.** Fastify 5.12.x (SocialEvents moves from 5.8.5
-  first) and zod 4.2 or later (atrium, comercial-website's `backend` and
-  public-resource-map move from zod 3 first, each in its own commit).
+- **The versions are in.** Fastify 5.12.x (SocialEvents moved from 5.8.5
+  first) and zod **4.6.7**: 4.5.4 and earlier carry GHSA-mrhx-c7xc-m3w5, so a
+  brief that says 4.5.4 or "no zod move" loses to the skill (Almanac,
+  Shelfmark, atrium, ward-auth and most of the others bumped it; satchel
+  stayed on 4.5.4 and asked the owner). atrium, comercial-website's
+  `backend` and public-resource-map moved from zod 3 first, each in its own
+  commit. `npm ls zod` shows one copy.
+- **A zod bump in `shared/` reaches the web bundle,** so the deploy phase is
+  `all`, not `server` (Almanac, Shelfmark, atrium), even though `web/` wasn't
+  touched.
 - **A `pretest` exists.** A fresh clone fails `npm test` without a build in
   Satchel, the-board, Shelfmark and lantern. Add it first, so every later
   step's tests run from clean.
-- **The JSON is captured.** On a seeded database, save the reply of every
-  route the web calls: method, path, status and body. Step 4 compares
-  against it.
+- **The replies are captured.** Before any change, save the reply of every
+  route, as each caller, with the error replies the client reads, through
+  the real app on a seeded or in-memory database
+  ([reply-capture.md](reply-capture.md)). Every step compares against it.
+- **Clean `dist/` before a start or grep check.** `tsc --build` leaves the old
+  files after a move or delete.
 
 ## 1. `config.ts`, and the `server.ts` / `app.ts` split
 
@@ -37,6 +49,9 @@ of that count.
   ([server-skeleton.md](server-skeleton.md)). Copied `REPO_ROOT` constants
   and env loaders elsewhere go. A `NODE_ENV` check becomes a setting named
   for what it switches.
+- **Settings types live in `config.ts`,** and a path `buildApp` resolves
+  keeps `:memory:` (wicket). A scratch run of the built server pins every
+  setting, because `config.ts` still loads a `.env` for what is unset.
 - **Config read at import time may stay** where a `loadConfig(env)` factory
   would be a large change (atrium's import-time constants and the test setup
   that depends on them). The reads still happen in `config.ts`.
@@ -47,11 +62,21 @@ of that count.
   app with the logger, `trustProxy` and the repo's timeouts, wires
   `close-with-grace` and listens. The rename changes, in the same commit,
   the Dockerfile's `CMD` (`node server/dist/server.js`), the package's
-  `main`, `start` and `dev` scripts, and any doc that names the entry (Q1).
+  `main`, `start`, `dev` and `exports`, and any doc that names the entry
+  (Q1). Grep the whole repo for the old name: public-resource-map's
+  Playwright config started `src/index.ts` and its ESLint `console` list named
+  it, and a grep for `dist/index` found neither. A copy in another repo
+  (imbatranim-apps' entry, named in imbatranimOS's catalog) is an owner
+  step, written into the outcome.
 - **Set the timeouts for the repo**: `connectionTimeout` above the longest
   silent wait (wicket's 25 s long poll, lantern's 26 s record route,
-  ward-auth's slow SMTP), and `requestTimeout` at 0 or raised where uploads
-  are large (comercial-website's 500 MB multipart).
+  ward-auth's slow SMTP), `requestTimeout` at 0 or raised where uploads are
+  large (comercial-website's 500 MB multipart), and `keepAliveTimeout` above
+  the proxy's. Measure the slow route first; the values and the shutdown
+  that waits for a held response are on
+  [shutdown-and-timeouts.md](shutdown-and-timeouts.md). An undeployed server
+  may defer them, `trustProxy`, close-with-grace and a rate-limited 404, each
+  with a decision entry.
 - **CLIs and scripts.** A CLI inside the app (a seed command) reads its
   settings through `config.ts` and goes in `houseStyle()`'s `console`
   option, which lets it print. A script run by hand moves out of the source
@@ -65,9 +90,16 @@ of that count.
   handler and the 404 handler, in the repo's existing body shape (Q43). The
   one `ApiError` class stays where it is if the repo has one (Q56), or goes
   in `lib/`.
+- **Register it first,** and test it on a real route (newspapper's covered
+  none of its routes).
 - **Pass Fastify's own 4xx through.** A handler without a `statusCode`
   branch turns bad JSON or an oversized body into a 500 (comercial-website,
   and likely every copy of that shape).
+- **`ApiError` is optional** where handlers send their own 4xx, and takes a
+  `details` argument where a reply needs extra fields.
+  [server-skeleton.md](server-skeleton.md) has both.
+- **The fixed 500 message changes what a client shows** where it reads
+  `message ?? error`: check, and list it under Deviations.
 - **Never echo a thrown message.** With no handler at all
   (public-resource-map), Fastify's default sends the thrown message, a
   500's included.
@@ -91,6 +123,20 @@ of that count.
 - **Pure modules go to `lib/`**, which never imports Fastify: Almanac's
   `recurrence/`, lantern's `suggest/`, imbatranim-apps' converter.
 - **A feature's CLI may live beside it** (Q56).
+- **Sign-in code moves in two commits, read alone.** First `git mv` plus
+  import paths only (Shelfmark's `accounts.ts` and `guard.ts` to
+  `plugins/auth/`), then the registration out of `app.ts` into
+  `plugins/auth/index.ts` under `fastify-plugin`, with an options type that
+  carries what it needs (`fetch`, the trusted proxies) and the body
+  unchanged. The vendored library stays untouched (Almanac, Shelfmark,
+  ro-housing, comercial-website). Compare its replies byte for byte.
+- **Domain modules** that aren't a feature (ward-auth's tokens, grants and
+  OIDC code) keep their folders, and ward-auth's dependency-cruiser rules say
+  the direction: `domain-not-to-features` (a domain folder never imports a
+  feature) and `app-through-feature-index` (the preset's
+  `feature-through-index` doesn't cover `app.ts`). sports-app added the same
+  for plugins (a plugin never imports a feature). Whether the preset carries
+  these is a house-style question (the library's todo on it).
 - **Break the `FeatureContext` cycle.** A route file that imports
   `type FeatureContext` from `app.ts` closes a cycle (`app.ts` → the
   feature's index → its routes → `app.ts`), and dependency-cruiser counts
@@ -99,8 +145,14 @@ of that count.
 - **Cross-feature reaches go through the index, or go.** For each import of
   another feature's insides: import it from that feature's index; move the
   shared part down to `lib/` or `db/`; or merge two features that can't live
-  apart. atrium has 24 such reaches and three cycles. One that must stay
-  until later is recorded: the rule stays lowered with its dated comment.
+  apart. atrium has 24 such reaches and three cycles; moving the stores two
+  features read down into `db/` (Q54: profiles, library, LaTeX) removed all
+  three with no exception, and comercial-website did the same with four
+  stores. A feature's index exports only what `app.ts` uses, and test helpers
+  two features share go in `testing/`
+  ([server-skeleton.md](server-skeleton.md)). One that must stay until later
+  is recorded: the rule stays lowered with its dated comment, and lowered
+  for the web app only, where the server's cycles are gone (Shelfmark).
 - **Check:** `depcruise` reports no `feature-through-index`,
   `lib-without-fastify` or `no-circular` error.
 
@@ -117,22 +169,33 @@ Then one commit per feature, each with its tests green:
    `PATCH` takes `0 | 1 | boolean`).
 2. **Declare the schemas**: `params`, `querystring` and `body` as the route
    takes them; `response` for each status the handler sends itself, and no
-   other (a declared 401 that a guard answers differently is a 500). zod from
-   `shared/` when the client imports it, else in the feature folder (Q55).
+   other (a declared 401 that a guard answers differently is a 500, and a
+   declared 4xx is generic, since it encodes every reply on that status). A
+   guard that must keep its 401 or 403 before validation goes in
+   `preValidation` or `onRequest`. zod from `shared/` when the client
+   imports it, else in the feature folder (Q55).
 3. **Split what transforms.** A response schema holds no `.transform()`
    (Almanac's `occurrenceSchema`, Shelfmark's `savedViewSchema.state`) and
    no `.strict()`; give it an output schema of its own.
 4. **Delete the hand parsing**, request and reply both: every
-   `schema.parse(request.body)`, every helper given `request.query` (the
-   grep misses those: wicket 5, lantern 13, public-resource-map 14), and
-   atrium's `schema.parse()` of its own replies.
-5. **Compare the bytes** of every captured reply with
+   `schema.parse(request.body)`, every helper given `request.query`
+   (a grep misses those: wicket 5, lantern 13, public-resource-map 14;
+   `check-structure` 1.2.0 finds them), and atrium's `schema.parse()` of its
+   own replies.
+5. **Compare the replies** with the capture
+   ([reply-capture.md](reply-capture.md)), or serialise static fixtures with
    `compareReplies` ([zod-type-provider.md](zod-type-provider.md)). A
    dropped field is a leak, kept dropped and noted in `log.md`, or a field
    the schema missed, added. A reorder is harmless. A failure is a 500 to
-   fix before the commit.
+   fix before the commit. Remove one field from the schema once to see the
+   compare change. Where stored data could fail a response schema, the owner
+   checks the real data before the deploy.
 6. **Test it**: the feature's `inject()` tests through `buildTestApp`,
-   including a schema failure (Shelfmark's tests stay off `inject()`, Q26).
+   including a schema failure on the real in-memory database
+   ([server-skeleton.md](server-skeleton.md)); Shelfmark's tests stay off
+   `inject()` (Q26). Where the stores, the context and the schemas rewrite
+   the same route files, one commit per feature is enough (the-board,
+   lantern, SocialEvents).
 7. **Mind the messages.** zod 4's issue text differs from zod 3's; a client
    that shows the first issue's message shows new words.
 
@@ -146,15 +209,21 @@ Then one commit per feature, each with its tests green:
 
 ## 5. Strict
 
-- **Drop `--warn-only`** from `check-structure` in `check:conventions`. A
-  finding the repo keeps becomes a `conventions.json` exception with its
-  reason.
+- **Drop `--warn-only`** from `check-structure` in `check:conventions`, in
+  the commit where it first reports 0 errors, not here, so strict guards
+  every later step (the controller's ruling, 2026-11-11). A finding the repo
+  keeps becomes a `conventions.json` exception with its reason. `match` is a
+  substring test: match the finding's message exactly, or the exception hides
+  every later finding in the same file that contains it (newspapper,
+  ward-auth).
 - **Raise every lowered dependency-cruiser rule** back to `error`: delete
   its override and its dated comment from `.dependency-cruiser.cjs`.
   `depcruise` exits 0.
 - **Rewrite `.claude/rules/server.md`** to the rules as they now hold.
 - **Write the log.** The repo's `log.md` entry carries the before-and-after
-  JSON comparison and every dropped field with its verdict.
+  reply comparison and every dropped field with its verdict, and the outcome
+  lists `check-structure` before and after (errors, warnings, exceptions) for
+  the library's table.
 
 ## Done when
 
@@ -162,4 +231,8 @@ Then one commit per feature, each with its tests green:
 - No handler parses request input, and every route has a `response` schema,
   except streams and binary routes with an entry.
 - `typecheck`, `test`, `lint` and `build` pass, and the server starts in
-  dev, from `dist/`, and with its container's `CMD` command.
+  dev and from `dist/` on a real socket, and shuts down on SIGTERM with exit
+  0 ([shutdown-and-timeouts.md](shutdown-and-timeouts.md)).
+- **The owner checks after the deploy:** the container turns healthy on the
+  new `CMD`, and `docker stop` ends at once. Local Docker can't build, so no
+  builder ran the image.

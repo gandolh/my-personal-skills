@@ -13,7 +13,10 @@ layer (`routes/`, `store/`, `db/`), two by feature, and the smallest are
 flat. None declared a response schema, so every reply went through
 `JSON.stringify`, and a column added to a table reached the client. This
 skill sets one structure, each rule with its reason and its source, checked
-by a script wherever a script can see it.
+by a script wherever a script can see it. Seventeen of those servers moved
+to it on 2026-11-11 and 2026-11-12 (the library's brief 16 has each one's
+before and after), and what they found is folded into the rules below and
+the references.
 
 It targets Fastify 5.12.x, `@fastify/type-provider-zod` 1.0.x and zod 4.2 or
 later (the provider needs it). Fastify 6 is in alpha, and nothing here is
@@ -62,14 +65,14 @@ scope (`@almanac/shared`, `@wicket/shared`).
 
 | # | Rule | Why | Source | Enforced by |
 |---|---|---|---|---|
-| 1 | `server.ts` is the only file that calls `listen`. It reads the settings, builds the app with the process's options (the logger, `trustProxy`, and `connectionTimeout`, `requestTimeout` and `keepAliveTimeout` set for this repo), wires `close-with-grace`, and listens on the host the deploy needs (`0.0.0.0` in a container) | Tests and scripts build the app without opening a port, and one file owns the process | Fastify's Testing guide; the demo's `server.ts`; Collina | `check-structure` rule 1, tests excepted |
+| 1 | `server.ts` is the only file that calls `listen`. It reads the settings, builds the app with the process's options (the logger, `trustProxy`, and `connectionTimeout`, `requestTimeout` and `keepAliveTimeout` set for this repo), wires `close-with-grace` (a held response is cancelled in `preClose`, or the shutdown waits for it), and listens on the host the deploy needs (`0.0.0.0` in a container). Values and checks: [shutdown-and-timeouts.md](references/shutdown-and-timeouts.md) | Tests and scripts build the app without opening a port, and one file owns the process | Fastify's Testing guide; the demo's `server.ts`; Collina | `check-structure` rule 1, tests excepted |
 | 2 | `app.ts` exports `buildApp(config)`. It builds the `FeatureContext` and registers by name, in a fixed order: external plugins, then the app's `plugins/`, then the features. No `@fastify/autoload` | Fastify loads in registration order, so the order is the architecture; a feature registered by name is found with grep and keeps its option types | Fastify's Plugins guide; the demo's `plugins/external`, `plugins/app`, `routes/`; owner decision 3 | `check-structure` rule 2 (no `app.ts`, or no exported `buildApp`); the order is review |
-| 3 | `config.ts` is the only file that reads `process.env`. It loads `.env` by an explicit path, parses once with zod into a typed `Config`, and throws naming every bad variable. Nothing reads `NODE_ENV`. A CLI inside the app (the entry, a seed command) reads its settings through `config.ts`; a script run by hand lives outside the roots, in `scripts/` | One place says what the app needs, and it fails at start rather than at the first request; `NODE_ENV` switches behaviour no setting names | Collina's anti-patterns; the demo's `server.ts`; the quiet env loaders the repo briefs found | `check-structure` rule 3 (server and shared roots, tests excepted); `n/no-process-env` (house-style rule 15) |
+| 3 | `config.ts` is the only file that reads `process.env`. Where the server loads a `.env`, it does so by an explicit path; it parses once with zod into a typed `Config` (settings types live here too) and throws naming every bad variable. Nothing reads `NODE_ENV`, `config.ts` included: name a setting for what it switches, or record one exception. A CLI inside the app (the entry, a seed command) reads its settings through `config.ts`; a script run by hand lives outside the roots, in `scripts/` | One place says what the app needs, and it fails at start rather than at the first request; `NODE_ENV` switches behaviour no setting names | Collina's anti-patterns; the demo's `server.ts`; the quiet env loaders the repo briefs found | `check-structure` rule 3 (server and shared roots, tests excepted); `n/no-process-env` (house-style rule 15) |
 | 4 | A cross-cutting plugin (errors, auth, security headers, static files) lives in `plugins/`, wrapped in `fastify-plugin` so it reaches every feature. A feature isn't wrapped, so its hooks stay inside it. Dependencies travel as plugin options; a decorator holds only a request-scoped value (`request.user`) | Every `register` makes a child scope, and that encapsulation is Fastify's architecture; an option is typed and found with grep, a decorator is global | Fastify's Plugins guide and Encapsulation reference; the demo; owner decision 2 (Almanac's `FeatureContext`), Q24 | review |
-| 5 | A server feature is a folder, `features/<name>/`, with an `index.ts` as its public surface. Code outside the folder, `app.ts` included, imports it through that index; another feature does only if it must. No import cycles, type-only imports included | A change to one domain stays in one folder, and its insides change without breaking callers | The demo's `routes` README; Collina; Pocock's `setup-ts-deep-modules` (owner decision 7) | dependency-cruiser `feature-through-index` and `no-circular`; `app.ts`'s own imports are review |
-| 6 | Every route declares its schemas through `@fastify/type-provider-zod`: `params`, `querystring` and `body` as it takes them, and `response` for each status its handler sends. Zod from `shared/` when the client imports the schema, else from the feature folder (Q55), or the repo's existing schema library (sports-app's TypeBox, Q28). No handler parses request input. A response schema is transform-free and not strict; pass-through JSON is a loose object (Q25). Streams and binary replies are exempt, each with a `conventions.json` entry (Q53) | Validation, typed handlers and fast serialisation from one declaration, and a field the schema doesn't name never leaves the server | Fastify's Validation-and-Serialization and Type-Providers references; Collina; owner decision 4 | `check-structure` rule 6, a heuristic: a route with no `schema`, and request input handed to a `parse`, `safeParse` or `validate` call. A declared `response` is review |
+| 5 | A server feature is a folder, `features/<name>/`, with an `index.ts` as its public surface. Code outside the folder, `app.ts` included, imports it through that index; another feature does only if it must. No import cycles, type-only imports included: a store two features read lives in `db/` (Q54), a feature names its own options type rather than importing `app.ts`, and test helpers two features share live in `testing/` | A change to one domain stays in one folder, and its insides change without breaking callers | The demo's `routes` README; Collina; Pocock's `setup-ts-deep-modules` (owner decision 7) | dependency-cruiser `feature-through-index` and `no-circular`; `app.ts`'s own imports are review |
+| 6 | Every route declares its schemas through `@fastify/type-provider-zod`: `params`, `querystring` and `body` as it takes them, and `response` for each status its handler sends. Zod from `shared/` when the client imports the schema, else from the feature folder (Q55), or the repo's existing schema library (sports-app's TypeBox, Q28). No handler parses request input. A response schema is transform-free and not strict; pass-through JSON is a loose object (Q25). A declared status encodes every reply on it, so a declared 4xx is the generic body. Streams and binary replies are exempt, declare no response schema, and each has a `conventions.json` entry (Q53) | Validation, typed handlers and fast serialisation from one declaration, and a field the schema doesn't name never leaves the server | Fastify's Validation-and-Serialization and Type-Providers references; Collina; owner decision 4 | `check-structure` rule 6, a heuristic: a route with no `schema`, and request input handed to a `parse`, `safeParse` or `validate` call. A declared `response` is review |
 | 7 | Handlers stay thin. SQL lives in the feature's `store.ts` (a factory returning an interface, house-style rule 20), logic two routes share in `service.ts`, pure code in `lib/`, which never imports Fastify. A store too big to split stays whole in `db/` (Q54) | A handler reads as input, call, reply; a store is faked with a plain object; pure code is tested without a server | The demo's data access through repositories; Collina | dependency-cruiser `lib-without-fastify`; the rest is review |
-| 8 | Errors: throw `ApiError(code, message)`, the one error class (Q56). One handler, set at the root by a `fastify-plugin` plugin, answers in the repo's existing error body (`{ error, message, issues? }` where it has none): an `ApiError` with its code's status, a schema failure with 400 and its issues, a 4xx Fastify or a plugin raised with its status, anything else with 500, a fixed message, and the error logged with the request. The 404 handler answers the same body, rate-limited where `@fastify/rate-limit` is present | Fastify's default handler sends a thrown message verbatim at every status, a 500's included; the web parses one body | Fastify's Errors reference; the demo; Collina; Q43 | review |
+| 8 | Errors: throw `ApiError(code, message, details?)`, the one error class (Q56), or where every handler sends its own 4xx, none. One handler, set at the root by a `fastify-plugin` plugin registered first, answers in the repo's existing error body (`{ error, message, issues? }` where it has none): an `ApiError` with its code's status, a schema failure with 400 and its issues, a 4xx Fastify or a plugin raised with its status, anything else with 500, a fixed message, and the error logged with the request. The 404 handler answers the same body, rate-limited where `@fastify/rate-limit` is present | Fastify's default handler sends a thrown message verbatim at every status, a 500's included; the web parses one body | Fastify's Errors reference; the demo; Collina; Q43 | review |
 | 9 | Each feature has `inject()` tests through `testing/buildTestApp.ts`: the whole app on a fresh temporary data folder, fakes passed in the context, closed after each test, with a schema-failure case. vitest, except atrium on `node:test` (Q27); Shelfmark tests handlers and plugins without `inject()` (Q26). Every server has a `pretest` that builds what its tests import | `inject()` runs the whole request path (hooks, validation, serialisation) with no socket | Fastify's Testing guide; the demo's test helper; Collina | review |
 | 10 | Web: a feature is a folder, `web/src/features/<name>/`, holding one domain's pages, components, hooks and API calls, used through its `index.ts`. Base UI wrappers live in `components/ui/`, the API client and pure helpers in `lib/` | The client changes with its feature, as the server does | Rule 5 applied to the client; base-ui rule 3 | dependency-cruiser `feature-through-index` and `no-circular`, which match any `features/` path; `check-base-ui` for `ui/`; the rest is review |
 | 11 | A file past about 400 lines is a warning: split it by sub-domain before adding to it | A file that long holds more than one idea, and the next change touches all of them | The demo's `routes` README (a growing file becomes a folder) | `check-structure` rule 11, a warning, in every root |
@@ -104,8 +107,14 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
   `app.get(path, { schema, handler })` and `app.route({ url, … })` with a
   literal path. An options object that spreads (`...shared`) counts as
   having a schema.
+- Rule 6 also misses a route whose path isn't a literal
+  (`app.get(routes.x.path, handler)` with no schema isn't flagged), and
+  flags `fn({ x: request.body.x })` on input a schema already validated:
+  that one is an exception.
 - A finding the repo accepts is an exception in `conventions.json`, with the
-  check, the rule, the path, an optional `match` and a required `reason`:
+  check, the rule, the path, an optional `match` and a required `reason`.
+  `match` is a substring of the finding's message: use the message exactly,
+  or one exception hides every later finding that contains the string:
 
   ```json
   {
@@ -120,7 +129,10 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 The house dependency-cruiser preset forbids cycles (`no-circular`),
 unresolvable imports, a feature reached past its index
 (`feature-through-index`) and Fastify under `lib/` (`lib-without-fastify`).
-It counts type-only imports. It runs in every repo from the harness brief
+It counts type-only imports. Two repos added rules the preset lacks:
+ward-auth's `domain-not-to-features` and `app-through-feature-index`
+(`app.ts` through a feature's index), and sports-app's "a plugin never imports a
+feature"; whether the preset gets them waits on a house-style release. It runs in every repo from the harness brief
 on; a rule the repo can't pass yet is lowered to a warning by name in its
 own `.dependency-cruiser.cjs`, with a dated comment that says what removes
 it (never a brief number), and the server brief raises it again:
@@ -145,9 +157,12 @@ A reviewer works through these, skipping what the tools report:
 
 - **Rule 1.** The timeouts suit the repo: a long poll under
   `connectionTimeout` (wicket's 25 s, lantern's 26 s record route, ward-auth's
-  slow SMTP), an upload under `requestTimeout` (comercial-website's 500 MB).
-  `TRUSTED_PROXIES` names the proxy's network in a container, or every
-  client shares one rate-limit bucket.
+  slow SMTP), an upload under `requestTimeout` (comercial-website's 500 MB),
+  `keepAliveTimeout` above the proxy's. `TRUSTED_PROXIES` names the proxy's
+  network in a container, or every client shares one rate-limit bucket. A
+  long poll, stream or websocket is cancelled in `preClose`, and the built
+  server exits 0 on SIGTERM with one held
+  ([shutdown-and-timeouts.md](references/shutdown-and-timeouts.md)).
 - **Rule 2.** The order in `buildApp`, and every feature registered by name.
 - **Rule 4.** `fastify-plugin` on each cross-cutting plugin and on none of
   the features; no `decorate` for a dependency; no `declare module
@@ -156,10 +171,13 @@ A reviewer works through these, skipping what the tools report:
 - **Rule 6.** A `response` schema for every status the handler sends itself
   and for no other: a declared status the handler doesn't send (a guard's
   401) answers 500 when the guard's body doesn't match it. No `.transform()`
-  and no `.strict()` in a response schema. Each stream or binary route has
-  its `conventions.json` entry.
+  and no `.strict()` in a response schema, and no `.default()` or `.catch()`
+  that a reply relies on (encode applies neither). A declared 4xx is generic.
+  Each stream or binary route has its `conventions.json` entry.
 - **Rules 7 and 8.** No SQL in a handler; no thrown message in a 5xx reply;
-  Fastify's own 4xx keep their status.
+  Fastify's own 4xx keep their status; the error plugin is registered first
+  and tested on a real route; the fixed 500 message is checked against what
+  the client shows.
 - **Rule 9.** A test per feature through `buildTestApp`, a schema-failure
   case, and a `pretest`.
 - **Rule 10.** A page belongs to the feature that owns its route; a
@@ -175,10 +193,10 @@ takes the version below:
 
 | Package | Version | Note |
 |---|---|---|
-| `fastify` | `5.12.8` | any 5.12.x; SocialEvents moves from 5.8.5 first |
+| `fastify` | `5.12.8` | any 5.12.x; 5.12.7 and 5.12.8 behaved alike on everything re-measured 2026-11-12; SocialEvents moved from 5.8.5 first |
 | `@fastify/type-provider-zod` | `1.0.3` | needs zod 4.2 or later |
 | `@fastify/swagger`, `openapi-types` | `9.9.3`, `12.1.3` | the provider's required peers: npm installs them, so pin them, and name them in the repo's dependency notes |
-| `zod` | `4.6.7` | 4.2 or later; atrium, comercial-website's `backend` and public-resource-map move from zod 3 first |
+| `zod` | `4.6.7` | 4.2 or later, but 4.6.6 or later: GHSA-mrhx-c7xc-m3w5 is in 4.5.4; one copy in the lockfile; atrium, comercial-website's `backend` and public-resource-map moved from zod 3 first |
 | `fastify-plugin` | `6.0.1` | |
 | `close-with-grace` | `2.5.0` | |
 | `@fastify/rate-limit` | `11.2.2` | where a repo limits; without it the 404 handler drops its `preHandler` |
@@ -198,6 +216,12 @@ the house flags and their tests pass on these versions.
   response schema may hold, how a zod issue becomes the error body, the
   traps, and the byte compare that proves a response schema changes
   nothing.
+- [shutdown-and-timeouts.md](references/shutdown-and-timeouts.md): the
+  timeouts the repos chose and why, what holds a shutdown (a long poll, a
+  stream, a websocket) and the `preClose` that cancels it, and the
+  real-socket SIGTERM check.
+- [reply-capture.md](references/reply-capture.md): the capture that proves a
+  migration changes nothing, and the differences that are expected.
 - [web-skeleton.md](references/web-skeleton.md): the `web/src` tree, the
   API client and a feature's calls.
 - [migrating-a-server.md](references/migrating-a-server.md): the order every

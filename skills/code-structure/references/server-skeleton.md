@@ -146,6 +146,9 @@ await app.listen({ host: config.host, port: config.port });
   defaults are no limit for both.
 - **`keepAliveTimeout`** outlives the proxy's idle upstream connections,
   which Caddy keeps for 2 minutes by default. Fastify's default is 72 s.
+- **What the repos measured** (the values chosen, the shutdown that waits for
+  a held response, and the real-socket check) is on
+  [shutdown-and-timeouts.md](shutdown-and-timeouts.md).
 - **The host** is `127.0.0.1` on a host and `0.0.0.0` in a container, where
   the proxy reaches the server over the container network. It comes from
   `HOST`.
@@ -310,6 +313,24 @@ describe("loadConfig", () => {
   a host behind Caddy. In a container it is the network the proxy connects
   from, or `request.ip` is the proxy for every client and they share one
   rate-limit bucket.
+- **Where the server reads a `.env`.** Rule 3's explicit path holds for a
+  server that loads one. Some repos load it outside `config.ts` (a dev script
+  passes `--env-file`, a library's `dotenv/config`) and `config.ts` only
+  parses (public-resource-map, newspapper); that is allowed, as long as
+  nothing else reads `process.env`. Their scripts read a smaller set
+  (`loadDatabaseConfig`, `loadSeedConfig`) so a migrate or a seed needs no
+  secret.
+- **Settings types live in `config.ts`.** A type a feature exports and the
+  routes import closes a cycle once `config.ts` imports the feature
+  (wicket's `CloudSettings`).
+- **`NODE_ENV` is a finding even here.** `check-structure` rule 3 refuses any
+  read of it, `config.ts` included, so a repo either names a setting for what
+  it switches (atrium keyed its proxy warning on a non-loopback `HOST`) or
+  records one exception with its reason (SocialEvents, public-resource-map
+  and comercial-website did). The rule also reads strings: a refusal message
+  that names `NODE_ENV` is a finding.
+- **A path that `buildApp(config)` resolves keeps `:memory:`** as it is, for
+  the tests (wicket).
 - **Read at import time is allowed.** A repo whose modules import a config
   constant (atrium) keeps that until a `loadConfig(env)` factory is a small
   change; `config.ts` stays the only reader either way.
@@ -459,6 +480,8 @@ export const ERROR_STATUS = {
   forbidden: 403,
   not_found: 404,
   conflict: 409,
+  /** A body over the limit: Fastify raises it as a 413. */
+  too_large: 413,
   rate_limited: 429,
   internal: 500,
 } as const satisfies Record<string, number>;
@@ -471,11 +494,14 @@ export type ErrorCode = keyof typeof ERROR_STATUS;
  */
 export class ApiError extends Error {
   readonly code: ErrorCode;
+  /** Extra fields for the reply body (a stale write's `mtime`). */
+  readonly details: Record<string, unknown> | undefined;
 
-  constructor(code: ErrorCode, message: string) {
+  constructor(code: ErrorCode, message: string, details?: Record<string, unknown>) {
     super(message);
     this.name = "ApiError";
     this.code = code;
+    this.details = details;
   }
 }
 ```
@@ -483,6 +509,18 @@ export class ApiError extends Error {
 One class (Q56) in `lib/`, because it imports nothing from Fastify: a
 feature, a plugin and a pure helper can all throw it. A new code is one line
 in `ERROR_STATUS`.
+
+- **A third argument, `details`,** carries extra body fields: 3D-sandbox's
+  stale write returns the file's `mtime` with its 409. The plugin spreads
+  it into the body.
+- **Optional.** Where every handler sends its own 4xx there is nothing to
+  throw, and the error plugin can be four branches: validation, Fastify's
+  4xx, the serialization 500 and the fixed 500 (mini-projects).
+- **One code, one status.** The table can't give a code two statuses;
+  wicket needed one on two, and listed it as the gap.
+- **An error class in a package the move may not touch** (3D-sandbox's
+  `SceneValidationError`, in a shared package) keeps its own branch in the
+  plugin.
 
 ## The error and 404 handlers: `plugins/errors.ts`
 
@@ -501,6 +539,7 @@ function errorBody(error: ErrorCode, message: string, issues?: Issue[]): ErrorBo
 /** The code for a 4xx that Fastify or a plugin raised. */
 function clientErrorCode(status: number): ErrorCode {
   if (status === 404) return "not_found";
+  if (status === 413) return "too_large";
   if (status === 429) return "rate_limited";
   return "bad_request";
 }
@@ -525,7 +564,9 @@ function statusOf(error: unknown): number | undefined {
 const errorHandling: FastifyPluginAsync = async (app) => {
   app.setErrorHandler((error: unknown, request, reply) => {
     if (error instanceof ApiError)
-      return reply.code(ERROR_STATUS[error.code]).send(errorBody(error.code, error.message));
+      return reply
+        .code(ERROR_STATUS[error.code])
+        .send({ ...error.details, ...errorBody(error.code, error.message) });
 
     if (hasZodFastifySchemaValidationErrors(error)) {
       const where = error.validationContext ?? "request";
@@ -564,7 +605,11 @@ export const errors = fp(errorHandling, { name: "errors", dependencies: ["@fasti
 ```
 
 - **`fastify-plugin` sets them on the root** (rule 4). Without it, the
-  handlers would apply only inside this plugin's own scope.
+  handlers would apply only inside this plugin's own scope. **Register the
+  plugin first**, and test it on a real route: newspapper's handler was set
+  after its route plugins and covered none of them, so a route's 500 sent
+  its message and Fastify's 400s their own body. The same order bug may sit in
+  any server that registers errors last.
 - **Fastify's own 4xx pass through** with their status. A handler without
   that branch turns bad JSON or an oversized body into a 500
   (comercial-website). With no handler at all, Fastify's default sends the
@@ -573,6 +618,15 @@ export const errors = fp(errorHandling, { name: "errors", dependencies: ["@fasti
   `ResponseSerializationError`: a 500, logged with the zod issues. Use
   `instanceof`; the provider's `isResponseSerializationError()` only checks
   for a `method` property.
+- **The fixed 500 message is a visible change** where the client shows
+  `message ?? error`: 3D-sandbox's failed save now reads "The API failed; its
+  log says why." instead of `internal`. Check the client's code before
+  writing it, and list the change under Deviations. A repo whose client reads
+  no message (mini-projects) shows no change.
+- **Don't log `error.cause.issues` where answers stay out of the logs.** A
+  serialization failure's issues quote stored values: wicket and Shelfmark log
+  the error's name and code, the method and the URL, and satchel the failing
+  paths and issue codes only.
 - **Logging needs a logger.** `request.log.error` does nothing under
   `logger: false`, so a server that says it logs 500s must turn the logger on
   in `server.ts`.
@@ -708,8 +762,12 @@ export { createBookStore, type BookRow, type BookStore } from "./store.js";
   has no schema on the route, so Fastify serialises it as it is; a declared
   404 schema it didn't match would turn it into a 500.
 - **`reply.code(201)`, then `return` the body.** The provider types a
-  handler's return value from the route's response schemas, and returning
-  `reply.code(204).send(…)` doesn't type-check.
+  handler's return value from the route's response schemas.
+  `reply.code(n).send(body)` type-checks for a status the route declares
+  (201, 409, 400 all measured on 5.12.7 and 5.12.8) and fails for one it
+  doesn't; a declared 204 as `z.null()` wants `.send(null)`, not `.send()`
+  ([zod-type-provider.md](zod-type-provider.md)). Both forms are fine; use the
+  one the file already uses.
 
 ## The test app and the tests
 
@@ -832,6 +890,24 @@ describe("the book routes", () => {
   the temporary folder goes with the app.
 - **A schema-failure case per feature** (rule 9) proves the route has its
   schema and the error body carries the issues.
+- **The schema-failure case runs on the real app.** On the in-memory
+  database: `ALTER TABLE` adds a stray column (the reply drops it), an
+  invalid stored value answers 500, and `db.close()` first proves a thrown
+  message stays out of the reply (mini-projects). Where no input can fail its
+  schema (3D-sandbox: params are strings, bodies `z.unknown()`), the case has
+  nothing to prove and is left out, with the reason in the decision log.
+- **`buildTestApp` doesn't fit a test that sets environment variables first**
+  (newspapper's `config.test.ts`); that test calls `loadConfig(env)` with its
+  own object. A repo may keep its own helper (`startTestApp`, wicket's two
+  build helpers) and record the rule 9 exception.
+- **A test pins a feature's route schemas** with a `testing/routeSchemas.ts`
+  that collects them through an `onRoute` hook (satchel), so a feature test
+  fails when a route loses its schema, without a second request.
+- **Test helpers two features use live in `testing/`,** not in a feature's
+  index: a feature's index exports only what `app.ts` uses, or knip flags the
+  rest (mini-projects), and lantern's `sources/index.ts` re-exporting its
+  fakes for other features' tests is the shape to avoid. A helper outside the
+  features may import a feature's folder directly.
 - **Shelfmark** keeps its "nothing boots the app" decision (Q26) and tests
   handlers and plugins without `inject()`; atrium writes the same tests on
   `node:test` (Q27).
