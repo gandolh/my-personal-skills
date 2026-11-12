@@ -204,3 +204,24 @@ CHANGELOG lists, per repo, the blocks and exceptions the sync retires and the
 `no-standalone-expect` directives to delete. No board ticket. The controller canaries
 the candidate on three adopters, then tags `house-style-v1.2.0`. A
 todo asks corpus-flow to leave room in a brief for its outcome note.
+
+## [2026-11-12] done | brief 16, the server wave folded into code-structure, v0.43.0
+
+Brief 16, the tracker for the 17 Fastify servers, is done: every server row is
+built and its brief is in its repo's `done/`. The brief's outcome note holds
+one table (check-structure before and after, the reply comparison, what is
+left) and says what the tracker's Acceptance did not get: the container `CMD`
+start, which no builder could run because local Docker can't build, is an
+owner check after the deploys. `code-structure` took the wave's lessons,
+each where a reader looks for it: two new references
+(`shutdown-and-timeouts.md`, `reply-capture.md`), the skeleton's `ApiError`
+`details` and `too_large` (compiled and tested again), the error plugin
+registered first, the migration order (zod 4.6.7, deploy phase `all`, the
+whole-repo grep for the old entry name, `--warn-only` dropped at the first
+0), and the zod provider page. Re-measured on Fastify 5.12.7 and 5.12.8:
+a plain `z.object` headers schema does not strip other headers (the value is
+merged over the raw headers), so 3D-sandbox's note is withdrawn; a long poll
+cancelled in `onClose` still held the close after 3 s, in `preClose` it took
+10 ms; `reply.code(n).send(body)` fails only for a status the route doesn't
+declare. The house-style findings are one todo for a release brief. Version
+0.43.0.

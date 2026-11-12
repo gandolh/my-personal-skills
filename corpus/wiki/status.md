@@ -1,6 +1,6 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, and brief 24's Hallmark at version 0.40.0 (2026-11-11).
-updated: 2026-11-11
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), and the server wave's lessons folded into code-structure at version 0.43.0 (2026-11-12).
+updated: 2026-11-12
 ---
 
 # Status
@@ -117,3 +117,14 @@ step sits behind a written guard. taste-skill 2.5's trade palettes and copy
 layer are in `design-md-library`. The taste suite is opt-in at its old pin,
 and `orchestrate` routes a redesign to Hallmark. Brief 28, the estate
 redesign board, can start. Owner step: update the plugin to 0.40.0.
+
+## 2026-11-12: brief 16 done, the server wave folded into code-structure, v0.43.0
+
+The library is at v0.43.0, with 29 skills. Brief 16, the tracker for the 17
+Fastify servers, is done: every server moved to the structure, and the
+brief's outcome note holds the table of before and after. `code-structure`
+now carries what the moves found: two new references
+(`shutdown-and-timeouts.md`, `reply-capture.md`), corrections where the
+builds disproved the skill, and an answer to 3D-sandbox's headers claim,
+which did not hold on Fastify 5.12.7 or 5.12.8. The house-style findings are
+one todo for a release brief. Owner step: update the plugin to 0.43.0.
