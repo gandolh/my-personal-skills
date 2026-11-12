@@ -262,3 +262,13 @@ a time. `hooks/agent-guard.mjs` enforces the rules for four new agents:
 briefs) and `owner-steps`. Plugin agents' hooks are ignored, so
 `scripts/install-agents.mjs` writes user-level copies. `plan-split-dispatch`
 uses them. See [the brief](briefs/done/29-workflow-agents-and-the-verify-script.md).
+
+## [2026-11-12] done | Brief 30 - the design team leaves draft, and the design-pipeline skill (v0.47.0)
+
+The pilot (the-board with three directions, atrium judged with two) is
+folded into the four design agents: two directions by default, the judged
+viewports, G3 failing an ellipsis, and a critic that counts the first screen
+against today and yields to the controller's rulings. `design-pipeline`
+runs the order and the hand-offs, with `scripts/pairs.mjs`, a node port of
+the pilot's pair maker that matched the atrium judging pixel for pixel. See
+[the brief](briefs/done/30-finish-the-design-team-and-a-design-pipeline-skill.md).

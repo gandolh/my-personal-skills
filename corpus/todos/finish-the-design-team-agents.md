@@ -18,4 +18,4 @@ v0.45.0 added four draft agents: `design-director`, `design-sketcher`, `design-j
   - when to use 2 directions instead of 3.
 - **Bump the plugin version,** and say in `docs/history.md` what changed from the drafts.
 
-Promoted to [brief 30](../briefs/todo/30-finish-the-design-team-and-a-design-pipeline-skill.md) on 2026-11-12.
+Promoted to [brief 30](../briefs/done/30-finish-the-design-team-and-a-design-pipeline-skill.md) on 2026-11-12.

@@ -153,3 +153,11 @@ The library is at v0.46.0, with 29 skills and 12 agents. Brief 29 is done:
 `plan-split-dispatch` now uses. Owner steps: run
 `node scripts/install-agents.mjs`, smoke-test a bare `brief-builder` in a new
 session, and update the plugin to 0.46.0.
+
+## 2026-11-12: brief 30, the design team and design-pipeline, v0.47.0
+
+The library is at v0.47.0, with 30 skills and 12 agents. Brief 30 is done:
+the four design agents left draft with the redesign pilot's lessons, and the
+new `design-pipeline` skill runs them in order, director to publish, with a
+tested pair maker. Owner step: update the plugin to 0.47.0. Open: re-run the
+judge's calibration case after the G3 wording change.

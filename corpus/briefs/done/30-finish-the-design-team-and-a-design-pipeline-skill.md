@@ -98,3 +98,27 @@ build notes. What they changed:
   path, a username or the domain.
 - `node scripts/check-skills.mjs` and `bash corpus/lint.sh` pass, and the
   version is 0.47.0 in every place.
+
+## Outcome (2026-11-12, v0.47.0)
+
+Built as specified. Commits 3054686, d1a77f8, 4117af1, cf2f1e2 and a232e01.
+
+- **The agents** lost DRAFT and took the pilot's lessons. The judge's rubric
+  is the one the pilot ran, plus "an ellipsis or clamp on content fails G3".
+- **`design-pipeline`** has `SKILL.md`, `references/hand-offs.md` (each
+  step's inputs, checks and the pilot's rulings over the critic) and
+  `references/judging.md` (the pair plan, the dispatch, the tally, a split,
+  the result file).
+- **`scripts/pairs.mjs`** keeps `pairs.py`'s plan and crop with no
+  dependency. It keeps the top rows' filtered bytes, which stay valid in a
+  non-interlaced PNG. Run on atrium's real inputs into a scratch folder, it
+  gave the same `KEY.json` and 24 of 24 images pixel-identical to the
+  estate's pairs. Its test (7 cases) covers both plans, the reversal, the
+  crop against decoded pixels for all five filter types in RGB and RGBA,
+  and the refusals.
+- **Not done:** the calibration case was not re-run after the G3 wording
+  changed (two opus judges; the controller's call). The three-direction plan
+  is tested on synthetic images only; the-board's pairs predate the script
+  and used another order. Atrium's build and critic cost were not yet
+  measured, so the two-direction total (about 0.9M) is the controller's
+  estimate. Almanac stays out of the evidence: its judging was under way.
