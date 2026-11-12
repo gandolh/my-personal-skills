@@ -73,3 +73,17 @@ v0.45.0 added a design team as four **draft** agents. They came from the estate 
 - **`design-critic`** (opus) reviews a finished proposal against today, regressions first. It uses hallmark's redesign question, impeccable's critique rubric and the impeccable detector.
 
 They settle after the first pipeline pilot (the brief-board app). A skill that runs the pipeline end to end follows then. Still 29 skills.
+
+v0.46.0 added four workflow agents and a verify script, brief 29. A research pass over the brief runs of 2026-11-10 to 2026-11-12 found that the controller ran the same mechanical checks about 100 times, and that about 6 of the builders' written rules were broken or nearly broken at least once. Its advice was to move those rules into hooks and the checks into a script, and to add few agents.
+- **`scripts/verify-brief.mjs <repo> <base>`** is the mechanical half of the verify gate. It runs the repo's check gate, the house-style sync check and `format:check`, checks for a clean tree and no tracked `node_modules` or `.env`, greps the added lines for machine paths, the username and the words in `VERIFY_BRIEF_DENY`, checks `--untouched` globs, and counts `npm audit` high and critical advisories. It runs them one at a time and prints one line each with its exit code. A test file on the repo's known-flaky list is re-run alone before the gate counts as failed.
+- **`hooks/agent-guard.mjs`** is the agents' PreToolUse hook, with four modes.
+  - `builder` blocks `git push`, `--no-verify` and `git commit -n`, `pkill`, `killall`, `pgrep -f`, docker builds and any `.env` read or write. It lets `kill` reach only a process whose working folder sits under a folder the agent worked in.
+  - `capturer` adds a ban on git commands that change a checkout, and allows the Write tool only inside folders marked `.screen-capturer-out`, outside any checkout.
+  - `audit` and `owner-steps` keep Bash to a read-only allowlist.
+  - The matcher reads a command as bash does, so `git -C x push`, `cd x && git push` and `bash -c "git push"` are caught, and a commit message that mentions them is not.
+- **`brief-builder`** (sonnet, no `Agent` tool) builds one brief and carries only the stable rules and the report contract.
+- **`screen-capturer`** (sonnet) folds the five capture prompts of 2026-11-12 into one method.
+- **`brief-auditor`** (sonnet, a draft) checks acceptance lines and review-only rules, read only. It is kept or dropped after a trial on 5 briefs.
+- **`owner-steps`** (haiku) compiles the deploy list per stack and flags a wrong deploy phase.
+
+Claude Code ignores frontmatter hooks in plugin agents, so `scripts/install-agents.mjs` writes user-level copies, with the guard's absolute path. `plan-split-dispatch` now dispatches `brief-builder` when it is installed. Its verify gate for brief runs is `verify-brief`, then `brief-auditor`, then the controller's own pass. Its review gate for brief runs is `brief-auditor`, plus `/security-review` on auth or personal-data briefs. At a pause it runs `owner-steps`. Still 29 skills.
