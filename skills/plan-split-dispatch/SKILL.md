@@ -17,8 +17,14 @@ history. This is what makes it token-efficient *and* failure-resistant: no
 context pollution, and the full transcript isn't reprocessed every turn.
 
 This is the portable, repo-agnostic cousin of project-specific implement
-skills. It needs **no custom agents** — it dispatches the built-in
-`general-purpose` agent with an explicit `model` override per chunk.
+skills. It dispatches the library's **`brief-builder`** agent when it is
+installed, else the built-in `general-purpose` agent with the run's common rules
+file, with an explicit `model` override per chunk either way. The workflow
+agents (`brief-builder`, `screen-capturer`, `brief-auditor`, `owner-steps`) are
+installed at user level by the library's `scripts/install-agents.mjs`, because
+Claude Code ignores frontmatter hooks in plugin agents. Dispatch the bare name
+(`brief-builder`), never the plugin copy (`personal-skills:brief-builder`), which
+runs without its guard.
 
 **Front door.** This skill is the generic implement target of the `orchestrate`
 router, which runs on top of `corpus-flow`. When `orchestrate` hands off, it
@@ -159,8 +165,11 @@ re-confirm. `re-scope` → fold in changes and re-emit.
 ### Step 4 — Dispatch (per chunk)
 
 Process chunks in dependency order; send a parallel-safe group as multiple
-`Agent` calls **in one message**. Use `subagent_type: general-purpose` with an
-explicit model:
+`Agent` calls **in one message**. Use `subagent_type: brief-builder` when it is
+installed (its hooks block pushes, `pkill`, docker builds, `.env` reads and
+killing another agent's process, and it has no `Agent` tool, so it can't start
+sub-builders past your cap). Otherwise use `general-purpose` and point it at the
+run's common rules file. Either way, pass an explicit model:
 
 - **Senior** → `model: opus`
 - **Junior** → `model: sonnet`
@@ -259,6 +268,10 @@ stand in for a finder. In a TypeScript repo, give the conventions finder the `ho
 skill's review checklist (`${CLAUDE_PLUGIN_ROOT}/skills/house-style/references/review-checklist.md`)
 and tell it to skip style the linter and formatter already enforce.
 
+**For a brief-backed run** (Backlog / wave mode), the review gate is `brief-auditor` on
+each brief, plus the built-in `/security-review` on briefs flagged auth, tokens,
+cookies or personal data. The finder fan-out above is for a fresh chunked task.
+
 **This gate is mandatory for any multi-file run.** Skip it only on a genuinely small
 run (1–2 files, one chunk), and say so explicitly rather than silently dropping it.
 
@@ -327,7 +340,22 @@ the controller, against the integrated tree.
 > evidence. A green claim on stale evidence is the single most expensive thing
 > that happens in a long run, because every later wave is built on it.
 
-Run, in order, and do **not** proceed past a failure:
+For a brief-backed run, the gate per brief result is three passes, in this order:
+
+- **`verify-brief`** (`node ${CLAUDE_PLUGIN_ROOT}/scripts/verify-brief.mjs <repo> <base>`):
+  the repo's check gate, the house-style sync check, `format:check`, a clean tree, no
+  tracked `node_modules` or `.env`, a grep of the added lines for machine paths and the
+  words in `VERIFY_BRIEF_DENY`, `--untouched <glob>` paths, and `npm audit` high and
+  above. It runs them one at a time, prints one line each with its exit code, and
+  re-runs a test file on the repo's known-flaky list alone. You run it, so the iron law
+  holds without spending a model's tokens.
+- **`brief-auditor`** (a light slot, read only): each acceptance line met, unmet or
+  unverifiable with its evidence, plus the review-only rules for the brief's kind. Hand
+  it the brief, the range, the builder's report and the `verify-brief` output.
+- **Your own pass:** read the risky diffs (auth, tokens, personal data), look at one or
+  two screenshots, and make the rulings.
+
+For a chunked run, run in order, and do **not** proceed past a failure:
 
 1. **Typecheck** the whole workspace (the repo's typecheck cmd, e.g. `npm run typecheck`).
 2. **Build** every package that emits artifacts dependents consume (a downstream
@@ -383,7 +411,10 @@ of `blocked/` without the owner (`corpus-flow` §2b).
    ending: which waves/briefs are **done** (with their Handoff-for-dependents contracts),
    which are **in-flight or next**, the current branch + last commit, and any open decisions.
    Put it at `corpus/log.md` (or a `corpus/resume-<date>.md` brief) so a **fresh session can
-   pick up cold** without re-deriving state. Confirm what was written and stop — do not start
+   pick up cold** without re-deriving state. When the run leaves deploys for the owner,
+   dispatch `owner-steps` (read only) for the deploy list (one ordered checklist per
+   stack, each phase checked against the paths its tickets changed), and put its list
+   in the resume point. Do the same at the end of a session. Confirm what was written and stop — do not start
    another wave. This is a first-class action, not a failure mode.
 
 Each brief is dispatched with the Step-4 template and must return a **Handoff for
