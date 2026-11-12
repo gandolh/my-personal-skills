@@ -132,3 +132,90 @@ the owner's answers are on
   `.claude/rules/` files for web and server.
 - The outcome note has a table per repo: strict or `--warn-only` for each
   checker, and the counts.
+
+
+## Outcome (2026-11-12)
+
+Every row's briefs are in their repo's `done/`: 23 repos, 71 briefs (harness,
+Base UI, Tailwind, server; "-" where the row has none). Each cell is the brief
+number and the short hash of the commit that put it in `done/`. The two
+checker columns are errors / warnings from running both `vendor/house-style`
+checkers on 2026-11-12 in each repo's main checkout, strict (no
+`--warn-only`), read-only, with the count of findings the repo's
+`conventions.json` excepts. Each repo's `check:conventions` script was read:
+it runs `check-base-ui` strict everywhere, and `check-structure` strict
+everywhere except Shelfmark and imbatranimOS (below).
+
+| Repo | Harness | Base UI | Tailwind | Server | check-base-ui | check-structure |
+|---|---|---|---|---|---|---|
+| mini-projects | 2 `56d70df` | 3 `de9855b` | 4 `91dc520` | 5 `b16b9df` | 0/0 | 0/0w |
+| wicket | 10 `9d83747` | 11 `a996ab6` | 12 `5695a34` | 13 `25ca7e5` | 0/0 | 0/0w; 1 excepted |
+| the-board | 16 `e7ecb3c` | 17 `d60d1cd` | 18 `23707a3` | 19 `89c7ca4` | 0/0 | 0/2w; 1 excepted |
+| lantern | 15 `fbb510b` | 16 `3f5c6ed` | 17 `8f96885` | 18 `1a6f34b` | 0/0 | 0/0w; 2 excepted |
+| satchel | 1 `c63caa9` | 2 `99529ac` | 3 `4c7e7c6` | 4 `5350a4d` | 0/0 | 0/3w; 1 excepted |
+| ward-auth | 3 `1c1e2ba` | 4 `beedb69` | 5 `0b9da2c` | 6 `32e030e` | 0/0; 2 excepted | 0/22w; 16 excepted |
+| almanac | 1 `de5c43c` | 2 `f7fd95d` | 3 `b6c7f0d` | 4 `9c0a9d5` | 0/0; 1 excepted | 0/4w |
+| shelfmark | 5 `5d028a9` | 6 `54dc01c` | 7 `51b1d9d` | 8 `17a84b0` | 0/0 | 0/9w; 1 excepted **`--warn-only`** |
+| postern | 1 `af8807c` | 2 `8bc8121` | 3 `0abe50a` | - | 0/2w | 0/18w |
+| newspapper | 8 `29f9db6` | 9 `a0e4155` | 10 `890a4f6` | 11 `8cbce81` | 0/0 | 0/4w |
+| atrium | 2 `cc2d366` | 3 `cd5d397` | - | 4 `12aacb6` | 0/0 | 0/43w; 2 excepted |
+| comercial-website | 11 `52c7ed1` | 12 `9c360e9` | - | 13 `19a3d97` | 0/0 | 0/5w; 3 excepted |
+| public-resource-map | 3 `d0e533e` | 4 `501cdc5` | - | 5 `31c21ad` | 0/0 | 0/5w; 2 excepted |
+| ro-housing | 22 `a6233c3` | 23 `b83979a` | - | 24 `d336f1c` | 0/0 | 0/2w |
+| sports-app | 2 `a47431b` | 3 `21a3555` | - | 4 `41234fc` | 0/0; 6 excepted | 0/7w; 2 excepted |
+| SocialEvents | 15 `85c6329` | 16 `429be02` | - | 17 `b890bc2` | 0/0 | 0/0w; 5 excepted |
+| 3D-sandbox | 5 `c4c0ede` | 6 `eb9fbd9` | - | 7 `b6faa05` | 0/0 | 0/4w |
+| imbatranimOS | 86 `ae76af5` | 87 `a8cdb21` | - | - | 0/0; 20 excepted | notwired (NestJS, no brief) |
+| imbatranim-apps | 8 `e21bdaa` | 9 `b08c6d9` | - | 10 `e479048` | 0/0 | 0/28w |
+| presentation-sites | 3 `73da32b` | 4 `3650c6d` | - | - | 0/0 | 0/1w |
+| churchix | 3 `8c3485a` | 4 `e5469be` | - | - | 0/0; 3 excepted | 0/1w |
+| game-engine | 3 `6c96013f` | - | - | - | 0/0 | 0/0w |
+| just-a-bot | 18 `6238281` | - | - | - | 0/0 | 0/0w |
+
+Every warning left in `check-structure` is rule 11 (file length), and
+Postern's two `check-base-ui` warnings are rule 9's icon-child false positive
+(a recorded checker gap, not an exception). Repos with no server row (Postern,
+imbatranimOS, presentation-sites, churchix, game-engine, just-a-bot) run
+`check-structure` on their Node folders or, for imbatranimOS, not at all.
+
+**Against the tracker's Acceptance.**
+
+- **Met: every row's briefs are in `done/`,** and every repo's `check-base-ui`
+  exits 0 strict with 0 errors and 0 warnings (Postern's two warnings
+  aside), with 32 findings excepted across 5 repos (imbatranimOS 20, sports-app 6,
+  churchix 3, ward-auth 2, almanac 1), each with a reason in
+  `conventions.json`.
+- **Met, with two flags: `check-structure` strict.** It exits 0 in the 22 rows that run it.
+  **Shelfmark's `check:conventions` still passes `--warn-only` to it**
+  although the checker reads 0 errors: the flag can go. **imbatranimOS does not
+  run `check-structure`:** its backend is NestJS (no Fastify brief), the brief
+  never wired it, and a read-only run finds 52 errors (rule 3 x45, rule 1 x4,
+  rule 6 x2, rule 2 x1) that are not a regression. It is a question for the
+  owner whether the checker should cover a NestJS backend or the repo records
+  that it doesn't.
+- **Met: each repo has a short root `CLAUDE.md` and `.claude/rules/` files**
+  for its parts (web and server, or the parts it has: Postern's `jmap.md`,
+  presentation-sites' `sites.md`, churchix's `churchix.md`, game-engine's
+  `client.md` and `engine.md`, just-a-bot's `bot.md`). Root files run from 31 to 199 lines; the five longest are
+  Newspapper 199, game-engine 160, comercial-website 138, churchix 94 and
+  mini-projects 82. Q46 asked for a short one, and whether 200 lines is short
+  is the owner's call.
+- **Not run by this closeout: `npm run check` in each repo.** The evidence is
+  each builder's outcome note (every repo's note says it exits 0) and the
+  controller's verification before each push; this pass ran only the two
+  checkers.
+- **Not met, and not a row: websites/trips.** It declares `@base-ui/react`
+  (`^1.6.0`, lockfile 1.8.0) and uses it in `src/ui/Modal.tsx`, but it is in
+  no tracker's table: no pin brief, no harness (no vendored `house-style`), no
+  conventions brief. Brief 04 stays open for it (see its progress note).
+  Brief 15 treats it as outside the table, whose rows name only the repos
+  that have a plan.
+
+**Open after this tracker, none a row of it.**
+
+- The Hallmark redesign brief in each repo (brief 28) is the next brief of
+  each row.
+- wzd_auth's todo "the OIDC pages follow the theme" rides with its
+  redesign brief 07.
+- The two owner steps the server wave left: the container `CMD` check after
+  each deploy, and the deploys themselves.

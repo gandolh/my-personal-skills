@@ -66,3 +66,56 @@ No restyling and no other dependency changes in a bump.
 - imbatranim-apps' `vendor/imbatranim-ui/COMMIT` names an imbatranimOS
   commit that has the bump.
 - The outcome note lists each repo's behaviour differences, or says none.
+
+
+## Progress (2026-11-12)
+
+Not moved to `done/`: Acceptance bullet 2 fails for one repo outside the
+table (websites/trips, below). Everything the table asked is done. Read from
+each repo's `package.json` and lockfile on 2026-11-12, and from each bump
+brief's outcome note in its own corpus.
+
+| Repo | Bump brief, done commit (the pin) | `package.json` | Lockfile | Behaviour differences |
+|---|---|---|---|---|
+| mini-projects | 01, `d21ed45` (`95f1e3a`) | `frontend`: `1.9.0` | 1.9.0 | none recorded; browser check not run, later covered by the Playwright specs of briefs 03 and 04 |
+| comercial-website | 10, `a92f7d0` (`c4dd42c`) | `frontend`: `1.9.0` | 1.9.0 | none recorded; walk left to the owner; `CityAutocomplete` and `Tooltip` were compile-checked only |
+| imbatranimOS | 85, `250311f` (`dcdb648`) | `packages/ui`: `1.9.0` (core's copy went in brief 87) | 1.9.0 | none recorded; the walk was not run, so 1.6.0 to 1.9.0 in the seven screens was unwalked then; brief 87's screenshots at 1.9.0 followed |
+| imbatranim-apps | 07, `b64323a` (`40450da`, kit sync) | root: `1.9.0` | 1.9.0 | none recorded; `vendor/imbatranim-ui/COMMIT` is now ea84fac, which has the bump (`dcdb648` is its ancestor, and `packages/ui` there pins `1.9.0`) |
+| ro-housing | 21, `26b1c23` (`17b1e27`) | `web`: `1.9.0` | 1.9.0 | none; `Tabs` still carries `data-active` in 1.9.0 (read from the package) |
+| newspapper | 07, `6eb7b34` (`c6bdca9`) | `ui`: `1.9.0` | 1.9.0 | none recorded; 944 tests before and after; walk left to the owner |
+| atrium | 01, `5270504` (`4299ea1`) | `apps/web`: `1.9.0` | 1.9.0 | none recorded; walk not run (sign-in); atrium's brief 03 walked it in Chromium |
+| public-resource-map | 02, `4527cd1` (`4339a3f`) | `ui`: `1.9.0` | 1.9.0 | none recorded; Playwright not run in the bump; brief 04's 38 specs pass on 1.9.0 |
+| sports-app | 01, `588a715` (`d4088c7`) | `client`: `1.9.0` | 1.9.0 | none recorded; the three forms were not walked in the bump |
+| 3D-sandbox | 04, `ccce579` (`f9a65a7`) | `apps/web`: `1.9.0` | 1.9.0 | none recorded; the `ScrollArea` thumb not looked at |
+| presentation-sites (saloon) | 02, `4abcdcf` (`c4d539e`) | `sites/saloon`: `1.9.0` | 1.9.0 | none; no runtime change |
+| churchix | 02, `6e7472f` (`bbcf247`) | `packages/ui`: `1.9.0` | 1.9.0 | none; no runtime change |
+| SocialEvents | 16 (adoption), `429be02` (`00c90ea`) | `client`: `1.9.0` | 1.9.0 | no bump: adopted at 1.9.0, all its parts walked in brief 16 |
+| almanac, shelfmark, wzd_auth, the-board, wicket, postern, lantern, satchel | none | `1.9.0` (one `package.json` each) | 1.9.0 | none: already 1.9.0, exact |
+| presentation-sites: auto-service, tractari, subcort | none | `1.9.0` each | 1.9.0 | none |
+| game-engine, just-a-bot | none | no `package.json` declares it | - | none |
+
+No bump brief recorded a behaviour difference, and none found a renamed API
+(`OTPFieldPreview`, `otp-field`, `sanitizeValue` printed nothing in every
+repo). Most ran typecheck, tests and the build before and after, and skipped
+the per-wrapper changelog read (GitHub was out of reach) and the browser walk,
+which they left for the owner after the deploy. The Base UI briefs that
+followed (rule-by-rule, with Chromium walks and before-and-after screenshots)
+used every component at 1.9.0 and recorded no 1.9.0-specific regression.
+
+**Acceptance.**
+
+- Every row's brief is in its repo's `done/`: yes.
+- Every `package.json` that declares `@base-ui/react` reads exactly `"1.9.0"`
+  and every lockfile resolves 1.9.0: yes for the 24 manifests and 21 lockfiles
+  of the table's repos (the library's own `house-style/test/fixtures` carry
+  deliberately wrong pins). **No for websites/trips**: `package.json` says
+  `^1.6.0` and the lockfile resolves 1.8.0. Trips uses Base UI (`src/ui/Modal.tsx`),
+  is not in the table above, and is not among the private repos the owner's Q2
+  listed. This tracker's 2026-11-10 table was therefore incomplete.
+- imbatranim-apps' `COMMIT` names an imbatranimOS commit with the bump: yes.
+- Behaviour differences, or none: written above.
+
+**To close it:** a trips brief that pins `1.9.0` exactly (`--save-exact`) and
+runs its typecheck, tests, build and a look at the `Modal`, or the owner
+ruling trips out of scope. Then this brief moves to `done/` with the table
+above as its outcome.
