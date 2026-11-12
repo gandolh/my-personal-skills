@@ -19,7 +19,7 @@ included. Only the winner is built in full, then a critic reviews it against
 today. The controller (the session that runs this skill) owns every hand-off
 and every ruling. It was piloted on the-board (the brief-board app, three
 directions) and atrium (two directions) on 2026-11-12. Both came through
-with the judges unanimous and today losing on a hard gate.
+with the judges unanimous and today losing every pair.
 
 ## The agents
 
@@ -92,8 +92,10 @@ Shelfmark's Library: today's version, with a header card and the table on
 its own surface, must beat a proposal with stronger type that put everything
 on one flat sheet. The owner sent that proposal back. With structure (G1) a
 hard gate, both reversed judges agreed with him. Re-run the case when you
-change the judge's prompt; a judge that prefers the flat sheet is
-miscalibrated.
+change the judge's prompt. A judge that prefers the flat sheet is
+miscalibrated. The images (today's Library at 1280 and the flat proposal's
+two rounds) are not in this library; the estate keeps them with its
+redesign run's notes, in the run's calibration folder.
 
 ## The cost
 
@@ -115,8 +117,8 @@ controller's estimate for an app with two directions is about 0.9M.
 runs at most three). Judges are light: they read a dozen images and write a
 few lines, with no browser and no build, so both can run beside heavy work.
 Sketchers, the build and the critic run headless Chrome; give them the slots
-when the machine is quiet. A judge's verdict is worth waiting for. Never skip
-the second judge to save a slot: the reversal is the check.
+when the machine is quiet. Never skip the second judge to save a slot. The
+reversal is the check.
 
 ## The pair maker
 

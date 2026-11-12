@@ -35,7 +35,7 @@ Then two softer gates, which decide only if the hard gates didn't:
 | Grouping and gestalt | `grouping` | 20 |
 | Typography | `type` | 12 |
 | Colour | `colour` | 10 |
-| Density and rhythm (how much of the job fits on this screen) | `density` | 10 |
+| Density and rhythm | `density` | 10 |
 | Consistency | `consistency` | 10 |
 | Fit to the product | `fit` | 10 |
 | Distinctiveness: made, not generated. The swap test (change the name; could it be any app?) and no famous product's exact palette | `distinct` | 8 |
