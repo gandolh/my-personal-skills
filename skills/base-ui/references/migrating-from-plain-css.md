@@ -11,7 +11,8 @@ and state through `[data-*]` selectors in its one stylesheet, because `cn()`
 and the tokens don't exist yet; this migration converts them.
 
 Checked against `tailwindcss` 4.3.5 and `@tailwindcss/vite` 4.3.5 on
-2026-11-11.
+2026-11-11, and revised on 2026-11-12 from the ten moves that followed it;
+[conversion-traps.md](conversion-traps.md) holds what each one found.
 
 ## The method
 
@@ -22,10 +23,23 @@ Before touching anything, take Playwright screenshots of every screen at
 `ui-test-plans` skill has the bring-up (server, fixtures, sign-in). Keep
 them out of git, in the scratch folder the brief names.
 
+Make "before" a throwaway clone of the repo at the brief's first commit, not
+a memory, and take both sets with one script, a pinned clock and seeded or
+mocked data. Run the same code twice first: two runs that compare at 0 px
+prove the script is steady, so every later difference is the migration's.
+An app that needs a sign-in uses a seeded local account and scratch data
+(never a copied `.env`). The e2e specs select by role and name; rewrite any
+that select by class or inline style now, before the classes go
+([conversion-traps.md](conversion-traps.md)).
+
 ### 2. Tailwind in, every old stylesheet in `legacy`
 
 - Add `tailwindcss` and `@tailwindcss/vite`, pinned exactly, and the plugin
   in `vite.config.ts`.
+- Move the root font size onto `body` now, not in step 3. If it stays on
+  `:root` inside `legacy`, every rem utility measures from the old size
+  through all the component commits (the todo app's dry run). An app whose
+  sizes are all in px needs no `--spacing` override (Wicket).
 - Create `src/styles/index.css` ([tailwind.md](tailwind.md) has the full
   file). Its first line fixes the layer order:
 
@@ -50,7 +64,15 @@ them out of git, in the scratch folder the brief names.
   matters in `@layer base`, with a comment.
 - Build, run the tests, commit. Check the built CSS for what the app relies
   on: a `light-dark(` token survives, `bg-<token>/50` compiles, and the `sm`
-  breakpoint is the width the app expects.
+  breakpoint is the width the app expects. The layer order in the built file
+  is `properties theme base …` with the app's own layers after `base`; a
+  remote `@import url()` inside `layer(vendor)` is hoisted above the `@layer`
+  statement by `vite build`, though not by the dev server, so read the built
+  CSS, and host the file locally where it matters (the todo app; comercial-
+  website's two font imports stay at the top of the file on purpose).
+- `@theme static` (not plain `@theme`) while any `legacy` sheet reads
+  `var(--space-2)` and the like: Tailwind emits only the variables a utility
+  uses otherwise (the-board, Postern, Almanac's lazy calendar sheet).
 - `.prettierignore` lists the stylesheets still in `legacy`, so a format run
   doesn't churn files that are about to be deleted.
 
@@ -72,7 +94,14 @@ them out of git, in the scratch folder the brief names.
   named text sizes into same-pixel `--text-*` entries.
 - Extend `cn()`'s tailwind-merge with the new size, radius, shadow and z
   names ([tailwind.md](tailwind.md)), or it drops classes it reads as
-  conflicting.
+  conflicting. Decide the size and line-height conflict now: by default a
+  later `text-*` removes an earlier `leading-*`.
+- Audit the old CSS's scale for browser-default sizes too (`h1` to `h3`,
+  `small`, an unsized `h2`): Preflight takes them, and each needs a named
+  `--text-*` entry or a class (Wicket's `--text-page-title`).
+- Say which breakpoints are Tailwind's and which are the app's own; the old
+  edges that aren't within a few pixels of `sm`, `md` or `lg` become
+  declared variants.
 - Add the theme switch if the app lacks one ([theme.md](theme.md), rule 14).
 
 ### 4. One stylesheet at a time
@@ -82,6 +111,21 @@ them out of git, in the scratch folder the brief names.
 - **Move each component whole, in one commit.** An inline `style` beats
   every layer, so a component can't mix old inline styles and new
   utilities. Inline `style` stays only for computed geometry (rule 5).
+- **An app styled inline** (the todo app: 34 `style` props, no stylesheet
+  to move) has no `legacy` to empty: each component is converted whole, in
+  the commit that deletes its `style` props.
+- **Shared classes first.** `.button`, `.muted`, a base card: move them (or
+  turn them into a `Button` wrapper and a `looks.ts`) before the areas that use
+  them, or put their utilities before the existing ones, so a later-converted
+  base class doesn't override an earlier one (Postern, Lantern).
+- **A converter does most of a big file.** Shelfmark's postcss pass
+  (declarations to utilities, simple selectors to variants, a `.shell--phone`
+  modifier to `max-md:`) plus a rewriter over `className` contexts did about
+  75 percent of 5,473 lines; descendant, compound and `:has(.class)`
+  selectors were by hand. Check that zero margins and paddings survive an
+  `inset` shorthand, and run `eslint --fix` for the class order afterwards.
+  Commit by area where the old rules share selectors across components (Wicket,
+  Satchel did), not necessarily by component.
 - **What can't become a utility** stays in `@layer base` or
   `@layer components`, each with a comment saying why: element defaults,
   third-party DOM (FullCalendar's cells), print rules. Keep these few.
@@ -104,6 +148,13 @@ Take the same screenshots again and compare them pair by pair. The bar is
 **close enough** (Q19): no visible change to layout or colour. Drift of a
 few pixels in spacing or rounding needn't be fixed or listed. Anything more
 is fixed, or listed in the brief's outcome note with the reason.
+
+A stylesheet test holds the move in place: the layer order, the token count,
+no Tailwind palette or default text scale left, and every page colour the
+theme script and the store mention equal to the stylesheet's
+([conversion-traps.md](conversion-traps.md) has the three recipes and the
+workspace traps). Log the CSS and JS sizes before and after in the outcome
+note; tailwind-merge is about 9 kB of JS, gzipped.
 
 ### 6. The design notes and the decisions
 
@@ -132,3 +183,10 @@ and a reviewer can see why:
   5 kB gzipped (ward-auth's sign-in pages, Q21): rule 5.
 - An inline `style` that holds data (a progress width, a colour the user
   picked): rule 5, recorded for review.
+- A kit package's components folder, and a token sheet several web roots
+  share (imbatranimOS: `packages/ui/src/components` and `theme.css`): rule 3
+  and rule 5, each with its reason, because `ui` and `stylesheet` name one
+  folder and one file per root.
+- A blend of two colours that no named token can hold (sports-app's four
+  `color-mix` token blends): rule 6. Where a token can hold it, the token is
+  the answer (Shelfmark).

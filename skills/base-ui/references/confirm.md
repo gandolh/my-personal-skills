@@ -260,6 +260,18 @@ export function NoteActions({
   at the Cancel button, so the safe answer has focus however the actions are
   ordered. Without it, "Cancel has focus" would hold only because Cancel is
   the first tabbable element (Base UI 1.9.0).
+- **Every way out is guarded, or the pending state is decorative.** Esc, the
+  X (if the look keeps one), an outside press on a dialog that allows it, and
+  Cancel all check `pending`. comercial-website's `ConfirmDialog` had no
+  guard on the first two and a Cancel that ran `onClose` twice; its one caller
+  never passed `loading`, so nothing showed. Wicket's test proves the guard
+  (removing it fails the third test), and wzd_auth's `Confirm.test.tsx` covers
+  the list: Cancel has focus, Esc and an outside press do nothing while busy,
+  both buttons are disabled.
+- **A look that keeps its title bar and X** (imbatranimOS's kit) still works
+  on `AlertDialog`: the outside press does nothing, focus starts on Cancel
+  instead of the X, and that was the one intended difference in its
+  screenshots.
 - **The page reports success.** The dialog closes when `run` resolves; the
   caller's own state (a row gone, a toast) says it worked.
 - **Description as a `<div>`.** `AlertDialog.Description` renders a `<p>`;

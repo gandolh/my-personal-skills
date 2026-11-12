@@ -23,6 +23,8 @@ Rule 5. It sits at `src/styles/index.css` in each web root, or where
 /* The app's one stylesheet (base-ui rule 5). The layer order comes first:
    the first @layer statement fixes the order for the whole page. */
 @layer theme, base, vendor, legacy, components, utilities;
+/* `legacy` is there only while old stylesheets remain; drop it from the order
+   when the last one goes (the todo app, Wicket). */
 
 @import "tailwindcss";
 /* Third-party CSS goes in the vendor layer, above Tailwind's reset and below
@@ -152,15 +154,23 @@ What each part is for:
   `border-*`; `--text-*` makes font sizes; `--radius-*` makes `rounded-*`;
   `--shadow-*` makes `shadow-*`; `--z-index-*` makes `z-*`; `--animate-*`
   makes `animate-*`. Checked in 4.3.5: `--z-index-dialog: 50` gives
-  `z-dialog`.
+  `z-dialog`, `--height-top` gives `h-top` and `min-h-top`, `--container-page`
+  gives `max-w-page` and `--spacing-gutter` gives `p-gutter`. Two that
+  don't: `--size-touch` makes `size-touch` only (no `h-touch`; write
+  `h-(--size-touch)` or name it `--height-touch`), and `--z-nav` makes no
+  utility at all. A closed scale (`--spacing: initial`) also drops `p-0` and
+  `inset-0`: add `--spacing-0: 0px` ([conversion-traps.md](conversion-traps.md)).
 - **The root font size.** `html` keeps the browser's size, because a pixel
   size there overrides the reader's font setting and shifts every `rem`
   utility. The app's size goes on `body`. An app whose old root size wasn't
   16 px sets `--spacing` so every spacing utility keeps its pixel value
   (13 px: `--spacing: 0.203125rem`, which is 0.25rem times 13/16), and its
   named text sizes become same-pixel `--text-*` entries (Q44).
-- **No `phone` variant.** Tailwind's `max-sm:` is the phone breakpoint, and
-  its one-pixel edge against `sm:` is accepted (Q62).
+- **`max-sm:` is the phone breakpoint** where the app's old edge is within a
+  pixel or two of Tailwind's 640 px; that one-pixel edge is accepted (Q62).
+  An edge that isn't (the-board's 600 and 1100 px, Satchel's 900 px,
+  ward-auth's 60rem console) is a declared variant or `--breakpoint-*`, with
+  a test that keeps it equal to any copy of the number in script.
 
 ## State attributes as variants
 
@@ -244,7 +254,15 @@ export function cn(...inputs: ClassValue[]): string {
 
 Measured with tailwind-merge 3.6.0: plain `twMerge("text-body text-ink")`
 returns `text-ink`; the extended one keeps both. Keep the lists in step with
-`@theme` when a token is added.
+`@theme` when a token is added; a `container` name (`max-w-page`) and a
+custom `@utility` group go in too.
+
+A size also removes an earlier `leading-*` by default, because a Tailwind size
+carries a line height. Where the app's sizes carry none (the todo app, the
+board), add `override: { conflictingClassGroups: { "font-size": [] } }` so
+`cn("leading-none", "text-tick")` keeps both; re-measured 2026-11-12: the
+default drops `leading-none`, the override keeps it. An app that keeps old CSS
+which relied on the default keeps the default and says so (imbatranimOS).
 
 ## A wrapper, start to finish
 
@@ -404,5 +422,10 @@ each quoted string whole, so the strings never build a class from pieces.
   (`[data-surface="console"]`) doesn't reach it, so theme attributes go on
   `<html>`, or the popup carries the attribute itself. Ward's console hit
   this.
+- **A script that selects by class breaks when the class goes.** The hook is a
+  `data-` attribute ([conversion-traps.md](conversion-traps.md)).
+- **State order is not CSS order, `grid-cols-N` is `minmax(0, 1fr)`,
+  `translate-*` is not `transform`:** the lookup of what differs from the CSS
+  being converted is [conversion-traps.md](conversion-traps.md).
 - **Class order and unknown classes** are house-style's rule 18
   (`better-tailwindcss`), not this skill's.

@@ -148,6 +148,14 @@ export function BookMenu({ title, remove }: { title: string; remove: () => Promi
   `finalFocus` instead: remember the choice in `onClick`, and in
   `finalFocus` focus the trigger, run it, and return `false` so Base UI
   moves nothing. Almanac hit this.
+- **A theme or language picker doesn't go inside a menu.** Menu arrows move
+  focus only, so a `RadioGroup` there fights them. Put a "Theme" item in the
+  menu that opens a small dialog with the `RadioGroup` (Almanac, Shelfmark),
+  or use the menu's own radio items where the choice is a menu entry
+  ([tabs-toggle-group.md](tabs-toggle-group.md)).
+- **A `ContextMenu` closes on any scroll event.** A screenshot or test script
+  that dispatches `contextmenu` after `scrollIntoViewIfNeeded` sees the menu
+  close a frame later; dispatch it first, or scroll before (imbatranimOS).
 - **A right-click menu** is `ContextMenu` (`@base-ui/react/context-menu`),
   with the same parts; it opens at the pointer on right click or a long
   press. It repeats actions a visible menu button already offers, never

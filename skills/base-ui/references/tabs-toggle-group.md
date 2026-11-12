@@ -4,20 +4,33 @@ Rule 16: which control a one-of-several choice gets. Three wrappers, and a
 feature that uses each.
 
 Checked against `@base-ui/react` 1.9.0 and `tailwindcss` 4.3.5 on
-2026-11-11.
+2026-11-11; "What the builds found" re-run in jsdom on 2026-11-12.
 
 ## Which one
 
 | The choice | Control | Arrow keys | Why |
 |---|---|---|---|
-| Switches what a list shows (All / Open / Done) | `RadioGroup` | move and choose | Nothing is saved; trying each option with the arrows is the point (Q41) |
+| Switches what a list shows (All / Open / Done), one always chosen | `RadioGroup` | move and choose | Nothing is saved; trying each option with the arrows is the point (Q41) |
 | Switches between panels of content | `Tabs`, with `activateOnFocus` | move and choose | The same, for panels (Q41) |
-| A setting kept on the device (theme, language) | `RadioGroup` | move and choose | Storing on the device costs nothing, so it behaves like a filter (Q57) |
+| A setting kept on the device (theme, language, a view mode) | `RadioGroup` | move and choose | Storing on the device costs nothing, so it behaves like a filter (Q57) |
 | A picker that saves to the server on each choice | guarded `ToggleGroup` | move focus only | An arrow press must not write; Space, Enter or a click does (Q57) |
+| A filter or a "move to" row that can be empty, where a second press clears it | `ToggleGroup`, no guard | move focus only | A radio can't be cleared; nothing is written, so no guard is needed |
 
-"Saves" means a write to the server. Four repo briefs made a device-only
+"Saves" means a write to the server. Six repo briefs made a device-only
 picker a `ToggleGroup` (public-resource-map, ro-housing, sports-app,
-Shelfmark); this table wins when they are built.
+Shelfmark, SocialEvents, 3D-sandbox); every builder followed this table
+instead and said so in the outcome note. The cases that settled the edges:
+
+- **imbatranimOS's Logs level filter** is an unguarded `ToggleGroup`: a
+  second click clears the level, which a radio can't do. imbatranim-apps'
+  Todo "Move to" row is one too (a pick closes the row, so arrows that picked
+  would close it on the way).
+- **Shelfmark's rating and shelf chips** are plain deselectable
+  `ToggleGroup`s: they write only on Save, so the guard has nothing to guard.
+- **Almanac's calendar colour palette** and **atrium's per-profile theme
+  and font picks** are guarded `ToggleGroup`s: each choice saves at once.
+  Base UI's radio clicks its hidden input when keyboard focus lands on it, so
+  a `RadioGroup` there would write on every arrow press.
 
 `Tabs.List`'s `activateOnFocus` defaults to `false` in 1.9.0: arrow keys move
 focus and Enter or Space selects. The wrapper below turns it on; a tab set
@@ -292,6 +305,48 @@ export function ReadingStatus({
   return <ToggleGroup label="Reading status" options={STATUSES} value={status} onValueChange={choose} />;
 }
 ```
+
+## What the builds found
+
+Each one was run against 1.9.0 in a scratch folder (jsdom, Testing Library)
+or read from the package source, unless it names a repo only.
+
+- **No choice yet is `value={null}`.** A controlled `RadioGroup` with
+  `value={null}` checks nothing and stays controlled; only `undefined` is
+  uncontrolled. `""` works too, but a filter's "everything" option reads
+  better as a sentinel (`"all"`; comercial-website). A star rating is a
+  `RadioGroup` of `Radio.Root` parts holding the icons, with `value={null}`
+  until the first pick; the arrow keys come free.
+- **Home and End.** `RadioGroup` leaves them out and `ToggleGroup` handles
+  them, but `ToggleGroup` has no Up and Down arrows (both measured). Focus
+  wraps at the ends in both. Almanac's wrappers add Home and End to its radio
+  lists.
+- **`Radio.Root` renders a `<span>`.** A chip of fixed height needs
+  `flex items-center justify-center` from the caller (imbatranimOS). With
+  `nativeButton` and `render={<Button />}` it also serves an icon rail.
+  `render={<fieldset />}` on the group keeps `role="radiogroup"`, not `group`
+  (Postern).
+- **A group inside a flex row** takes `className="contents"` so its radios
+  join the row's layout; Chrome keeps the role (the-board, imbatranimOS).
+- **A radio chooses a tick after it gets focus** (`onFocus` clicks the
+  hidden input), so a jsdom arrow-key test awaits a tick inside `act`
+  before it reads `activeElement` or `checked` (imbatranimOS).
+- **A segmented radio in an app that already draws a segmented track** needs
+  no wrapper look of its own: a group and `Radio` styled on `data-checked`
+  was enough in Shelfmark. A wrapper may take `look` for the two shapes.
+- **The dot's border** needs a token of at least 3:1 in both themes
+  (`ink-muted`, not `line`; Lantern).
+- **A clearable `ToggleGroup`** wrapper takes `value: T | null`, and takes
+  `children` so rows sit inside the group (Lantern's ratings list: 50 rows,
+  50 pickers, one Tab stop each).
+- **A page-level key guard** (Lantern's `/rate` swipes on arrows) must treat
+  `radiogroup` and `tablist` as fields it leaves alone, not `group`: a
+  plain `role="group"` also wraps buttons that should still swipe.
+- **A theme picker can't live in a `Menu`.** Menu arrows only move focus and
+  a `RadioGroup` inside it fights them. Almanac and Shelfmark put a Theme
+  item in the account menu that opens a small dialog holding the
+  `RadioGroup`. public-resource-map kept the menu and uses the menu's own
+  radio items; that is a menu, not rule 16's control.
 
 ## Adapt to the app
 

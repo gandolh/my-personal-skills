@@ -133,6 +133,67 @@ export function ThemeSwitch() {
 
 The `RadioGroup` wrapper is in [tabs-toggle-group.md](tabs-toggle-group.md).
 
+## What the builds found
+
+Every app moved to this switch on 2026-11-11 and 2026-11-12. Checked in a
+scratch folder (`lightningcss`, jsdom, Tailwind 4.3.5) where it says so.
+
+- **`color-scheme` is set from `data-theme` in the same stylesheet as the
+  tokens.** For browsers older than Chrome 123 the build rewrites
+  `light-dark()` into `--lightningcss-light` and `--lightningcss-dark`
+  variables that the `color-scheme` rules in that sheet switch, and a
+  `color-scheme` set from JS or another file doesn't switch them (mini-projects'
+  dry run; re-run: the rewrite is there, `:root[data-theme="dark"]` flips the
+  pair). It works inside a shadow's colour components too (Lantern).
+- **A second form fits an app whose palette is already roles.**
+  comercial-website (Material 3 roles) and SocialEvents (plain values) keep
+  the light roles as they are and redefine them under
+  `:root[data-theme="dark"]`. Then `data-theme` is only `light` or `dark`: the
+  store resolves System with `matchMedia` (and listens to its `change`), and the
+  boot script resolves it before the first paint. The cost is one more thing to
+  keep equal: a test reads the script, the store and the stylesheet and checks
+  they agree on the page colour. Where a role pairs in a way stock Material
+  doesn't (`bg-primary` hovering to `bg-primary-container`, `on-primary` text
+  on a container), the dark container is the lighter one.
+- **`theme-color` follows the choice, or it doesn't, on purpose.** The store
+  above never moves the meta tag. Lantern and comercial-website keep one
+  `<meta name="theme-color">` set by the boot script and by the store (also on
+  a System change) and test that `THEME_COLOR`, the script's colours and the
+  stylesheet's page colour are equal. Postern and Shelfmark left
+  the metas and the manifest colour alone, so the phone's bar follows the
+  system, not the switch. Choose one and say which.
+- **System stored on one device and nothing stored on another differ.** A
+  device that chose System before the key existed has no stored value, so it
+  shows light once (sports-app); say so in the outcome note.
+- **A "set before first paint" observer watches `document`,** with
+  `subtree: true`, not `<html>`: an init script runs before `<html>` exists
+  (Postern's e2e).
+- **The boot script** is inline in `index.html`, which the estate's
+  Content-Security-Policy allows (it sets only `frame-ancestors` and
+  `object-src`). Postern serves it as `theme-boot.js` under `script-src
+  'self'` and lists it in the service worker's precache. A `script-src` added
+  later needs the hash, or the script moved to a file (ward-auth's note).
+- **Greps and tests that look for `prefers-color-scheme`** find the store's own
+  `matchMedia` call and the `@custom-variant dark` system branch. An
+  acceptance grep says where it expects them (wicket, comercial-website).
+- **Tests of the stylesheet** read the source with `fs`, or import
+  `index.css?inline` under vitest's `test.css.include`; `?raw` gives an empty
+  string or the compiled file, and Tailwind drops roles no class uses
+  (comercial-website, newspapper). [conversion-traps.md](conversion-traps.md)
+  has the recipe.
+- **A fourth button wraps.** atrium's header gained System beside Light, Dark
+  and Sepia, and at 390 px the four no longer fit one row: the cost of the
+  new choice, not a regression.
+- **The switch inside a menu** is a dialog the menu opens
+  ([menu.md](menu.md)); on a page with room (an account page) it is the
+  `list` look, and in a 36 px footer the `segmented` look
+  (mini-projects).
+- **Contrast,** per theme: text 4.5:1 and a control 3:1, held by a test over
+  the pairs (comercial-website's 18, Shelfmark's `tokens.test.ts`). The runs
+  found ro-housing's light `accent` on `accent-soft` at 3.9:1 and
+  SocialEvents' focus ring at about 1.7:1; both were raised, and SocialEvents
+  keeps seven light pairs as recorded floors until its redesign.
+
 ## Where the rule bends
 
 Each is a `conventions.json` exception for rule 14, with its reason, so a

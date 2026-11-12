@@ -112,6 +112,14 @@ export function EmailAlerts({ initial, save }: { initial: boolean; save: (on: bo
 
 ## Notes
 
+- **A checkbox drawn as a track is a Switch.** comercial-website's three
+  filter and "free" toggles apply at once and were checkboxes styled as
+  switches; a drawn `Checkbox` there would be announced wrong. Real boxes
+  (negotiable, the terms, bundle rows) stay `Checkbox`.
+- **An empty box and an unchecked track need 3:1** against the surface in
+  both themes. imbatranimOS's kit `Checkbox` is faint in Classic dark and
+  comercial-website's unchecked track was about 1.2:1 in light, kept only
+  for Q19's parity; the redesign raises both.
 - **The value the server takes.** `onCheckedChange` gives a boolean. A
   native checkbox in a form sends `"on"` (or its `value`), and some handlers
   were written for `0 | 1` (the todo app's `PATCH` takes `0 | 1 | boolean`).

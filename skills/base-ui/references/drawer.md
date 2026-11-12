@@ -138,5 +138,27 @@ export function PhoneNav({ navigate }: { navigate: (href: string) => void }) {
   same words as its `aria-label`.
 - **Wide screens** keep their own navigation. `sm:hidden` here, or the
   app's own breakpoint; the drawer is the phone's menu, not a second one.
+- **A mouse drag doesn't swipe a left drawer; touch does** (Postern). Its
+  e2e dispatches touch events through the browser's protocol
+  (`Input.dispatchTouchEvent`), not a mouse drag.
+- **Initial focus lands on the popup, not the first link,** when
+  `Drawer.Close` comes before the first control: the default is the popup
+  itself (jsdom, mouse open, 1.9.0). Pass `initialFocus` (a ref or a function)
+  to reach the first link or button. Find it by a `data-` attribute, never by
+  a class the Tailwind move may delete (Postern's `NavDrawer` read
+  `.nav-drawer-content`; the grep for `querySelector` found it).
+- **A modal drawer makes the page behind it inert,** the menu button
+  included, so "the menu button toggles it" becomes a press outside that
+  closes the drawer (Postern). A drawer that carries state (a folded label
+  tree, a scroll position) keeps it in a parent that outlives the popup.
+- **A scroller inside the popup** that restores `scrollTop` at mount is
+  clamped, because the popup has no height yet: restore it from a
+  `ResizeObserver` for about 500 ms (Postern's `Drawer.Content`).
+- **A content sheet over a map is a non-modal drawer with snap points**
+  (public-resource-map's place sheet). `modal={false}` keeps the map
+  pannable and its pins tappable at the peek; `snapToSequentialPoints` stops
+  a fast swipe from the full height closing it outright. Snap points were
+  0.46 and 0.82 there. It passed a Chromium spike with mouse and touch and
+  has an e2e spec; the full-height snap is the old 82 percent.
 - **A bottom sheet** (actions for a row on a phone) is the same component
   with `swipeDirection="down"`; the package docs' first demo is the shape.

@@ -142,5 +142,15 @@ sites from the check; that wrapper's callers are review's.
   (Q16): the phone's own picker is the better control there. Such an app
   picks one at render time from `matchMedia("(width < 40rem)")`, the same
   edge as `max-sm:`, so only one control is ever in the form.
+- **A compact bar's select has no visible label.** It takes an `aria-label`
+  on the trigger and no `Select.Label`; the wrapper makes one of the two
+  required (3D-sandbox's toolbar selects).
+- **A Base UI select is wider than the native one it replaces** where its
+  trigger follows the chosen value (imbatranimOS: the kit `Select` for the
+  two native selects, and the Todo sort control in imbatranim-apps). Say so in the
+  outcome note; Q19's parity doesn't ask for the old width.
+- **A multi-select stays native.** The kit's `Select` is single-choice, so a
+  `<select multiple>` (the PDF form fields in imbatranim-apps) is a recorded
+  exception, not a swap.
 - **In a form,** `name` sends the value with the form, and `Field.Root`
   around it supplies the label and the error ([field.md](field.md)).

@@ -57,6 +57,15 @@ node vendor/house-style/bin/check-base-ui.mjs [--warn-only] [--version 1.9.0] [r
   it.
 - Tests (`*.test.*`, `*.spec.*`, files under `test`, `tests`, `__tests__`,
   `testing` or `e2e`) are exempt from rules 3, 6, 9, 10 and 11.
+- `ui` and `stylesheet` are per web root, one value each. A kit package whose
+  components folder isn't `components/ui` (imbatranimOS: 18 findings), a
+  token sheet shared by several roots, a lazy route's vendor sheet and a
+  public-pages sheet (ward-auth, churchix's three token sheets) each take an
+  exception with a reason. A repo whose one stylesheet stays at `src/index.css`
+  sets `"stylesheet": "index.css"` (comercial-website) instead of an exception.
+- Rule 9 flags an icon child inside `Menu.Trigger` or `Popover.Trigger`
+  (postern: `ComposeForm`, `SearchBox`). It is a warning and stays one; don't
+  except it.
 
 The house-style package README has the full format.
 
@@ -77,9 +86,9 @@ The house-style package README has the full format.
 | 11 | No `window.confirm`, `alert` or `prompt`. Ask with `ConfirmAction`, `useConfirm()` or an inline Yes / No (Q58) | A native dialog blocks every script on the page, can't be styled, and some browsers suppress it | rule 11: bare, `window.`, `globalThis.` and `self.` calls; a name the file binds itself is skipped |
 | 12 | Dialogs: controlled `open` and `onOpenChange` with the Escape guard; initial focus on `[data-autofocus]`, else the first field, else the footer's first button; `disablePointerDismissal` on a dialog that holds a form (Q58); a `Title` on every dialog; an `aria-label` on every icon-only control | Each was found by hand in three or more apps | review |
 | 13 | Prefer Base UI over a hand-built or third-party widget: a menu, dialog, popover, select, switch, checkbox, tabs, toast or slider starts from Base UI (`sonner` moves behind a wrapper with its call shape). Native stays for text, date and time inputs, and for a `<select>` on phones where an app decided so (Q16) | One accessible behaviour per widget, one look per app | review |
-| 14 | Every app has a Light / Dark / System choice; a first visit shows light; the choice is kept on the device; `dark:` keys off `data-theme` on `<html>` through `@custom-variant`, never `prefers-color-scheme` alone (Q18) | The owner's call: a switch everywhere, light first. The attribute lets the choice override the system | review; the apps that bend it record a `conventions.json` exception |
+| 14 | Every app has a Light / Dark / System choice; a first visit shows light; the choice is kept on the device; `dark:` keys off `data-theme` on `<html>` through `@custom-variant`, never `prefers-color-scheme` alone; the `theme-color` meta follows it (Q18) | The owner's call: a switch everywhere, light first. The attribute lets the choice override the system | review; the apps that bend it record a `conventions.json` exception |
 | 15 | A phone navigation panel is a `Drawer`, closed by a swipe, a tap outside, the X or Esc, and it has a `Drawer.Title` (Q40) | A swipe is how a phone closes a side panel; the title names it for a screen reader | review |
-| 16 | A filter, or a setting kept on the device, is a `RadioGroup` (`Tabs` with `activateOnFocus` when it switches panels). A picker that saves to the server on each choice is a guarded `ToggleGroup` (Q41, Q57) | Arrow keys may try out a filter; they must never write | review |
+| 16 | One of several. A filter that always has one chosen, and a setting kept only on the device (theme, language, a view mode), is a `RadioGroup` (`Tabs` with `activateOnFocus` when it switches panels). A picker that saves to the server on each choice is a `ToggleGroup` with the guard. A filter that can be empty, where a second press clears it, is a `ToggleGroup` without the guard (Q41, Q57) | Arrow keys may try out a filter or a device setting, which cost nothing; they must never write to the server. A radio can't be cleared | review |
 | 17 | jsdom tests only for wrappers that hold logic; flows in Playwright. Tests select by role and name, with `data-testid` only where no role fits (Q60, Q62) | A test of a thin wrapper tests Base UI; a role query tests what a user and a screen reader get | review |
 
 `check-base-ui` reports rules 1, 2, 3, 5, 6 and 11 as errors and 9 and 10
@@ -97,7 +106,11 @@ A reviewer works through these, skipping what the checker already reports:
 - **Rule 6.** No literal radius, shadow or z value (`rounded-[6px]`,
   `z-[999]`) where a token exists; token names say a role.
 - **Rules 7 and 8.** Transitions under `motion-safe:`; every popup portalled
-  and on the z scale.
+  and on the z scale. Rule 7 is where the checker is blind and the repos
+  were too: imbatranimOS had 63 `transition` and `animate-` uses and none
+  under `motion-safe:`, imbatranim-apps 20 and none. Grep for them
+  (`transition|animate-|data-starting-style`) and count the ones that aren't
+  under `motion-safe:`.
 - **Rules 9 and 10 through aliases.** A repo's own `DialogTrigger` or
   `Select` re-export hides its call sites from the checker. Look at each
   caller.
@@ -148,6 +161,10 @@ substitute the app's own.
   tooltip, and the order of `render`.
 - [migrating-from-plain-css.md](references/migrating-from-plain-css.md):
   the method every app's Tailwind brief follows.
+- [conversion-traps.md](references/conversion-traps.md): where Tailwind 4
+  differs from the CSS being converted (what Preflight removes, state order,
+  `translate`, `grid-cols`, `color-mix`, class hooks in code), and what the
+  ten moves measured.
 
 The package ships its own docs, one Markdown file per component with the
 full API tables, at `node_modules/@base-ui/react/docs/react/`. Check a prop
@@ -171,6 +188,28 @@ A repo meets this skill through two briefs of its own, in the owner's order
   dialog against rule 12, adds the theme switch and the phone drawer (14,
   15), sorts its choice controls (16), and drops `--warn-only` from
   `check:conventions` when `check-base-ui` passes.
+
+What the 2026-11 builds settled (every repo's Base UI and Tailwind briefs):
+
+- **The skill beats a repo brief's wording** where they differ, and the
+  outcome note lists it. It happened for the theme picker (a `RadioGroup`
+  in six repos where the brief said `ToggleGroup`: ro-housing, sports-app,
+  Shelfmark, public-resource-map, SocialEvents, 3D-sandbox), for dark tokens
+  (`light-dark()` pairs with `color-scheme` from `data-theme`, where the
+  brief said a block under `[data-theme="dark"]`) and for the error toast
+  (it stays until dismissed, `timeout: 0`, where a brief said about 5 s).
+- **An error toast stays at every call site, not only in the wrapper.**
+  Almanac added `type: "error"` and left its six callers on the old default;
+  Postern's 17 failure toasts needed `duration: null` one by one. Grep every
+  failure toast after changing the default.
+- **A `Button` wrapper for a repeated look is in scope** for a Tailwind
+  brief (lantern), beside `looks.ts` for the repeated class strings.
+- **Before and after screenshots decide parity.** Two throwaway clones,
+  `pixelmatch`, a pinned clock, seeded data. It found Satchel's lost bubble
+  looks, Lantern's changed grid widths and Almanac's utilities that
+  generated no CSS.
+  [migrating-from-plain-css.md](references/migrating-from-plain-css.md) has
+  the recipe.
 
 The repo's `.claude/rules/web.md` carries a short copy of the rules that
 apply to it, scoped to its web roots, so they load even where this skill

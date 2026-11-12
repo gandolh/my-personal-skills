@@ -242,3 +242,24 @@ export function RenameBook({ title, rename }: { title: string; rename: (title: s
   `getByRole`; pass `{ hidden: true }` to reach it.
 - **A phone menu is a Drawer, not a positioned Dialog** (rule 15,
   [drawer.md](drawer.md)).
+- **The Esc that closes a dialog or popover never reaches a `window`
+  listener.** Base UI listens on the document and stops the event's
+  propagation unless `escapeKeyBubbles` is set (read from the 1.9.0 source; 3D-sandbox
+  found it while keeping its tools' own Esc listeners, none needed a change).
+  An Esc handler of the app's own sits on the element that has focus, or runs
+  from `onOpenChange`.
+- **A non-modal panel with no form** (brief-board's ticket panel) takes its
+  own small wrapper, not this one: `modal={false}`, `disablePointerDismissal`,
+  `initialFocus` on the close button, a `Dialog.Title` that is the ticket's
+  heading (with an `aria-label` only until it loads), and no Escape guard,
+  because no field lives in it.
+- **A dialog with nothing to type in and nothing to press first** (a key
+  legend) falls back to focusing the popup itself, so focus never lands on
+  the X. A hidden file input doesn't count as a field (Newspapper).
+- **One close path.** A Cancel button that runs `onClose` in its own
+  `onClick` and also closes through `onOpenChange` runs it twice
+  (comercial-website's `ConfirmDialog` did). Let `onOpenChange` be the one.
+- **A portalled dialog covers the viewport.** A hand-built modal inside a
+  `backdrop-blur` column was clipped to that column, because the blur box became the
+  containing block of its `fixed` backdrop (SocialEvents): the one visible
+  difference of that move, and an intended one.
