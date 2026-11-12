@@ -88,7 +88,9 @@ describe("verify-brief", () => {
   });
 
   it("fails a machine path or a denied word the diff adds", () => {
-    const home = verify(repo({ "doc.md": "see /home/someone/projects/x\n" }), ["--gate", "true"]);
+    // Built at run time, so this file adds no machine path itself.
+    const homePath = ["", "home", "someone", "projects", "x"].join("/");
+    const home = verify(repo({ "doc.md": `see ${homePath}\n` }), ["--gate", "true"]);
     assert.equal(home.code, 1);
     assert.match(lineOf(home.out, "diff grep"), /doc\.md:1/);
     const word = verify(repo({ "doc.md": "line one\nhosted at example-estate.test\n" }), ["--gate", "true"], {
