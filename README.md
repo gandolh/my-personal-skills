@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.46.0, 29 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.47.0, 30 skills.
 
 ## What it does
 
@@ -74,6 +74,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 | `hallmark` | The design skill every web UI's redesign uses: a Floor of 16 rules no page ships without, a tiered browser lint, themes dealt per page, credited Wikimedia photographs; `/hallmark redesign <path>` or `audit <path>` (MIT) |
 | `impeccable` | The design build engine: 23 sub-commands, an anti-pattern detector, live browser iteration (Apache-2.0) |
 | `design-taste-frontend` + `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | Anti-slop frontend direction and presets, held at their 2026-08 pin and run only when called by name; each defers to impeccable on conflict (MIT) |
+| `design-pipeline` | A redesign run as a judged competition: two directions, two sketches, two blind judges in reversed order with today as a contestant, then the winner's full build, a critic against today and fix rounds; with the pair maker and the measured cost per app |
 | `design-md-library` | 74 real-brand `DESIGN.md` references and the method for adapting one into your own tokens, plus palettes and type dealt by trade and a copy layer for Hallmark runs |
 | `base-ui` | React UI on Base UI with Tailwind: 17 numbered rules, each with its `check-base-ui` id or review, copy-ready wrappers compiled against Base UI 1.9.0, the Light / Dark / System switch, and the method for moving an app from plain CSS to Tailwind |
 | `web-design-guidelines` | UI review against Vercel's Web Interface Guidelines, fetched fresh each run (MIT) |
@@ -116,6 +117,17 @@ node scripts/install-agents.mjs             # agents and the guard hook into the
 | `owner-steps` | haiku | Compiles the deploy list per stack from the board, read only, and flags a wrong deploy phase |
 
 `node scripts/verify-brief.mjs <repo> <base>` is the mechanical half of the verify gate, the one the controller runs on each result.
+
+### Design team agents
+
+Four agents for the `design-pipeline` skill. They carry no hooks, so the plugin's copies work as they are.
+
+| Agent | Model | What it does |
+|---|---|---|
+| `design-director` | opus | Writes two directions for one app's redesign (A evolve today, B the boldest structural answer), one content fixture and the main screen to sketch |
+| `design-sketcher` | sonnet | Draws one direction's main screen and renders the two viewports the judges compare, with the Floor checks |
+| `design-judge` | opus | Picks the better of each blind pair, hard gates (structure, legibility) first, then a weighted rubric; read only |
+| `design-critic` | opus | Reviews the winner's full build against today, first-screen density and regressions first; edits nothing |
 
 ### Other agents
 

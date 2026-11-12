@@ -26,6 +26,7 @@ is open work.
 | "what does the wiki say about X" | `corpus-flow` §5 |
 | "grill me" | `grill-me` |
 | "redesign <app>", "the estate redesign board" | brief 28, with `hallmark` called by name (`/hallmark redesign <path>`, `/hallmark audit <path>`) inside each repo's redesign brief |
+| "run the design pipeline", "let the judges pick" | `design-pipeline` (director, sketchers, reversed judges, build, critic) |
 
 ## READ / SKIP / SKILLS
 
