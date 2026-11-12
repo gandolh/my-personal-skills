@@ -41,7 +41,7 @@ describe("install-agents", () => {
       first[name] = text;
       assert.ok(text.startsWith("---\n# Installed by personal-skills"), name);
       assert.ok(!text.includes("CLAUDE_PLUGIN_ROOT"), name);
-      assert.ok(text.includes(`args: [${JSON.stringify(guard)}, `), name);
+      assert.ok(text.includes(`command: 'node "${guard}" `), name);
       assert.match(text, new RegExp(`^name: ${name}$`, "m"));
     }
     const again = install("--target", target);
@@ -54,9 +54,10 @@ describe("install-agents", () => {
     const target = mkdtempSync(join(scratch, "e2e-"));
     install("--target", target);
     const text = readFileSync(join(target, "agents", "brief-builder.md"), "utf8");
-    const [guard, mode] = JSON.parse(/args: (\[.*\])/.exec(text)[1]);
+    // Run the hook's command line through a shell, as Claude Code does.
+    const hookCommand = /^ {10}command: '(.*)'$/m.exec(text)[1];
     const run = (command) =>
-      spawnSync(process.execPath, [guard, mode], {
+      spawnSync("bash", ["-c", hookCommand], {
         input: JSON.stringify({ agent_id: "t", cwd: scratch, tool_name: "Bash", tool_input: { command } }),
         encoding: "utf8",
         env: { ...process.env, AGENT_GUARD_STATE: join(scratch, "state") },

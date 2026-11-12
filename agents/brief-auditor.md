@@ -9,8 +9,7 @@ hooks:
     - matcher: "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|Grep"
       hooks:
         - type: command
-          command: node
-          args: ["${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs", "audit"]
+          command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs" audit'
           timeout: 10
 ---
 # Brief auditor (draft)

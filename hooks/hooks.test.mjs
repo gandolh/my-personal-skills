@@ -356,10 +356,14 @@ describe("agent guard", () => {
       "git status && git log --oneline -3",
       `echo "git push" > notes.txt`,
       "git -C /tmp/x status",
+      "rsync -a --exclude .env src/ /tmp/copy/",
+      "tar --exclude=.env -czf /tmp/x.tgz .",
     ]);
   });
 
-  it("lets kill reach only processes under folders the agent worked in", () => {
+  const hasProc = existsSync("/proc/self/cwd");
+
+  it("lets kill reach only processes under folders the agent worked in", { skip: !hasProc && "no /proc" }, () => {
     const mine = gitRepo();
     const theirs = gitRepo();
     const mineId = idle(join(mine));
@@ -378,7 +382,17 @@ describe("agent guard", () => {
     assert.match(bash("builder", "kill -9 -1", "kill-a"), /far more/);
   });
 
-  it("counts a scratch folder the agent made or wrote in, but never a broad one", () => {
+  it("counts a checkout that holds checkouts, and its nested ones", { skip: !hasProc && "no /proc" }, () => {
+    const outer = gitRepo();
+    const inner = join(outer, "vendor-lib");
+    mkdirSync(join(inner, ".git"), { recursive: true });
+    const outerId = idle(outer);
+    const innerId = idle(inner);
+    assert.equal(bash("builder", `cd ${outer} && kill ${outerId}`, "kill-g"), null);
+    assert.equal(bash("builder", `cd ${inner} && kill ${innerId}`, "kill-h"), null);
+  });
+
+  it("counts a scratch folder the agent made or wrote in, but never a broad one", { skip: !hasProc && "no /proc" }, () => {
     const parent = mkdtempSync(join(scratch, "scratch-"));
     const made = join(parent, "run-1");
     mkdirSync(made);

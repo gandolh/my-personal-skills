@@ -9,8 +9,7 @@ hooks:
     - matcher: "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|Grep"
       hooks:
         - type: command
-          command: node
-          args: ["${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs", "capturer"]
+          command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs" capturer'
           timeout: 10
 ---
 # Screen capturer
@@ -46,7 +45,7 @@ Playwright writes the shots through Bash, which the fence can't see. The same ru
 4. **Servers:**
    - Check `ss -ltn` first. Use only free ports that are not on the caller's list.
    - Pin every setting on the command line. A repo's dev script may read a root `.env`. Never read, copy or print one.
-   - Start each server as a background task and save its PID. Stop only those PIDs, with `kill <pid>`. Never use `pkill` or `pgrep -f`, and never kill a PID you found by port or by name.
+   - Start each server as a background task, from `cd <app folder or scratch folder> && ...`, and save its PID. Stop only those PIDs, with `kill <pid>`. A hook lets `kill` reach only a process running under a folder you have changed into or made. Never use `pkill` or `pgrep -f`, and never kill a PID you found by port or by name.
    - Run one app at a time, and stop its servers before you start the next.
    - In a heavy repo (a monorepo of sites, a large build), run one dev server at a time. Build only when dev won't serve.
 5. **Browser:** headless only. Wait for the network to go idle and for fonts to load before each shot. Turn off animations, or wait them out.

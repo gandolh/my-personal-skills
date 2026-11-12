@@ -8,8 +8,7 @@ hooks:
     - matcher: "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|Grep"
       hooks:
         - type: command
-          command: node
-          args: ["${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs", "owner-steps"]
+          command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs" owner-steps'
           timeout: 10
 ---
 # Owner steps

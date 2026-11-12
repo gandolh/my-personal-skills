@@ -9,7 +9,8 @@
 // script writes user-level copies instead:
 //
 //   <target>/hooks/personal-skills/agent-guard.mjs   the guard, copied as is
-//   <target>/agents/<name>.md                        each agent, with the
+//   <target>/agents/<name>.md                        each agent, its hook
+//                                                    command naming the
 //                                                    guard's absolute path
 //
 // <target> defaults to the .claude folder in the home folder. The guard
@@ -22,7 +23,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const WORKFLOW_AGENTS = ["brief-builder", "screen-capturer", "brief-auditor", "owner-steps"];
-const PLACEHOLDER = '"${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs"';
+const PLACEHOLDER = "${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs";
 const STAMP = "# Installed by personal-skills scripts/install-agents.mjs. Edit the library's copy and re-run it.";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -42,7 +43,9 @@ function parseArgs(argv) {
 export function installedText(source, guardPath) {
   if (!source.startsWith("---\n")) throw new Error("no frontmatter");
   if (!source.includes(PLACEHOLDER)) throw new Error(`no ${PLACEHOLDER} to rewrite`);
-  return `---\n${STAMP}\n${source.slice(4).split(PLACEHOLDER).join(JSON.stringify(guardPath))}`;
+  // The path lands inside a double-quoted shell word in a single-quoted YAML string.
+  if (/["'$`\\]/.test(guardPath)) throw new Error(`the guard's path can't hold quotes, $, backticks or backslashes: ${guardPath}`);
+  return `---\n${STAMP}\n${source.slice(4).split(PLACEHOLDER).join(guardPath)}`;
 }
 
 function main() {

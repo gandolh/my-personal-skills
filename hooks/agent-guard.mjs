@@ -307,6 +307,23 @@ export function isEnvPath(word) {
   });
 }
 
+const EXCLUDE = /^--(exclude|exclude-dir|exclude-from|ignore|ignore-file|ignore-pattern)$/;
+
+/** A word that names a .env file, leaving out exclude and ignore values
+ * (`rsync --exclude .env`, `rg --ignore-file=.env` keep the file out). */
+function namedEnvFile(argv) {
+  for (let k = 0; k < argv.length; k++) {
+    const a = argv[k];
+    if (EXCLUDE.test(a)) {
+      k++;
+      continue;
+    }
+    if (/^--(exclude|exclude-dir|ignore|ignore-pattern)=/.test(a)) continue;
+    if (isEnvPath(a)) return true;
+  }
+  return false;
+}
+
 // ------------------------------------------------------------------- rules
 
 const NO_ENV = "never read, copy, print or edit a .env file; name a variable by its file and key instead";
@@ -532,12 +549,17 @@ function gitTop(dir) {
   }
 }
 
+/** The home or temp folder, or a folder above one of them. */
+function wideOrAbove(d) {
+  return [homedir(), tmpdir()].map(real).some((wide) => d === wide || wide.startsWith(d.endsWith(sep) ? d : d + sep));
+}
+
+/** Too wide for a folder outside any checkout: also a direct child of home
+ * or temp (a session's shared scratch), or a folder of checkouts. */
 function tooBroad(dir) {
   const d = real(dir);
-  for (const wide of [homedir(), tmpdir()].map(real)) {
-    if (d === wide || wide.startsWith(d.endsWith(sep) ? d : d + sep)) return true;
-    if (dirname(d) === wide) return true;
-  }
+  if (wideOrAbove(d)) return true;
+  if ([homedir(), tmpdir()].map(real).includes(dirname(d))) return true;
   try {
     return readdirSync(d, { withFileTypes: true }).some((e) => e.isDirectory() && existsSync(join(d, e.name, ".git")));
   } catch {
@@ -547,7 +569,7 @@ function tooBroad(dir) {
 
 function rootFor(dir) {
   const top = gitTop(dir);
-  if (top) return tooBroad(top) ? null : top;
+  if (top) return wideOrAbove(real(top)) ? null : top;
   return tooBroad(dir) ? null : resolve(dir);
 }
 
@@ -645,7 +667,7 @@ export function decide(mode, event) {
     return writer ? null : "read only: the command couldn't be read; split it into simpler commands";
   }
   for (const c of commands) {
-    if (c.argv.some(isEnvPath) || c.redirects.some((r) => !["<<", "<<-", "<<<"].includes(r.op) && isEnvPath(r.target)))
+    if (namedEnvFile(c.argv) || c.redirects.some((r) => !["<<", "<<-", "<<<"].includes(r.op) && isEnvPath(r.target)))
       return NO_ENV;
   }
   if (writer) remember(event, rootsTouched(event, commands));

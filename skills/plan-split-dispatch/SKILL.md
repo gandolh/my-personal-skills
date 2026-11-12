@@ -168,8 +168,11 @@ Process chunks in dependency order; send a parallel-safe group as multiple
 `Agent` calls **in one message**. Use `subagent_type: brief-builder` when it is
 installed (its hooks block pushes, `pkill`, docker builds, `.env` reads and
 killing another agent's process, and it has no `Agent` tool, so it can't start
-sub-builders past your cap). Otherwise use `general-purpose` and point it at the
-run's common rules file. Either way, pass an explicit model:
+sub-builders past your cap). `brief-builder` is for brief-backed runs whose common
+rules file hands the builder its commits, board moves and closeout; for a fresh
+chunked task (no brief, no author name), its body leaves those to you, and Step 8's
+"don't commit unless asked" still holds. Otherwise use `general-purpose` and point it
+at the run's common rules file. Either way, pass an explicit model:
 
 - **Senior** → `model: opus`
 - **Junior** → `model: sonnet`

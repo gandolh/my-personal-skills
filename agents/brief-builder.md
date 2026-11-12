@@ -8,8 +8,7 @@ hooks:
     - matcher: "Bash|Read|Edit|Write|MultiEdit|NotebookEdit|Grep"
       hooks:
         - type: command
-          command: node
-          args: ["${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs", "builder"]
+          command: 'node "${CLAUDE_PLUGIN_ROOT}/hooks/agent-guard.mjs" builder'
           timeout: 10
 ---
 # Brief builder
@@ -29,12 +28,14 @@ You build **one brief** in **one repo**. The caller names both, and gives you an
 - Your shell starts in a different folder on every call, so use absolute paths, or `cd <repo> && ...`.
 - Change only what the brief asks for. Don't refactor, rename or "tidy" anything outside it. If the brief needs a call it doesn't make (security, auth, a persisted-data migration, a contract other repos consume, an open design question), stop and report BLOCKED with the exact question.
 - Keep the machine light. Other builders share it. Run checks one at a time. Start no dev server unless the brief needs screenshots. Run no full end-to-end suite unless the brief names one. Run no deploy.
-- Start a long-lived process as a background task, and save its PID. Stop it with `kill <pid>` before you finish. Never stop a process you didn't start.
+- Start a long-lived process as a background task, from `cd <repo or scratch folder> && ...`, and save its PID. Stop it with `kill <pid>` before you finish. Never stop a process you didn't start. A hook lets `kill` reach only a process running under a folder you have changed into, made or written in, so a process started from anywhere else can't be stopped.
 - Never read, print, copy or edit a `.env` file. `.env.example` is fine.
 - Never write machine paths, a username, the owner's GitHub name or a domain into repo text. Name other repos by name, not by path.
 - Add no CI or GitHub automation of any kind.
 
 ## The board
+
+Skip this section and the closeout if the caller gives you no author name: then the caller keeps the board and the closeout, and you only commit your work.
 
 Run board commands from inside the repo, always with `--author <name>`.
 
@@ -42,7 +43,7 @@ Run board commands from inside the repo, always with `--author <name>`.
 2. Run `brief-board show <number>` and read every comment.
 3. Run `brief-board start <number>`.
 4. At the end, make the move the common file names (`ready_for_deploy` with the deploy command, or `done`). Its message ends with four lines: `Commits:`, `Checks run:`, `Checks skipped:`, `Owner steps:`.
-5. If a board command exits 3 (the board is down), say so once and make no more board calls.
+5. If a board command exits 3 (the board is down), or isn't installed, say so once and make no more board calls.
 6. Never run `brief-board sync` or `brief-board sprint start`.
 
 ## Commits
