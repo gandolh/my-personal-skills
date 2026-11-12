@@ -149,14 +149,14 @@ did not record the count before the move. Replies are the captured replies compa
 | Repo, done brief | check-structure before → after (exceptions) | Replies compared | Left |
 |---|---|---|---|
 | mini-projects 05 | 6 / 0 → 0 / 0 (none) | 34; 8 differ: the brief's 5 rows, no-body text, Fastify's bad-JSON body, unknown-method 404 | none; undeployed, the frontend wasn't run against it |
-| imbatranim-apps 10 | n/r → strict (the WebSocket route, recorded) | `GET /health` byte for byte | OS catalog copy to re-pin to `server.ts`; todo: kill the converter child on close |
+| imbatranim-apps 10 | n/r → strict (the WebSocket route, recorded) | `GET /health` byte for byte | OS catalog re-pinned at imbatranimOS ac69342 (e479048, command `server.ts`); todo: kill the converter child on close |
 | 3D-sandbox 07 | n/r → 0 / 4 rule 11 (none) | 45; 5 changed on purpose (bad JSON and 1.1 MB body 500 → 400/413, unknown-route body), a no-body PUT reads "null" | none; undeployed |
 | the-board 19 (brief-board) | 41 / 3 → 0 / 2 (1: `GET /` redirect) | 100; 94 identical, 4 key order, 2 text | Caddy `keepalive` check in vps-deploy |
 | wicket 13 | 20 / 1 → 0 / 0 (1: `GET /`) | 108; all identical but one no-body message | an id over 100 characters answers 414 in Fastify's own shape (not fixed); image size |
 | lantern 18 | 39 / 0 → 0 / 0 (2: poster route, `GET /`) | 69; identical but list key order, a no-body PUT, an unknown list with an unknown query key (400, was 404) | in-container CLI run |
 | newspapper 11 | 50 / 3 → 0 / 3 (7 exempt routes) | 172; 152 of 171 identical, 19 deliberate (listed in its log) | owner questions on `store.ts` with `core` and the context |
 | SocialEvents 17 | 0 / 66 → 0 / 0 (5: `NODE_ENV` in `config.ts`) | 116; 100 identical, 16 intended (Fastify's 4xx, unknown route, no-body, validation first) | none recorded |
-| satchel 04 | 21 / 3 → 0 / 3 (1: live route) | 169; every step compared; no-body text, no field dropped | zod 4.5.4 advisory question on the board |
+| satchel 04 | 21 / 3 → 0 / 3 (1: live route) | 169; every step compared; no-body text, no field dropped | zod moved to 4.6.7 by the controller (satchel 2b41253, GHSA-mrhx-c7xc-m3w5), one copy |
 | almanac 04 | 31 / 4 → 0 / 4 (none) | 70; 64 identical, 6 no-body text; two validation-first reorders not captured | timeouts and `trustProxy` question |
 | shelfmark 08 | 36 / 9 → 0 / 9 (1: backup stream) | 114; 92 identical, 10 key order, 12 differ (9 no-body, 3 validation first) | todo: a lookup in flight holds the shutdown; stored-data check before the deploy |
 | ro-housing 24 | 0 / 31 → 0 / 2 (none) | 132; 122 identical, 10 on purpose (validation first, 500 → 400, Fastify's 400 text) | todo: a refresh in flight holds the shutdown |
