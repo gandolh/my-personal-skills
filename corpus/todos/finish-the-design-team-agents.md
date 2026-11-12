@@ -1,7 +1,7 @@
 ---
 title: Finish the design team agents after the pipeline pilot
 created: 2026-11-12
-status: open
+status: promoted
 ---
 
 # Finish the design team agents after the pipeline pilot
@@ -17,3 +17,5 @@ v0.45.0 added four draft agents: `design-director`, `design-sketcher`, `design-j
   - the token cost per app the pilot measured;
   - when to use 2 directions instead of 3.
 - **Bump the plugin version,** and say in `docs/history.md` what changed from the drafts.
+
+Promoted to [brief 30](../briefs/todo/30-finish-the-design-team-and-a-design-pipeline-skill.md) on 2026-11-12.
