@@ -248,3 +248,5 @@ does make `h-*`; `--size-*` and `--z-nav` don't make `h-*` and `z-*`;
 `todo/` with a progress note: every row is pinned, but websites/trips
 declares `^1.6.0` (lockfile 1.8.0) and is in no table. The UI wave's
 house-style findings are in one todo, renamed to cover both waves.
+
+## [2026-11-12] done | brief 04 closed: trips pinned Base UI 1.9.0 (its brief 04), the last repo; every manifest in the estate now reads 1.9.0

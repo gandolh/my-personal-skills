@@ -119,3 +119,16 @@ used every component at 1.9.0 and recorded no 1.9.0-specific regression.
 runs its typecheck, tests, build and a look at the `Modal`, or the owner
 ruling trips out of scope. Then this brief moves to `done/` with the table
 above as its outcome.
+
+## Outcome (2026-11-12)
+
+Done. The gap above closed the same day: trips brief 04, *Base UI 1.9.0*,
+pinned `"1.9.0"` exactly (`cee5bae`, lockfile 1.9.0, `@base-ui/utils` 0.5.0),
+with lint, tests (12), the build and the corpus lint passing. Its browser walk
+ran on 1.8.0 and then 1.9.0 at 1280 and 390 px: Dialog, Collapsible, Tabs,
+Toggle group, Popover, Menu, Meter, Separator and ScrollArea showed no
+behaviour difference. The fingerprint harness found one style change in the
+whole site: the Meter's visually hidden 1x1 span moved from a `-1px` margin to
+`0`, which is clipped and invisible. Trips has no git remote, so its commits
+are local. Every acceptance bullet now holds; the table above, with this
+trips row, is the outcome.

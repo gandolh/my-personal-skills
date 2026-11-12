@@ -16,7 +16,7 @@ anything is built. The questions for it are in
 | 01 The corpus skills learn blocked briefs and todos | | built, v0.34.0 |
 | 02 A base-ui skill, styled with Tailwind | conventions, patterns, checker | built, v0.37.0 |
 | 03 A code-structure skill for Fastify + React | layout, zod route schemas, boundaries | built, v0.38.0 |
-| 04 Every repo on Base UI 1.9.0 | version bump across the estate | open: every table row done, websites/trips unpinned (progress note in the brief) |
+| 04 Every repo on Base UI 1.9.0 | version bump across the estate | done 2026-11-12 (trips pinned last) |
 | 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | superseded by each repo's Tailwind brief, all done |
 | 15 Enforce the two skills in every repo | checkers, rules files, gates | done, 71 repo briefs in 23 repos |
 | 16 Fastify servers adopt the structure | 16 servers, smallest first | done, 17 servers, v0.43.0 |
