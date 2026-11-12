@@ -225,3 +225,26 @@ cancelled in `onClose` still held the close after 3 s, in `preClose` it took
 10 ms; `reply.code(n).send(body)` fails only for a status the route doesn't
 declare. The house-style findings are one todo for a release brief. Version
 0.43.0.
+
+## [2026-11-12] done | brief 15, the UI wave folded into base-ui, v0.44.0
+
+Brief 15, the tracker for the harness, Base UI, Tailwind and server briefs of
+23 repos, is done: all 71 repo briefs are in their repo's `done/`. Its outcome
+note holds one table (the brief and its done commit per column, and what
+`check-base-ui` and `check-structure` read today, strict, with the findings
+each repo excepts) and says what the Acceptance did not get: Shelfmark still
+passes `--warn-only` to `check-structure` though it reads 0 errors,
+imbatranimOS does not run `check-structure` (NestJS; a read-only run finds 52
+errors), and five root `CLAUDE.md` files are well past short. `base-ui`
+took the UI wave's lessons (version 0.44.0): rule 16's three cases, a new
+`conversion-traps.md`, and the pages each lesson belongs on. Claims about
+Base UI were re-run on 1.9.0: a controlled `RadioGroup` takes `value={null}`,
+`RadioGroup` has no Home or End and `ToggleGroup` no Up or Down, a toast
+raised before the provider mounts is lost, a high-priority toast root is
+`aria-hidden` until focused, the Esc that closes a dialog is stopped at the
+document. The skill was corrected where the builds disproved it (`--height-*`
+does make `h-*`; `--size-*` and `--z-nav` don't make `h-*` and `z-*`;
+`max-sm:` isn't the answer for every old breakpoint). Brief 04 stays in
+`todo/` with a progress note: every row is pinned, but websites/trips
+declares `^1.6.0` (lockfile 1.8.0) and is in no table. The UI wave's
+house-style findings are in one todo, renamed to cover both waves.

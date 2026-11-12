@@ -1,5 +1,5 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), and the server wave's lessons folded into code-structure at version 0.43.0 (2026-11-12).
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12).
 updated: 2026-11-12
 ---
 
@@ -16,10 +16,10 @@ anything is built. The questions for it are in
 | 01 The corpus skills learn blocked briefs and todos | | built, v0.34.0 |
 | 02 A base-ui skill, styled with Tailwind | conventions, patterns, checker | built, v0.37.0 |
 | 03 A code-structure skill for Fastify + React | layout, zod route schemas, boundaries | built, v0.38.0 |
-| 04 Every repo on Base UI 1.9.0 | version bump across the estate | todo |
-| 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | todo |
-| 15 Enforce the two skills in every repo | checkers, rules files, gates | todo |
-| 16 Fastify servers adopt the structure | 16 servers, smallest first | todo |
+| 04 Every repo on Base UI 1.9.0 | version bump across the estate | open: every table row done, websites/trips unpinned (progress note in the brief) |
+| 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | superseded by each repo's Tailwind brief, all done |
+| 15 Enforce the two skills in every repo | checkers, rules files, gates | done, 71 repo briefs in 23 repos |
+| 16 Fastify servers adopt the structure | 16 servers, smallest first | done, 17 servers, v0.43.0 |
 | 17 Review comments and finishing a branch | from obra/superpowers | todo |
 | 18 A diagnose skill and an owner-steps wizard | from mattpocock/skills | todo |
 | 19 A skills stocktake and MCP pin review | from affaan-m/ecc | todo |
@@ -128,3 +128,19 @@ now carries what the moves found: two new references
 builds disproved the skill, and an answer to 3D-sandbox's headers claim,
 which did not hold on Fastify 5.12.7 or 5.12.8. The house-style findings are
 one todo for a release brief. Owner step: update the plugin to 0.43.0.
+
+## 2026-11-12: the UI wave folded into base-ui, brief 15 done, v0.44.0
+
+The library is at v0.44.0, with 29 skills. Every web repo's Base UI and
+Tailwind brief is done, and `base-ui` took what they found: rule 16 as the
+builds settled it, a new `conversion-traps.md` reference, the dry run's
+steps in `migrating-from-plain-css.md`, and lessons in the theme, toast,
+drawer, dialog, confirm, select, switch, menu and tabs pages, each with its
+source repo. Where a claim is about Base UI it was re-run on 1.9.0 in a
+scratch folder. Brief 15, the tracker for the harness, Base UI, Tailwind and
+server briefs of 23 repos, is done: its outcome note has the table, and two
+flags (Shelfmark's `--warn-only` on `check-structure`, and imbatranimOS not
+running it). Brief 04 stays open: every table row is pinned at 1.9.0, but
+websites/trips, which the table missed, declares `^1.6.0` and resolves 1.8.0.
+The UI wave's house-style findings joined the server wave's todo. Owner step:
+update the plugin to 0.44.0.
