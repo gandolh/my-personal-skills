@@ -1,7 +1,7 @@
 ---
 title: house-style findings from the server and UI waves
 created: 2026-11-12
-status: open
+status: promoted
 tags: [house-style]
 ---
 
@@ -154,3 +154,5 @@ house-style" parts of the UI builders' findings (Postern 02 and 03, Shelfmark
 07, imbatranimOS 87, comercial-website 12, Wicket 12, Newspapper 10) and the
 findings of the controller's build ledger. The matching changes to
 `code-structure` are in v0.43.0 and to `base-ui` in v0.44.0.
+
+Promoted to [brief 31](../briefs/todo/31-house-style-1-3-0-a-domain-root-and-the-wave-findings.md) on 2026-11-13.
