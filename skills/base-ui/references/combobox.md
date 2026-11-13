@@ -133,10 +133,9 @@ export function CityPicker({
 - **Label the input.** A `<label htmlFor>` names `Combobox.Input`, as here.
   `Combobox.Label` labels the trigger instead, for the pattern where the
   input sits inside the popup.
-- **The icon sits in `Combobox.Icon`** inside the trigger. A bare icon
-  component as the trigger's first child is rule 9's known false positive
-  (the check can't tell an icon from a button); the part keeps the check
-  quiet and marks the icon `aria-hidden`.
+- **The icon sits in `Combobox.Icon`** inside the trigger. The part marks
+  the icon `aria-hidden`; rule 9 skips a bare icon from an icon package
+  since house-style 1.3.0, but the part says what the icon is for.
 - **Memoize the collection.** `createItems` rebuilds the lookup; keep it in a
   `useMemo` on the options, or at module scope for static data.
 - **Async results** (a server search): pass the current results as `items`

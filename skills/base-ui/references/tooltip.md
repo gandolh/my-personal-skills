@@ -82,8 +82,9 @@ holds for every trigger: Dialog, AlertDialog, Popover, Menu, Select.
 component with no `render`, and when a `render` function wraps its content
 in a `span` or `div` (comercial-website's `Dropdown` and `Tooltip` did):
 that span becomes the trigger, and the caller's button nests inside it. An
-icon child (`<Tooltip.Trigger><InfoIcon /></Tooltip.Trigger>`) is a false
-positive the warning accepts. A wrapper that re-exports the part under its
+icon child (`<Tooltip.Trigger><InfoIcon /></Tooltip.Trigger>`) is skipped
+since house-style 1.3.0: a name imported from an icon package, or named
+`…Icon`. A wrapper that re-exports the part under its
 own name (`export const TooltipTrigger = Tooltip.Trigger`) hides its call
 sites from the check; review covers those.
 

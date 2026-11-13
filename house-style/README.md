@@ -135,7 +135,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 3 | A Base UI import outside the `ui` folders (tests excepted) |
 | | 5 | A stylesheet other than the one, a CSS module, and the one without `@import "tailwindcss"`. When the repo's one stylesheet is somewhere other than `styles/index.css`, the message names the `"stylesheet"` key in `conventions.json` as the way to declare it |
 | | 6 | An arbitrary colour in a class name: `bg-[#…]`, `text-[rgb(…)]`, `border-[hsl(…)]`, … |
-| | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
+| | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`, and not an icon: a name imported from `lucide-react`, `react-icons`, `@phosphor-icons/react`, `@heroicons/react`, `@tabler/icons-react` or `@radix-ui/react-icons`, or one named `Icon` or `…Icon`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
 | | 10 | A `<Select.Root>` without `items` (a warning) |
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
@@ -329,7 +329,7 @@ globs from the repo root.
 | `console` | none | App files allowed to print: a CLI entry, or a module that logs before the logger exists. Their `process.env` reads are still errors |
 | `env` | `["**/config.ts"]` | Where `n/no-process-env` is off: the repo's env reader. A repo whose reader is `config/env.ts` passes `["server/src/config/env.ts"]` instead of writing its own block. A CLI entry that hands its environment to child commands goes here too. Tests, scripts and `*.config.*` stay exempt. Mirror the list in `conventions.json`'s `env` key |
 | `assertFunctionNames` | `["expect", "expectTypeOf"]` | The names `vitest/expect-expect` counts as assertions. A repo adds its helpers (`expectError`, `expectPoint`) |
-| `tailwind` | none | `{ css, order }`: the CSS entry, and whether the class order is enforced yet |
+| `tailwind` | none | `{ css, order, ignore }`: the CSS entry, whether the class order is enforced yet, and `ignore`, regex patterns of classes `no-unknown-classes` lets through (a hook-only class such as `^list-grid$`, an icon font's `^ti(-|$)`, a dead plugin's `^animate-in$`), in place of a second block of the repo's own. The rule stays an error in test files: a fixture's class is a real one (`mt-2`). It reads a class in a JSX attribute or in a `cn()` or `clsx()` call, keys of an object there included, so a lookup map written inside the call (`cn({ sm: "h-8" }[size])`) is read as class names: declare the map above the call |
 | `vitest` | `true` | `false` for a repo whose tests run on `node:test` |
 | `typed` | `projectService` | `{ allowDefaultProject }`. `projectService` is the one that works with a Vite solution `tsconfig.json` (`files: []` plus references); `project: true` fails there. List tsconfigs under `typed.project` only when tests sit in a tsconfig `projectService` can't find: a `tsconfig.test.json` (or `tsconfig.tests.json`) beside a `tsconfig.json` that excludes the tests. Then list both, the main one too |
 | `untyped` | none | TypeScript files no tsconfig covers, linted without types |

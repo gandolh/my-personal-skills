@@ -53,7 +53,7 @@ const CASES = [
     rule: 9,
     area: "a warning",
     fail: [{ file: "app/src/components/ui/rule-9.fail.tsx", count: 3, severity: "warning" }],
-    pass: ["app/src/components/ui/rule-9.pass.tsx"],
+    pass: ["app/src/components/ui/rule-9.pass.tsx", "app/src/components/ui/rule-9-icons.pass.tsx"],
   },
   {
     rule: 10,
@@ -68,6 +68,7 @@ const CASES = [
 const SUPPORT = [
   "conventions.json",
   "app/src/components/ui/Button.tsx",
+  "app/src/components/ui/MoreIcon.tsx",
   "app/src/components/ui/useConfirm.ts",
   "loose-pin/src/main.ts",
   "other-pin/src/main.ts",

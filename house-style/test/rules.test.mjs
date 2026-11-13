@@ -316,6 +316,26 @@ describe("the class order, once a repo turns it on", () => {
   it(`${ORDER_CASE.rule}: ${ORDER_CASE.pass[0]} passes`, () => assertPasses(results, ORDER_CASE.pass[0]));
 });
 
+describe("tailwind.ignore", () => {
+  let results;
+  before(async () => {
+    results = await lintAll({ ...OPTIONS, tailwind: { ...OPTIONS.tailwind, ignore: ["^not-a-tailwind-"] } });
+  });
+
+  it("passes its patterns to no-unknown-classes, so a hook-only or icon-font class it names is no finding", () => {
+    assertPasses(results, "web/src/tailwind/no-unknown-classes.fail.tsx");
+  });
+
+  it("leaves the rest of the rule on", () => {
+    const block = houseStyle({ ...OPTIONS, tailwind: { css: "web/src/index.css", ignore: ["^icon-"] } }).find(
+      (config) => config.name === "house-style/tailwind",
+    );
+    assert.deepEqual(block.rules["better-tailwindcss/no-unknown-classes"], ["error", { ignore: ["^icon-"] }]);
+    const plain = houseStyle(OPTIONS).find((config) => config.name === "house-style/tailwind");
+    assert.equal(plain.rules["better-tailwindcss/no-unknown-classes"], "error");
+  });
+});
+
 describe("the env and assertFunctionNames options", () => {
   let results;
   before(async () => {

@@ -63,9 +63,10 @@ node vendor/house-style/bin/check-base-ui.mjs [--warn-only] [--version 1.9.0] [r
   public-pages sheet (ward-auth, churchix's three token sheets) each take an
   exception with a reason. A repo whose one stylesheet stays at `src/index.css`
   sets `"stylesheet": "index.css"` (comercial-website) instead of an exception.
-- Rule 9 flags an icon child inside `Menu.Trigger` or `Popover.Trigger`
-  (postern: `ComposeForm`, `SearchBox`). It is a warning and stays one; don't
-  except it.
+- Rule 9 skips an icon child inside a trigger (postern's `ComposeForm` and
+  `SearchBox` warned on lucide icons until house-style 1.3.0): a name
+  imported from an icon package, or one named `Icon` or `…Icon`. Another
+  icon component still warns; it is a warning and stays one, don't except it.
 
 The house-style package README has the full format.
 
@@ -81,7 +82,7 @@ The house-style package README has the full format.
 | 6 | Colours, radii, shadows and z-indexes come from `@theme` tokens named for a role (`bg-surface`, `text-ink`, `rounded-control`, `z-popup`; Q17, Q61). No arbitrary colour | A token restyles the app at once, and dark mode is a token's second value | rule 6: an arbitrary colour anywhere in code (`bg-[#…]`, `rgb(`, `hsl(`, `oklch(`, `color-mix(`, in `cn()` and cva too). Radius, shadow and z literals are review |
 | 7 | Motion keys on `data-starting-style` and `data-ending-style`, under `motion-safe:`; keyframes are `--animate-*` in `@theme` | Base UI keeps a popup mounted until its transition ends, and reduced motion is honoured in one place | review |
 | 8 | Every popup goes through its `Portal`, and its z-index comes from the token scale | A popup inside `overflow` or a transform gets clipped; literal z values put a Select under a Dialog in imbatranimOS | review |
-| 9 | A trigger that wraps a component uses `render`: `<Tooltip.Trigger render={<Button … />} />`, for every trigger. A `render` function returns the element itself, not a span around it | A trigger is a `<button>`; a Button inside it nests a button in a button, invalid and click-swallowing | rule 9, a warning. It can't see a part re-exported under a new name, and an icon child is a false positive |
+| 9 | A trigger that wraps a component uses `render`: `<Tooltip.Trigger render={<Button … />} />`, for every trigger. A `render` function returns the element itself, not a span around it | A trigger is a `<button>`; a Button inside it nests a button in a button, invalid and click-swallowing | rule 9, a warning. It can't see a part re-exported under a new name; an icon child (from an icon package, or named `…Icon`) is skipped since house-style 1.3.0 |
 | 10 | A Select whose values differ from their labels passes `items` to `Select.Root` | Without them the trigger shows the raw value | rule 10, a warning on every `Select.Root` without `items`. Blind to a re-exported root |
 | 11 | No `window.confirm`, `alert` or `prompt`. Ask with `ConfirmAction`, `useConfirm()` or an inline Yes / No (Q58) | A native dialog blocks every script on the page, can't be styled, and some browsers suppress it | rule 11: bare, `window.`, `globalThis.` and `self.` calls; a name the file binds itself is skipped |
 | 12 | Dialogs: controlled `open` and `onOpenChange` with the Escape guard; initial focus on `[data-autofocus]`, else the first field, else the footer's first button; `disablePointerDismissal` on a dialog that holds a form (Q58); a `Title` on every dialog; an `aria-label` on every icon-only control | Each was found by hand in three or more apps | review |
