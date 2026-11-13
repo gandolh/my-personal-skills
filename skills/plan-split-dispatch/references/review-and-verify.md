@@ -27,6 +27,25 @@ and tell it to skip style the linter and formatter already enforce.
 each brief, plus the built-in `/security-review` on briefs flagged auth, tokens,
 cookies or personal data. The finder fan-out above is for a fresh chunked task.
 
+**Scope, proportion and read-only.** Two checks run on every diff:
+- **Scope:** compare the diff with the chunk's declared files. A file outside them
+  is a finding unless the hand-back justifies it.
+- **Proportion:** a diff much larger than the plan's estimate is flagged for a second look.
+
+Reviewers report gaps against the brief and correctness problems, not style: the
+formatter and linter own style, and a reviewer asked to find problems always finds
+something. Fixing every finding adds layers and tests for cases that cannot happen.
+Make a reviewer read-only through its tool list (`Read, Grep, Glob`, and Bash for the
+checks), not by instruction.
+
+**Review comments and findings.** Classify each one before acting:
+- **Correct:** verify it against the code before any change.
+- **Unclear:** ask one question; change nothing yet.
+- **Wrong:** reply with the evidence (a file and line, a command's output).
+- **Out of scope:** write a corpus todo, and say so in the reply.
+
+A builder's "Noticed, not touched" items are filed the same way, as todos.
+
 **This gate is mandatory for any multi-file run.** Skip it only on a genuinely small
 run (1–2 files, one chunk), and say so explicitly rather than silently dropping it.
 

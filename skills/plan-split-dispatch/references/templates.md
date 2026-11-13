@@ -13,7 +13,7 @@ Moved out of `SKILL.md` verbatim so its first 5,000 tokens hold the rules.
 - **Skip**: areas this chunk must not touch (the profile's SKIP column) — advisory; the senior list below still overrides
 - **Skills**: skill(s) the subagent should load for this chunk, or `none` (from the profile's SKILLS column)
 - **Tests**: which test file(s) and what they must assert (if applicable)
-- **Constraints**: patterns to follow
+- **Constraints**: patterns to follow (the Scope discipline block below always applies)
 - **Depends on**: Chunk M (if any) — controller serializes these
 ```
 
@@ -61,6 +61,15 @@ than working around it.
 ## Pre-existing state
 <the files this chunk touches + one line each, so the subagent doesn't grep around>
 
+## Scope discipline
+- Every changed line traces to this chunk's goal.
+- Match the file's existing style.
+- Don't refactor, reformat or delete code outside the chunk. List it under
+  "Noticed, not touched" in your hand-back.
+- Remove only the imports, variables and functions this chunk orphaned.
+- No new abstraction for a single use, no options nobody asked for.
+- If the chunk can't be done as specified, stop and report. Don't widen it.
+
 ## What I need back
 - **Status**: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
 - Files changed (paths)
@@ -68,6 +77,8 @@ than working around it.
 - Concerns (if DONE_WITH_CONCERNS)
 - Blocker (if BLOCKED — be specific)
 - Missing info (if NEEDS_CONTEXT — name exactly what)
+- **Noticed, not touched**: unrelated dead code, bugs or style you saw nearby and left
+  alone, one line each with file and line. The controller files these as corpus todos.
 - **Handoff for dependents** (backlog/wave mode): the exact signatures, paths, and
   data shapes this chunk/brief produced that downstream work must consume. This is
   the connective tissue — the controller pastes it into dependent prompts.

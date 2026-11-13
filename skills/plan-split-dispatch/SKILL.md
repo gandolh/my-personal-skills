@@ -73,7 +73,9 @@ Wave mode in full, the configuration and the failure modes are in
    junior. Fill the prompt template from the chunk and curated context. Every
    dispatch asks for a Status (DONE, DONE_WITH_CONCERNS, BLOCKED, NEEDS_CONTEXT),
    files changed, tests, concerns or blocker, and a **Handoff for dependents** (the
-   exact signatures, paths and data shapes downstream work consumes). Subagents do
+   exact signatures, paths and data shapes downstream work consumes) and a
+   **Noticed, not touched** list. Every prompt carries the **Scope discipline**
+   block from the templates: each changed line traces to the chunk. Subagents do
    not commit, push or open a PR. A junior prompt carries a line telling it to
    STOP with BLOCKED rather than stretch into a senior area. `Skip` is advisory
    scoping, not a licence: if a Skip area is load-bearing, report BLOCKED. A
@@ -94,6 +96,13 @@ Wave mode in full, the configuration and the failure modes are in
    For a substantial build dispatch 2–3 focused finders in parallel, scoped by
    area or risk, each returning `{file, line, summary, failure_scenario}`. Finders
    default to sonnet; at most one opus finder, on the highest-risk lens.
+   The gate also checks **scope** (a file outside the chunk's declared files is
+   a finding unless the hand-back justifies it) and **proportion** (a diff much
+   larger than the plan's estimate gets a second look). Reviewers report gaps
+   against the brief and correctness, never style, and run read-only (`Read, Grep,
+   Glob`, Bash for the checks). Each review comment is classified correct,
+   unclear, wrong or out of scope; the rules are in `references/review-and-verify.md`.
+   File each "Noticed, not touched" item as a corpus todo, not a fix.
    Consolidate and dedup yourself, then dispatch **one fix agent whose tier follows
    the fix**, re-verify, and stop. For a brief-backed run the gate is
    `brief-auditor` on each brief, plus `/security-review` on briefs that touch auth,

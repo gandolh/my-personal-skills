@@ -139,6 +139,11 @@ Adopted as method into first-party skills, with no code copied:
   gate, bounded escalating fix loop, and ruling ledger in `plan-split-dispatch`; the
   "evidence before claims" iron law on its verify gate; and the approval gate in
   `orchestrate` that scales ceremony but never the gate itself.
+- **[multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)**
+  (read at `2c60614`, 2026-04-20; no license file, so ideas only, no text copied) — the
+  "surgical changes" and "simplicity first" principles from Andrej Karpathy's post on LLM
+  coding pitfalls, behind the scope-discipline block, the "Noticed, not touched" list and
+  the scope and proportion checks in `plan-split-dispatch`.
 - **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** (Apache-2.0, read at
   `ffab839`, 2026-11-09) — the progressive-disclosure index: a session starts with a compact
   index and fetches detail on demand. Idea only; `hooks/session-start.mjs` injects the
