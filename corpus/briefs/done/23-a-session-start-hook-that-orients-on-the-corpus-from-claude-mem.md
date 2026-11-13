@@ -106,3 +106,7 @@ skills, commands and agents).
   what the corpus holds without letting it read any file.
 - In a repo without a corpus, nothing is injected.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-13, v0.49.0)
+
+`hooks/session-start.mjs` is registered for `SessionStart` (no matcher, so startup, resume, clear and compact) in `hooks/hooks.json`. It prints the catalog (one short line per page), a `resume` entry only when it comes after the last `done` entry in `log.md`, and the brief names in `todo/` and `blocked/`, capped at 2,000 characters; nothing without a corpus. Six fixture tests in `hooks/hooks.test.mjs` cover no corpus, no resume, fresh resume, stale resume, an oversized catalog and a subfolder. Run on Shelfmark's corpus it printed 1,505 characters; on a folder without one, nothing. Not done: the live check in a real Claude Code session (owner step). `plugin.json` got no `hooks` entry: Claude Code loads `hooks/hooks.json` by itself, as for the existing hooks. `node --test hooks/` (a folder argument) fails on this Node version for every file; `node --test hooks/hooks.test.mjs` passes.

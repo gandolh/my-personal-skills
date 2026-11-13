@@ -287,3 +287,7 @@ note is folded in and marked done. Verified with the repo's 18 test files, the
 skill checker and `corpus/lint.sh`. See
 [the brief](briefs/done/19-a-skills-stocktake-and-mcp-pin-review-from-ecc.md).
 
+
+## [2026-11-13] done | Brief 23 - a SessionStart hook that orients on the corpus (v0.49.0)
+
+`hooks/session-start.mjs` injects the corpus catalog (short lines), a `resume` checkpoint newer than the last `done`, and the open brief names, at most 2,000 characters, and nothing without a `corpus/`. Credit to claude-mem's progressive-disclosure index (idea only). Six fixture tests, the skill checker and `corpus/lint.sh` pass. The live check in a real session is an owner step. See [the brief](briefs/done/23-a-session-start-hook-that-orients-on-the-corpus-from-claude-mem.md).
