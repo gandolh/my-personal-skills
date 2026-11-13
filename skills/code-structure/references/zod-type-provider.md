@@ -233,11 +233,13 @@ backwards. Measured:
   `0 | 1 | boolean`. Read what the web sends before writing the schema.
 - **Hand parsing hides from grep.** `.parse(request.` finds none of the
   helper sites (wicket 5, lantern 13, public-resource-map's 14
-  `safeParse(req.`), but `check-structure` 1.2.0 rule 6 reports a `parse`,
+  `safeParse(req.`), but `check-structure`'s rule 6 reports a `parse`,
   `safeParse` or `validate` call handed `request.body`, `.query`, `.params` or
-  `.headers`, through a helper too (wicket). It also reports `fn({ x:
-  request.body.x })` on input the schema already validated, which is a false
-  positive: an exception in `conventions.json`, with its reason.
+  `.headers`, and a `parse…` or `validate…` helper handed the whole of one
+  (wicket). Since house-style 1.3.0 a helper of the route's own handed a
+  property of input the schema already validated
+  (`validateRedirect({ uri: request.body.uri })`) is not reported; 1.2.0
+  reported it, and repos recorded those as exceptions.
 
 ## How a failed request becomes the error body
 

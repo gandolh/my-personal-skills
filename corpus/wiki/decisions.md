@@ -1,6 +1,6 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09).
-updated: 2026-11-11
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13).
+updated: 2026-11-13
 ---
 
 # Decisions
@@ -171,3 +171,18 @@ hand parsing in 12 servers, which serialised every reply with
 `JSON.stringify`, so a field added to a row reached the client. Streams and
 binary replies are exempt with a `conventions.json` entry, and sports-app
 keeps TypeBox for its existing contract.
+
+## Shared domain code in `domain/<name>/`, under the features
+_2026-11-13_ (v0.53.0, house-style 1.3.0, brief 31; the backlog grill's
+answer 2) - Code several features share that isn't pure (ward-auth's tokens,
+grants and OIDC provider) lives in `domain/<name>/`, beside `features/`,
+`plugins/`, `db/` and `lib/`. The features import it; it never imports a
+feature. ward-auth's two import rules became the preset's:
+`domain-not-to-features` and `app-through-feature-index`. Unused exports
+stay knip warnings. Rejected: leaving domain folders at the root of the
+server, where no layout rule names them, and putting them in `lib/`, which
+is for pure code. Two scope calls in the build: the preset's
+`domain-not-to-features` reads only `domain/` (ward-auth's own rule also
+lists its `lib/`, `db/`, `plugins/` and `testing/`, but the skill lets
+`testing/` import a feature), and sports-app's "a plugin never imports a
+feature" stayed a repo rule, because the owner's answer named two rules.

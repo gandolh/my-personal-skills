@@ -134,10 +134,10 @@ folder on `recommendedTypeChecked`, `react-refresh`, and an Astro repo.
    A rule with more than about 20 real findings, or mostly false ones, goes to
    the owner with its counts before it is turned on. Don't loosen it quietly.
    Put the knip preset's config in before the first measurement.
-2. **Vendor.** `npm run house-style:sync -- house-style-v1.2.0` copies the
+2. **Vendor.** `npm run house-style:sync -- house-style-v1.3.0` copies the
    library's `house-style/` folder at that tag into `vendor/house-style/`
    (the first time, before the copy exists, run the library checkout's
-   `house-style/bin/sync.mjs house-style-v1.2.0` from the repo root, or from
+   `house-style/bin/sync.mjs house-style-v1.3.0` from the repo root, or from
    the app's folder in a multi-project repo: the copy goes to the nearest
    `package.json`). Pin the
    devDependencies the house-style README lists; the sync reports any pin that

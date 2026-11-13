@@ -182,7 +182,7 @@ Then one commit per feature, each with its tests green:
 4. **Delete the hand parsing**, request and reply both: every
    `schema.parse(request.body)`, every helper given `request.query`
    (a grep misses those: wicket 5, lantern 13, public-resource-map 14;
-   `check-structure` 1.2.0 finds them), and atrium's `schema.parse()` of its
+   `check-structure`'s rule 6 finds them), and atrium's `schema.parse()` of its
    own replies.
 5. **Compare the replies** with the capture
    ([reply-capture.md](reply-capture.md)), or serialise static fixtures with

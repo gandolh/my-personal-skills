@@ -1,6 +1,6 @@
 ---
 summary: Part 2 of the house-style measurements (brief 27), collated from the repo harness briefs - each repo's lint findings for the typed rules and the house shapes, the timings of tsc, ESLint (projectService against project), Prettier and the tests, the knip results, what no brief measured, and the two convention checkers' counts per rule on ro-housing, Almanac, atrium and wicket (2026-11-11, for brief 16's table).
-updated: 2026-11-11
+updated: 2026-11-13
 ---
 
 # House style: findings, timings and gaps
@@ -188,3 +188,14 @@ of a test file, `playwright`, `conventions.json`'s `env`, hooks in
 notes in the README and adoption reference, plus a recipes reference
 (per-folder blocks, `react-refresh`, Astro). Findings declined as options are
 listed in the CHANGELOG's 1.2.0 section.
+
+## Version 1.3.0 (2026-11-13)
+
+The owner's `domain/` root (backlog grill, answer 2) and the waves' defects:
+two preset rules (`domain-not-to-features`, `app-through-feature-index`),
+`check-structure`'s rule 3 (a `NODE_ENV` message, a second `config.ts`) and
+rule 6 (computed paths, a helper given validated input), `check-base-ui`'s
+icon child and `tailwind.ignore`. What a re-sync may fire (wzd_auth's three
+interaction routes, imbatranim-apps' three `app.ts` imports) and what each
+repo can delete are in the CHANGELOG's 1.3.0 section; the declined findings
+are in brief 31's outcome note. The estate re-sync runs after imbatranimOS 89.
