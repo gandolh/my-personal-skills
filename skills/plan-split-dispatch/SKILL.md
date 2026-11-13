@@ -6,462 +6,169 @@ description: Repo-agnostic implementation orchestrator. The controller (opus) pl
 # Plan, Split, Dispatch — model-routed subagent implementation
 
 You (the controller) stay in this session on **opus**. Your job is **not** to
-write the code — it is to **plan, split, classify, dispatch, and integrate**.
-Subagents do the actual edits. This routes expensive (opus) reasoning to the
-hard chunks and cheap (sonnet) execution to the mechanical ones, and keeps your
-own context lean so coordination doesn't degrade over a long run.
+write the code: it is to **plan, split, classify, dispatch, and integrate**.
+Subagents do the edits. Dispatch **one fresh subagent per chunk**, and curate
+exactly the context each needs: they never inherit your conversation history.
+That is what makes the run cheap and failure-resistant.
 
-**Core principle:** one **fresh subagent per chunk**. The controller curates
-exactly the context each subagent needs — they never inherit your conversation
-history. This is what makes it token-efficient *and* failure-resistant: no
-context pollution, and the full transcript isn't reprocessed every turn.
+Dispatch the library's **`brief-builder`** agent when it is installed, else the
+built-in `general-purpose` agent with the run's common rules file, with an explicit
+`model` per chunk either way. The workflow agents (`brief-builder`,
+`screen-capturer`, `brief-auditor`, `owner-steps`) are installed at user level by
+`scripts/install-agents.mjs`, because Claude Code ignores frontmatter hooks in
+plugin agents. Dispatch the bare name (`brief-builder`), never the plugin copy
+(`personal-skills:brief-builder`), which runs without its guard.
 
-This is the portable, repo-agnostic cousin of project-specific implement
-skills. It dispatches the library's **`brief-builder`** agent when it is
-installed, else the built-in `general-purpose` agent with the run's common rules
-file, with an explicit `model` override per chunk either way. The workflow
-agents (`brief-builder`, `screen-capturer`, `brief-auditor`, `owner-steps`) are
-installed at user level by the library's `scripts/install-agents.mjs`, because
-Claude Code ignores frontmatter hooks in plugin agents. Dispatch the bare name
-(`brief-builder`), never the plugin copy (`personal-skills:brief-builder`), which
-runs without its guard.
+**Front door.** This is the generic implement target of `orchestrate`, which
+passes the brief and the matched rows of the project's **READ / SKIP / SKILLS**
+table from `corpus/routing.md`. Use them to fill each chunk's `Read` / `Skip` /
+`Skills`. Invoked directly, read `corpus/routing.md` yourself if it exists.
 
-**Front door.** This skill is the generic implement target of the `orchestrate`
-router, which runs on top of `corpus-flow`. When `orchestrate` hands off, it
-passes the brief being built plus the matched rows of the project's
-**READ / SKIP / SKILLS** table (from `corpus/routing.md`). Use them to fill each
-chunk's `Read` / `Skip` / `Skills` fields so subagents read the right slice and
-skip the rest. Invoked directly with no router, read `corpus/routing.md` yourself
-if it exists; otherwise infer per-chunk context as usual.
+Templates (the chunk block, the plan, the dispatch prompt, the delivery, the ledger)
+are in [`references/templates.md`](references/templates.md). The finder fan-out and
+the verify passes are in [`references/review-and-verify.md`](references/review-and-verify.md).
+Wave mode in full, the configuration and the failure modes are in
+[`references/wave-mode-and-configuration.md`](references/wave-mode-and-configuration.md).
 
-## When to use
+## When to use, and when not to
 
-- The task genuinely decomposes into **≥3 independent chunks**, and several are
-  mechanical (follow-a-pattern, tests-for-existing-logic, type/string
-  propagation, formatting).
-- The user invokes `/plan-split-dispatch`, or asks to "split this up", "do the
-  easy parts on sonnet", "route by difficulty", or "implement with subagents".
-- A **backlog of pre-written briefs** (e.g. `corpus/briefs/todo/*`) with
-  dependencies between them needs building — run them in dependency waves. See
-  **Backlog / wave mode** below.
+- **Use** it for **≥3 independent chunks**, several of them mechanical, or for a
+  backlog of pre-written briefs with dependencies (wave mode, below).
+- **Do not** use it for a one- or two-chunk task or a single-file edit: do it
+  inline. The plan, classify and context-curation overhead costs more than the work.
+  This is the commonest misfire.
+- One indivisible hard problem: inline on opus. Pure review: a review skill.
+  Research only: the `Explore` agent.
+- Undersizing backfires: a sonnet chunk that stalls, goes `BLOCKED` and is
+  re-dispatched on opus costs more than opus once.
 
-## When NOT to use
+## The steps, in order
 
-- **One- or two-chunk tasks, or any single-file edit** → just do it inline. The
-  plan + classify + per-chunk context-curation overhead costs more than the
-  work. This is the most common misfire — guard against it.
-- The whole task is one indivisible hard problem (can't be split without
-  threading state between chunks) → do it inline on opus.
-- Pure review (no edits) → use a review skill/command.
-- Research-only ("explore X") → use the `Explore` agent directly.
+1. **Plan** (inline). A numbered list of self-contained chunks: Files, Goal,
+   Acceptance, Read, Skip, Skills, Tests, Constraints, Depends on. Two chunks
+   with no dependency and disjoint files are **parallel-safe**.
+2. **Classify.** Tag each chunk:
+   - **Senior (opus):** security, auth, access control, secrets, crypto; schema or
+     data migrations and anything that mutates persisted state irreversibly;
+     concurrency and transaction boundaries; cross-module contracts and public API
+     surface; new design whose acceptance has gaps; refactors across module
+     boundaries.
+   - **Junior (sonnet):** a single-file edit with clear acceptance; a call, query
+     or component that follows an existing pattern; tests for existing logic;
+     copy and i18n; formatting, lint fixes, dead code; type propagation.
+   - **Trivial (haiku):** find-and-replace against an explicit spec, with zero
+     judgement.
+   - **The reference-pattern rule, the biggest cost lever:** the chunk that
+     FIRST establishes a pattern, contract or subsystem is senior; later chunks
+     that copy that in-repo reference are junior, even when they look large. A
+     healthy plan is mostly junior with a few senior chunks.
+   - **When in doubt, senior, but only for genuine risk** (security, data,
+     concurrency, novel design). A borderline pattern-copy starts as junior;
+     escalate-on-block (step 5) is the safety valve.
+3. **Confirm with the user (MANDATORY).** Show the plan: goal, tagged chunks with
+   one line on why each tier, parallel-safe groups, estimated dispatches. Wait for
+   `yes`, `re-classify` or `re-scope`. Dispatch nothing before the reply.
+4. **Dispatch**, per chunk, in dependency order. Send a parallel-safe group as
+   multiple `Agent` calls **in one message**. `model: opus` for senior, `sonnet` for
+   junior. Fill the prompt template from the chunk and curated context. Every
+   dispatch asks for a Status (DONE, DONE_WITH_CONCERNS, BLOCKED, NEEDS_CONTEXT),
+   files changed, tests, concerns or blocker, and a **Handoff for dependents** (the
+   exact signatures, paths and data shapes downstream work consumes). Subagents do
+   not commit, push or open a PR. A junior prompt carries a line telling it to
+   STOP with BLOCKED rather than stretch into a senior area. `Skip` is advisory
+   scoping, not a licence: if a Skip area is load-bearing, report BLOCKED. A
+   `brief-builder` is for brief-backed runs; for a fresh chunked task its body
+   leaves commits and board moves to you, and step 8's "don't commit unless
+   asked" still holds.
+5. **Handle status.** DONE: proceed. DONE_WITH_CONCERNS: fix first if it affects
+   correctness, else note it. NEEDS_CONTEXT: supply it and re-dispatch. BLOCKED:
+   a context gap, provide it; a junior out of depth, re-dispatch as **senior**
+   (the rule working, not a failure); a wrong plan, escalate to the user; **two
+   failed attempts, escalate, never a third loop**. **Never** re-dispatch with the
+   same prompt: something must change between attempts.
+6. **Run straight through.** After step 3, execute the whole plan without checking
+   in between chunks. Valid stops: an unresolvable BLOCKED, a genuinely blocking
+   ambiguity, all chunks done, and in wave mode each wave boundary. Between chunks
+   send a few status lines; never echo a subagent's diff or re-narrate the plan.
+7. **Review gate (mandatory for any multi-file run).** Review the cumulative diff.
+   For a substantial build dispatch 2–3 focused finders in parallel, scoped by
+   area or risk, each returning `{file, line, summary, failure_scenario}`. Finders
+   default to sonnet; at most one opus finder, on the highest-risk lens.
+   Consolidate and dedup yourself, then dispatch **one fix agent whose tier follows
+   the fix**, re-verify, and stop. For a brief-backed run the gate is
+   `brief-auditor` on each brief, plus `/security-review` on briefs that touch auth,
+   tokens, cookies or personal data. Skip only a 1–2 file, one-chunk run, and
+   say so. **The fix loop is bounded and escalates:** rounds 1–3 the fix tier
+   follows the fix, with the gates re-verified after each; rounds 4–5 escalate one
+   tier above the original implementer; **past round 5, stop** and report
+   `needs-discussion`: the chunk was mis-specified. Only **Critical** and
+   **Important** findings gate the run; log the rest as known-and-accepted, and
+   make no unrequested "while I was in there" fix.
+8. **Deliver** with the shape in the templates: chunks, files, review verdict, fix
+   rounds, accepted-not-fixed, suggested next, and the ruling ledger. Do not
+   commit, push or open a PR unless the user asked.
 
-## Token efficiency — when it actually pays off
+## The verify gate: the iron law
 
-This skill is a **router that puts cheap tokens on cheap work**, not a universal
-saver. Be honest about the trade-off:
+A subagent's "tests pass" is **not** sufficient. Verify from the controller, against
+the integrated tree, between waves and before final delivery.
 
-- **Wins** when ≥3 independent chunks exist and several are mechanical: sonnet on
-  the easy chunks is far cheaper than opus, and the controller's context stays
-  small (the conversation isn't reprocessed every turn; each subagent gets only
-  curated context).
-- **Loses** on small tasks: planning + classification + context curation is real
-  overhead that dominates 1–2 chunk work.
-- **Backfires** if you undersize: sonnet stalls on a hard chunk → `BLOCKED` →
-  re-dispatch on opus = *more* tokens than just using opus once. Hence the
-  **when in doubt → senior** rule below.
+> **No completion claim without fresh verification evidence.** If you have not run
+> the command *in this turn*, you cannot say it passes: not "should pass", not
+> "passed earlier", not "the agent said it passes". Name the command that proves it,
+> run it in full, read the exit code and the failure count, then claim it, **with**
+> the evidence. A green claim on stale evidence is the most expensive thing in a
+> long run, because every later wave is built on it.
 
-## Procedure
-
-### Step 1 — Plan (controller, opus)
-
-Plan inline. Produce a numbered chunk list. Each chunk must be **self-contained**
-— a subagent dispatched against it should not need to read the other chunks to
-understand what to do. Each chunk has:
-
-```
-### Chunk N: <short name>
-- **Files**: create/modify paths (exact)
-- **Goal**: one sentence
-- **Acceptance**: one or two bullets — what "done" means
-- **Read**: the files/docs this chunk needs (from the profile's READ column, or what you'd grep anyway)
-- **Skip**: areas this chunk must not touch (the profile's SKIP column) — advisory; the senior list below still overrides
-- **Skills**: skill(s) the subagent should load for this chunk, or `none` (from the profile's SKILLS column)
-- **Tests**: which test file(s) and what they must assert (if applicable)
-- **Constraints**: patterns to follow
-- **Depends on**: Chunk M (if any) — controller serializes these
-```
-
-If two chunks have no dependency and edit disjoint files, mark them
-**parallel-safe**.
-
-### Step 2 — Classify (controller, opus)
-
-Tag each chunk `[senior]` (opus) or `[junior]` (sonnet) with this **generic**
-rule:
-
-**Senior (opus)** — anything where being wrong is expensive or the path isn't
-obvious:
-- Security / auth / access control / secrets / crypto.
-- Schema or data migrations, anything that mutates persisted state irreversibly.
-- Concurrency, race conditions, transaction boundaries, locking.
-- Cross-module / cross-package contracts, public API surface, anything other
-  code depends on.
-- New design where acceptance criteria have gaps the agent must close.
-- Refactors that move code across module boundaries.
-
-**Junior (sonnet)** — mechanical work with an explicit target and an existing
-pattern to copy:
-- Single-file edit with clear acceptance.
-- A new call/query/component that follows an established pattern in the repo.
-- Tests for already-implemented logic.
-- i18n / copy / string additions.
-- Formatting, lint fixes, dead-code removal.
-- Type propagation (add a field to an interface and thread it through).
-
-**Trivial (haiku)** — the cheapest slice of the above with *zero* judgement: pure
-copy/string additions, threading one named field through, deleting named dead code,
-formatting. Use it instead of sonnet when the chunk is essentially find-and-replace
-against an explicit spec.
-
-**The reference-pattern rule — the biggest cost lever.** The chunk that FIRST
-establishes a pattern, contract, or new subsystem is senior; **subsequent chunks that
-copy that now-existing in-repo reference are junior, even when they look substantial.**
-A "new panel just like the one we just built" is junior — the design risk was already
-spent on the first one. On a multi-chunk feature, expect the first chunk senior and most
-later chunks junior.
-
-**When in doubt → senior** *for genuine risk* (security/data/concurrency/novel design):
-cheap to oversize there, expensive to undersize. But do **not** reflexively senior
-pattern-following work — a clear reference implementation makes it junior, and
-escalate-on-block (Step 5) is the safety valve, so it's fine to start a borderline
-pattern-copy as junior. Opus should be the **exception** (the hard/novel/risky pieces),
-not the default; a healthy plan is mostly junior with a few senior chunks.
-
-### Step 3 — Confirm with user (MANDATORY)
-
-Output the plan + classification in this shape and **wait**:
-
-```
-## Plan
-
-**Goal:** <one sentence>
-
-**Chunks:**
-1. [senior] Chunk 1: <name> — <one-line goal> — <why senior>
-2. [junior] Chunk 2: <name> — <one-line goal> — <why junior>
-3. [senior] Chunk 3: <name> ...
-
-**Parallel-safe groups:** {1, 2} can run in parallel; 3 depends on 1.
-
-**Estimated dispatches:** N senior (opus), M junior (sonnet), K trivial (haiku){, + review (sonnet finders)}.
-<!-- If N dominates, re-check the reference-pattern rule — pattern-copies should be junior. -->
-
-Proceed? (yes / re-classify / re-scope)
-```
-
-Do not dispatch until the user replies. `re-classify` → swap the named tags and
-re-confirm. `re-scope` → fold in changes and re-emit.
-
-### Step 4 — Dispatch (per chunk)
-
-Process chunks in dependency order; send a parallel-safe group as multiple
-`Agent` calls **in one message**. Use `subagent_type: brief-builder` when it is
-installed (its hooks block pushes, `pkill`, docker builds, `.env` reads and
-killing another agent's process, and it has no `Agent` tool, so it can't start
-sub-builders past your cap). `brief-builder` is for brief-backed runs whose common
-rules file hands the builder its commits, board moves and closeout; for a fresh
-chunked task (no brief, no author name), its body leaves those to you, and Step 8's
-"don't commit unless asked" still holds. Otherwise use `general-purpose` and point it
-at the run's common rules file. Either way, pass an explicit model:
-
-- **Senior** → `model: opus`
-- **Junior** → `model: sonnet`
-
-Dispatch prompt template (fill in from the chunk + curated context — the
-subagent has none of your history):
-
-```
-You are implementing Chunk <N>: <name>.
-
-## Task
-<paste the chunk block verbatim — files, goal, acceptance, read, skip, skills, tests, constraints>
-
-## Context
-Working directory: <abs path>
-Branch: <current branch>
-Skills to load: <the chunk's Skills, or "none">
-<2–3 lines of any repo conventions that bear on this chunk — naming, layering,
-"no comments", reuse-existing-components, etc.>
-Skip (do not touch): <the chunk's Skip>. This is advisory scoping, NOT a licence —
-if a Skip area turns out to be load-bearing for the task, report BLOCKED rather
-than working around it.
-
-## Pre-existing state
-<the files this chunk touches + one line each, so the subagent doesn't grep around>
-
-## What I need back
-- **Status**: DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
-- Files changed (paths)
-- Tests added/modified and pass/fail
-- Concerns (if DONE_WITH_CONCERNS)
-- Blocker (if BLOCKED — be specific)
-- Missing info (if NEEDS_CONTEXT — name exactly what)
-- **Handoff for dependents** (backlog/wave mode): the exact signatures, paths, and
-  data shapes this chunk/brief produced that downstream work must consume. This is
-  the connective tissue — the controller pastes it into dependent prompts.
-
-Do not commit, push, or open a PR. The controller handles integration.
-```
-
-For **junior** dispatches, prepend one line:
-
-```
-This is a junior-scoped chunk. If the work turns out to touch anything in the
-senior list (security/auth, migrations, concurrency, cross-module contracts,
-public API surface, open design questions), STOP and report BLOCKED — do not
-stretch your scope.
-```
-
-### Step 5 — Handle status
-
-- **DONE** → mark complete, proceed.
-- **DONE_WITH_CONCERNS** → if it affects correctness, fix before proceeding
-  (re-dispatch with the fix); if observation only, note and continue.
-- **NEEDS_CONTEXT** → supply the missing info, re-dispatch the same chunk.
-- **BLOCKED** → triage:
-  1. Context gap → provide it, re-dispatch.
-  2. Junior over their head → re-dispatch the chunk as **senior** (opus). This is
-     the rule working, not a failure.
-  3. Plan is wrong → escalate to user, revise, re-confirm.
-  4. Two attempts failed → escalate; do not loop a third time.
-
-**Never** silently re-dispatch the same chunk with the same prompt — something
-must change between attempts.
-
-### Step 6 — Continuous execution + output discipline
-
-After Step 3 approval, **execute the whole plan** without checking in between
-chunks. Valid stops: an unresolvable `BLOCKED`, genuinely blocking ambiguity, or
-all chunks done. (**Exception — backlog/wave mode:** stop at each wave boundary to
-run the **Verify gate** and checkpoint, then continue. Within a wave, still run
-straight through.)
-
-You coordinate; subagents produce the heavy text. Keep your between-chunk
-messages to a few status lines ("Chunk 3 dispatched (senior)…", "Chunk 3 DONE,
-2 files, 14/14 tests"). Do **not** echo a subagent's full diff or re-narrate the
-plan each turn — one giant turn risks the output-token cap and can lose the run.
-Save detail for the final summary.
-
-### Step 7 — Review gate
-
-If the run was non-trivial (or the user asks), review the cumulative diff
-(`git diff <base>...HEAD` — also `git diff HEAD` if uncommitted). For a substantial
-multi-file build, **don't rely on one broad review agent** — dispatch **2–3 focused
-finder agents in parallel, scoped by area/risk** (e.g. one on cross-file integration +
-wiring correctness, one on the new module's own logic, one on reuse/cleanup/conventions),
-each returning concrete `{file, line, summary, failure_scenario}` findings. **Finders
-default to sonnet** — reading a diff and pattern-matching for bugs is mostly junior work;
-reserve **opus for at most one finder on the highest-risk integration/correctness lens**,
-or to adversarially verify an uncertain finding before acting. Then **consolidate + dedup**
-their findings yourself, and dispatch **one fix agent whose tier follows the fix**
-(haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
-correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
-generalist pass routinely misses (it has, every time). A repo review skill/command can
-stand in for a finder. In a TypeScript repo, give the conventions finder the `house-style`
-skill's review checklist (`${CLAUDE_PLUGIN_ROOT}/skills/house-style/references/review-checklist.md`)
-and tell it to skip style the linter and formatter already enforce.
-
-**For a brief-backed run** (Backlog / wave mode), the review gate is `brief-auditor` on
-each brief, plus the built-in `/security-review` on briefs flagged auth, tokens,
-cookies or personal data. The finder fan-out above is for a fresh chunked task.
-
-**This gate is mandatory for any multi-file run.** Skip it only on a genuinely small
-run (1–2 files, one chunk), and say so explicitly rather than silently dropping it.
-
-**Fix loop — bounded, and it escalates.** Consolidated findings are worked in rounds,
-not in one pass:
-
-| Round | Who fixes | Rule |
-|---|---|---|
-| 1–3 | tier follows the fix (haiku/sonnet mechanical, opus subtle) | re-verify the gates after each round |
-| 4–5 | **escalate one tier above the original implementer** | the chunk's owner has now failed twice — a fresh pair of eyes on a stronger model is cheaper than a sixth round |
-| >5 | **stop and surface it** | five rounds means the chunk was mis-specified or the design is wrong. Report it as `needs-discussion`, do not keep grinding. |
-
-Only **Critical** and **Important** findings gate the run. Log the rest into the
-delivery report as known-and-accepted rather than fixing them silently — an
-unrequested "while I was in there" fix is how a clean run turns into an unreviewable
-diff.
-
-### Step 8 — Deliver
-
-```
-## Done
-
-**Chunks:** N senior + M junior, all DONE
-**Files changed:** <count / list>
-**Review verdict:** ship | fix-required | needs-discussion | skipped (small run)
-**Fix rounds:** <n> (escalated: yes/no)
-**Accepted, not fixed:** <minor findings logged but left>
-**Suggested next:** <commit / open a PR / run the repo's PR skill>
-```
-
-Do not commit, push, or open a PR yourself unless the user asked — hand off
-cleanly.
+For a brief-backed run, the gate per brief result is three passes, in order:
+`verify-brief` (`node ${CLAUDE_PLUGIN_ROOT}/scripts/verify-brief.mjs <repo> <base>`),
+then `brief-auditor`, then your own pass over the risky diffs. For a chunked run:
+typecheck the workspace, build every package dependents consume, run the touched
+packages' tests, and check the new files are **tracked, not ignored** (`git status
+--porcelain`, and `git check-ignore` empty for a new source directory). Do not
+proceed past a failure: re-dispatch the owning chunk with the specific error before
+the next wave. The passes in full: `references/review-and-verify.md`.
 
 ## The ruling ledger (survives compaction)
 
-A long dispatch run outlives its own context. When the controller's window compacts,
-the *decisions* are what get lost first — why a chunk was split this way, why a
-finding was rejected, why a chunk was re-dispatched — and a controller that has
-forgotten its own rulings will happily re-litigate them or contradict them.
+A long run outlives its context, and the *decisions* are lost first. **Append one
+line to a running ledger every time you decide something a future controller would
+otherwise have to guess at**: why a chunk was split, why a finding was rejected, why
+a chunk was re-dispatched, why a gate failed. Keep it in the working notes, and
+**restate it in the step 8 delivery**. For a brief-backed run, fold the durable
+rulings into `log.md` at closeout via `corpus-flow` §4. Rulings are decisions, not
+narration: do not log "started chunk 4." An example is in the templates.
 
-So **append one line to a running ledger every time you decide something a future
-controller would otherwise have to guess at**:
+## Backlog / wave mode (a set of pre-written briefs)
 
-```
-## Rulings
-- [chunk 3] split from chunk 2 — shared store, cannot run in parallel
-- [chunk 5] re-dispatched on opus — sonnet missed the async boundary twice
-- [finding 11] rejected — by-design, corpus/wiki/decisions.md "no .js suffixes"
-- [wave 2] gate failed on build, not tests — dist/ was stale, not a code bug
-```
+The briefs already are the chunks: order, dispatch, verify and integrate them.
 
-Keep it in the run's working notes, and **restate it in the Step 8 delivery**. If the
-run is brief-backed, fold the durable ones into `log.md` at closeout via `corpus-flow` §4.
-Rulings are decisions, not narration — do not log "started chunk 4."
+- **Only `corpus/briefs/todo/` is the backlog.** A brief in `blocked/` is in no
+  wave, and neither is one that depends on it: report it with its condition. Never
+  move a file out of `blocked/` without the owner (`corpus-flow` §2b).
+- **Build the DAG** from each brief's depends-on, *Files you OWN* and *Files you must
+  NOT touch*. A **wave** is every brief whose dependencies are all done. Two briefs
+  are parallel-safe in one wave **iff their OWN sets are disjoint**; dispatch a
+  wave as multiple `Agent` calls in one message.
+- **Carry contracts forward:** paste each finished brief's Handoff for dependents
+  into the prompts of the briefs that depend on it.
+- **Verify gate and checkpoint between waves**, then commit each brief separately if
+  asked (never to a protected branch without asking). Show a one-line wave plan up
+  front (`01 → 02‖08 → 03 → 04‖06 → 05 → 07`).
+- **Standing authorization:** if the user pre-authorized the build ("build all the
+  briefs", "just go"), present the wave plan once and run through it. Closeout (done,
+  log, fold findings and deviations into the wiki) is the controller's, via
+  `corpus-flow` §4.
+- **Pause and checkpoint on demand.** On a quota or session limit, stop at the next
+  **wave boundary** (never mid-wave) and write a resume point to `corpus/log.md`:
+  briefs done with their contracts, in-flight or next, branch and last commit, open
+  decisions. When deploys are left for the owner, dispatch `owner-steps` for the
+  list and put it in the resume point. Then stop; this is a first-class action.
 
-## Verify gate (between waves, and before final delivery)
+## Configuration, at a glance
 
-A subagent reporting "tests pass" is **not** sufficient — verify it yourself, from
-the controller, against the integrated tree.
-
-> **The iron law: no completion claim without fresh verification evidence.**
-> If you have not run the command *in this turn*, you cannot say it passes. Not
-> "should pass", not "passed earlier", not "the agent said it passes". Before
-> claiming any status: name the command that proves it, run it in full, read the
-> exit code and the failure count, and only then make the claim — **with** the
-> evidence. A green claim on stale evidence is the single most expensive thing
-> that happens in a long run, because every later wave is built on it.
-
-For a brief-backed run, the gate per brief result is three passes, in this order:
-
-- **`verify-brief`** (`node ${CLAUDE_PLUGIN_ROOT}/scripts/verify-brief.mjs <repo> <base>`):
-  the repo's check gate, the house-style sync check, `format:check`, a clean tree, no
-  tracked `node_modules` or `.env`, a grep of the added lines for machine paths and the
-  words in `VERIFY_BRIEF_DENY`, `--untouched <glob>` paths, and `npm audit` high and
-  above. It runs them one at a time, prints one line each with its exit code, and
-  re-runs a test file on the repo's known-flaky list alone. You run it, so the iron law
-  holds without spending a model's tokens.
-- **`brief-auditor`** (a light slot, read only): each acceptance line met, unmet or
-  unverifiable with its evidence, plus the review-only rules for the brief's kind. Hand
-  it the brief, the range, the builder's report and the `verify-brief` output.
-- **Your own pass:** read the risky diffs (auth, tokens, personal data), look at one or
-  two screenshots, and make the rulings.
-
-For a chunked run, run in order, and do **not** proceed past a failure:
-
-1. **Typecheck** the whole workspace (the repo's typecheck cmd, e.g. `npm run typecheck`).
-2. **Build** every package that emits artifacts dependents consume (a downstream
-   wave often resolves a dependency from its built `dist/`, not source).
-3. **Tests** for the packages touched this wave — and confirm prior waves still pass.
-4. **Tracked, not just on-disk** (the silent-ignore check): `git status --porcelain`
-   must list the expected new files, and `git check-ignore <new-source-dir>` must be
-   empty for any new source directory. A chunk can build and test green entirely from
-   files git is **ignoring** (e.g. an over-broad `store/` rule that also hides
-   `src/store/`); this step catches that before it ships as "done".
-
-On failure: fix in place — re-dispatch the owning chunk with the specific error —
-before the next wave. Never let unverified breakage flow into a dependent wave; that
-cascade is the whole reason this gate exists.
-
-## Backlog / wave mode
-
-Use this when the unit of work is a **set of pre-written briefs** with dependencies
-between them (e.g. `corpus/briefs/todo/*`), not chunks of one fresh task. The briefs
-already are the chunks; your job is to order, dispatch, verify, and integrate them.
-
-**Only `corpus/briefs/todo/` is the backlog.** A brief in `corpus/briefs/blocked/` waits on
-an outside condition (its `**Blocked by:**` line) and is in no wave. A brief that depends on
-a blocked brief goes in no wave either: report it with that condition. Never move a file out
-of `blocked/` without the owner (`corpus-flow` §2b).
-
-1. **Build the dependency DAG.** Read each brief's *depends-on*, *Files you OWN*, and
-   *Files you must NOT touch*. An edge = brief B consumes a file or contract brief A
-   owns. (If briefs don't declare ownership, infer it — and prefer adding it.)
-2. **Group into waves.** A wave = every brief whose dependencies are all already done.
-   Two briefs are **parallel-safe in the same wave iff their OWN sets are disjoint** —
-   this, not worktrees, is the cheap parallelism lever (see Configuration → Parallel
-   dispatch). Dispatch a wave as multiple `Agent` calls in **one** message.
-3. **Carry contracts forward.** Harvest each completed brief's **Handoff for dependents**
-   and paste the relevant pieces into the prompts of briefs that depend on it. Dependent
-   briefs are only as accurate as the contracts you thread in — don't make them re-derive
-   an interface a prior brief already pinned down.
-4. **Verify gate + checkpoint between waves.** After each wave, run the **Verify gate**.
-   Then, if the user asked for per-brief / per-wave commits, commit each completed brief
-   separately on the current branch (never a protected branch without asking). Only then
-   dispatch the next wave. Present a one-line wave plan up front so the user sees the
-   shape (`01 → 02‖08 → 03 → 04‖06 → 05 → 07`).
-5. **Standing authorization.** If the user pre-authorized the whole build ("build all the
-   briefs", "be the master orchestrator", "just go"), present the wave plan **once** and
-   execute through it — don't re-gate every wave. Reserve the Step-3 confirm gate for
-   genuinely ambiguous scope. Closeout (move briefs to done, log, fold findings —
-   including any deviations/discovered-gaps the agents reported — into the wiki) is the
-   controller's, via `corpus-flow` §4.
-
-6. **Pause & checkpoint on demand (quota / session boundary).** If the user says they are
-   near a quota/usage limit or asks to pause, **stop at the next wave boundary** (never
-   mid-wave with subagents in flight) and write a durable resume point to the corpus before
-   ending: which waves/briefs are **done** (with their Handoff-for-dependents contracts),
-   which are **in-flight or next**, the current branch + last commit, and any open decisions.
-   Put it at `corpus/log.md` (or a `corpus/resume-<date>.md` brief) so a **fresh session can
-   pick up cold** without re-deriving state. When the run leaves deploys for the owner,
-   dispatch `owner-steps` (read only) for the deploy list (one ordered checklist per
-   stack, each phase checked against the paths its tickets changed), and put its list
-   in the resume point. Do the same at the end of a session. Confirm what was written and stop — do not start
-   another wave. This is a first-class action, not a failure mode.
-
-Each brief is dispatched with the Step-4 template and must return a **Handoff for
-dependents** section.
-
-## Configuration
-
-- **Default model routing**: trivial = haiku, junior = Sonnet, senior = opus,
-  controller = opus. **Bias to the cheapest tier that can do the chunk** — opus is the
-  exception (novel/risky/security/data), not the default. Current-generation Sonnet is a
-  strong *executor* — reliable on well-specified, well-gated chunks **including medium-hard
-  ones** (not just mechanical copies), so **bias borderline chunks → junior** rather than
-  reflexively senioring them. Review finders default to Sonnet (Step 7). **Keep opus in the
-  controller/verify seat — do NOT promote Sonnet to it**: the controller's value is planning
-  the grounded briefs the executors succeed *inside*, plus being a *stronger second opinion*
-  at verify time and making the expensive-if-wrong calls (design/contract decisions,
-  real-bug-vs-stale-test adjudication). Hard objective gates (tests, determinism/
-  byte-identity checks) are the net that makes routing risky chunks down safe. Keep the
-  controller's own turns lean (don't echo subagent diffs) so the one unavoidable opus seat
-  stays cheap. Override per-chunk when the user asks ("do all of these on sonnet to save
-  cost" / "promote chunk 3 to opus").
-- **Parallel dispatch**: only within a parallel-safe group, and only for chunks
-  that edit disjoint files. Never run two implementers against the same file in
-  parallel.
-- **File lanes** (preferred over worktree when feasible): when two parallel chunks
-  would *otherwise* both touch a shared hub file (a central `main.ts`, a barrel, a
-  router), split the work so each owns a disjoint set of files and state the lane
-  **explicitly in each chunk prompt** ("you may edit ONLY X/Y; chunk N owns Z — do not
-  touch it; if you can't avoid Z, report BLOCKED"). This keeps them genuinely
-  disjoint → safe to run in one message, no worktree/merge overhead. Each chunk's
-  transient typecheck errors from the other's half-done hub edits are expected; verify
-  the *combined* gates after both land. Reach for worktree only when the edits can't be
-  cleanly laned apart.
-- **Worktree**: if chunks mutate files in parallel and could conflict, dispatch
-  with `isolation: "worktree"`. On a protected branch (main/dev), refuse and ask
-  the user to branch first.
-- **Max retry per chunk**: 2. After two failures, escalate.
-
-## Failure modes
-
-- **Invoked on a 1–2 chunk task** → the orchestration tax loses tokens. Decline
-  and edit inline instead; this skill is for ≥3 independent chunks.
-- **Junior BLOCKED on a senior-only area** → re-classify, re-dispatch as senior.
-  Signal, not failure.
-- **Senior BLOCKED on a design call** → escalate to user; don't invent the design.
-- **Two parallel juniors edit the same file** → controller bug; sequence them or
-  use worktree isolation.
+Routing: trivial haiku, junior sonnet, senior opus, controller opus; bias to the
+cheapest tier that can do the chunk. Parallel dispatch only over disjoint files, with
+file lanes before a worktree. At most two retries per chunk. The full text and the
+failure modes are in
+[`references/wave-mode-and-configuration.md`](references/wave-mode-and-configuration.md).
