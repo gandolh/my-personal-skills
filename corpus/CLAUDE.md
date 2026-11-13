@@ -88,6 +88,7 @@ updated: <YYYY-MM-DD>
 
 - Standard relative markdown links. Absolute dates only.
 - One concept per page. Split a page past 200 body lines.
+- Text an agent reads (skills, agent prompts, `CLAUDE.md` files) follows [the skill-writing rules](../docs/writing-skills.md).
 
 ## Hard rules
 

@@ -144,6 +144,12 @@ Adopted as method into first-party skills, with no code copied:
   "surgical changes" and "simplicity first" principles from Andrej Karpathy's post on LLM
   coding pitfalls, behind the scope-discipline block, the "Noticed, not touched" list and
   the scope and proportion checks in `plan-split-dispatch`.
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** (MIT, read at `4ae2317`,
+  2026-10-31; ideas only, no text copied) — the `diagnosing-bugs` method (the feedback loop
+  first, ten ways to build one, stop and ask when none can be built, redaction) behind
+  `diagnose`, and its guidance on writing for agents behind `docs/writing-skills.md`. The
+  `diagnose` skill also follows obra/superpowers' `systematic-debugging` (root cause before
+  any fix, one hypothesis at a time).
 - **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** (Apache-2.0, read at
   `ffab839`, 2026-11-09) — the progressive-disclosure index: a session starts with a compact
   index and fetches detail on demand. Idea only; `hooks/session-start.mjs` injects the
