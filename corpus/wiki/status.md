@@ -21,7 +21,7 @@ anything is built. The questions for it are in
 | 15 Enforce the two skills in every repo | checkers, rules files, gates | done, 71 repo briefs in 23 repos |
 | 16 Fastify servers adopt the structure | 16 servers, smallest first | done, 17 servers, v0.43.0 |
 | 17 Review comments and finishing a branch | from obra/superpowers | superseded 2026-11-13 (rule folded into 20) |
-| 18 A diagnose skill and an owner-steps wizard | from mattpocock/skills | todo |
+| 18 A diagnose skill and the skill-writing rules | from mattpocock/skills | done, v0.51.0 (wizard dropped) |
 | 19 A skills stocktake and MCP pin review | from affaan-m/ecc | done, v0.48.0 |
 | 20 Surgical changes in the chunk contract | from andrej-karpathy-skills | done, v0.50.0 |
 | 21 The Agent Skills format | from anomalyco/opencode | built, v0.35.0 |

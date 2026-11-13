@@ -124,3 +124,7 @@ Weighed and left out:
   stage per owner step.
 - `docs/writing-skills.md` exists and is linked from `corpus/CLAUDE.md`.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-13)
+
+Built in v0.51.0 (9c4f2a0), cut down: `skills/diagnose/` (loop first, ten ways, stop-and-ask, redaction, one hypothesis at a time, the loop kept as a regression test, an `incident` entry) and `docs/writing-skills.md` (14 numbered rules, each with its check). The `owner-steps` wizard was dropped on 2026-11-13. Not done: the seeded-bug dry run, which needs a live session.

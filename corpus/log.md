@@ -299,3 +299,7 @@ Superseded by the owner (backlog grill, answer 1): the `brief-builder` agent alr
 ## [2026-11-13] done | Brief 20 - surgical changes in the chunk contract, with brief 17's review rule (v0.50.0)
 
 Every dispatch prompt carries a Scope discipline block and hands back a "Noticed, not touched" list; the review gate checks scope and proportion, reports no style, runs reviewers read-only and classifies each review finding as correct, unclear, wrong or out of scope. Ideas from andrej-karpathy-skills (no license, nothing copied). See [the brief](briefs/done/20-surgical-changes-in-the-chunk-contract-from-karpathy.md).
+
+## [2026-11-13] done | Brief 18 - the diagnose skill and the skill-writing rules (v0.51.0)
+
+`diagnose` builds a red, deterministic, fast loop before any fix, tests one hypothesis at a time and keeps the loop as a regression test; `docs/writing-skills.md` gives 14 rules for agent-facing text, each with its check. Ideas from mattpocock/skills and obra/superpowers, no text copied. The owner-steps wizard was dropped: the `owner-steps` agent covers it. See [the brief](briefs/done/18-a-diagnose-skill-and-an-owner-steps-wizard-from-pocock.md).
