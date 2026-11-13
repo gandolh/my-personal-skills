@@ -1,4 +1,6 @@
-# Task 18: A diagnose skill, and a wizard for owner steps (from mattpocock/skills)
+# Task 18: A diagnose skill and a skill-writing guide (from mattpocock/skills)
+
+> Cut down 2026-11-13 (owner, backlog grill answer 1): the `owner-steps` wizard is dropped, because the `owner-steps` agent (`agents/owner-steps.md`, brief 29) already turns a corpus's "Next (owner)" list into the owner's checklist. Kept: the `diagnose` skill and `docs/writing-skills.md`. Steps 2 and the owner-steps file, the corpus-flow pointer and the owner-steps acceptance line below are void.
 
 ## Context
 
