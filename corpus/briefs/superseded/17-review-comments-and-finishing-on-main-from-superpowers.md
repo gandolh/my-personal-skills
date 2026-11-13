@@ -1,5 +1,7 @@
 # Task 17: Taking review comments, and finishing on main (from obra/superpowers)
 
+> Superseded on 2026-11-13 by the owner, because the `brief-builder` agent (brief 29) already verifies, commits on main and closes out, and there are no PRs; its review-finding rule moved into brief 20.
+
 > Revised 2026-11-10 (Q31): the owner works on `main` only and there are no
 > PRs, so "ship a branch" becomes **finish on main**. The skill verifies,
 > commits and pushes to `main`. It never merges, and never approves a PR. The
