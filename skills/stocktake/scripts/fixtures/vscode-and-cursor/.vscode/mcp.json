@@ -1,0 +1,1 @@
+{ "servers": { "pinned": { "command": "npx", "args": ["-y", "server-a@3.1.0"] }, "loose": { "command": "npx", "args": ["server-b"] } } }

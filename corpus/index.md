@@ -21,6 +21,7 @@ Start here. Triage on the summary lines and open at most 2-3 pages.
 - [wiki/open-questions.md](wiki/open-questions.md) - Open questions Q1-46 for the grilling of 2026-11-10 are all answered; this page points at where the answers are. Read it only to find that out.
 - [wiki/overview.md](wiki/overview.md) - What the my-personal-skills library holds (one front door, a corpus workflow, design and docs layers, vendored skills), how it ships, and what it leaves out.
 - [wiki/status.md](wiki/status.md) - Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12).
+- [wiki/stocktake-2026-11-13.md](wiki/stocktake-2026-11-13.md) - The first full stocktake of the library at v0.48.0 (2026-11-13) - always-on and on-invoke token costs, which descriptions are over the limit (none), what sits past the 5,000-token compaction cut, and 13 ranked findings with a file and line each; the owner picks which become briefs.
 
 <!-- END CATALOG -->
 

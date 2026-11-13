@@ -1,0 +1,1 @@
+{ "mcpServers": { "a": { "command": "npx", "args": ["server@^1.2.3"] }, "b": { "command": "npx", "args": ["server@next"] }, "c": { "command": "npx", "args": ["server@1.x"] } } }

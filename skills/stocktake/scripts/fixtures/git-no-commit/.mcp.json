@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "a": { "command": "npx", "args": ["-y", "github:someone/their-server"] },
+    "b": { "command": "npx", "args": ["git+https://example.com/org/server.git#main"] },
+    "c": { "command": "bunx", "args": ["someone/their-server#v1.2.0"] }
+  }
+}

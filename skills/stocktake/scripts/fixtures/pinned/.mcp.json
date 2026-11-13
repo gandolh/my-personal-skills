@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "codegraph": {
+      "command": "npx",
+      "args": ["-y", "@colbymchenry/codegraph@1.4.2", "serve", "--mcp", "--no-watch", "--path", "${CODEGRAPH_INDEX_PATH:-.codegraph}"]
+    },
+    "plain": { "command": "bunx", "args": ["some-server@2.0.1-beta.3"] },
+    "pnpm": { "command": "pnpm", "args": ["dlx", "--package", "@scope/tool@0.3.0", "tool-bin"] }
+  }
+}

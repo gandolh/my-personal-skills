@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.47.0, 30 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.48.0, 31 skills.
 
 ## What it does
 
@@ -64,6 +64,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 |---|---|
 | `codegraph` | Scope a change with a code graph (impact, callers), confirm with grep + read |
 | `thermo-nuclear-review` | A very strict maintainability review; use it deliberately (MIT) |
+| `stocktake` | Audits the library's own skills for token cost, rules past the compaction cut and stale text, and ranks what is worth fixing; also a static check that MCP servers are pinned |
 | `house-style` | The house TypeScript style as numbered rules, each with its lint rule or a review check, and how a repo adopts the harness: configs vendored from `house-style/`, one reformat commit, `npm run check` and `check:fast` |
 | `code-structure` | One structure for the Fastify servers and React apps: 11 numbered rules, each with its source and its `check-structure` id, dependency-cruiser rule or review; skeletons compiled and tested against Fastify 5.12.8 with the zod type provider; the order every server's migration follows |
 

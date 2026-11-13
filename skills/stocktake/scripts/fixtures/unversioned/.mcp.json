@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "a": { "command": "npx", "args": ["some-server"] },
+    "b": { "command": "npx", "args": ["-y", "@scope/other", "--flag"] },
+    "c": { "command": "pnpm", "args": ["dlx", "third-server"] }
+  }
+}

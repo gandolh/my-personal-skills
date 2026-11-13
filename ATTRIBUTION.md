@@ -166,6 +166,13 @@ Adopted as method into first-party skills, with no code copied:
   badge discipline, value → proof → mechanism sequence and re-runnable captures behind
   `readme-docs`.
 
+- **[affaan-m/ecc](https://github.com/affaan-m/ecc)** (MIT, read at `d2ef268`, ideas
+  only, no code or text copied) — `skill-stocktake` (a quick scan of changed skills and a
+  full pass in batches) behind the `stocktake` skill; `skill-comply` (scenarios at three
+  levels of prompt strictness, scored by compliance) behind its scenario files; and
+  `mcp-dependency-review` (a static check for unpinned MCP package references) behind
+  `check-mcp-pins.mjs`.
+
 ## History
 
 Through **v0.23.0** this plugin vendored an earlier frontend design suite. **v0.24.0**

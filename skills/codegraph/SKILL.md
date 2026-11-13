@@ -85,6 +85,9 @@ Gitignore the index dir (`.codegraph/`). Register the MCP server in `.mcp.json`:
 registers `codegraph_explore` by default; further tools may be gated behind an
 env var. If the MCP is not installed, run the CLI subcommands directly
 (`impact`, `callers`, `callees`, `explore`, `node`).
+Check that the pin holds with
+`node ${CLAUDE_PLUGIN_ROOT}/skills/stocktake/scripts/check-mcp-pins.mjs`: it fails on an
+unversioned `npx`, `@latest` or a git URL with no commit.
 
 ## Benchmark the accuracy envelope - do not skip {#benchmark}
 
