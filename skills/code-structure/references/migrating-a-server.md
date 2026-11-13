@@ -131,12 +131,13 @@ zero.
   unchanged. The vendored library stays untouched (Almanac, Shelfmark,
   ro-housing, comercial-website). Compare its replies byte for byte.
 - **Domain modules** that aren't a feature (ward-auth's tokens, grants and
-  OIDC code) keep their folders, and ward-auth's dependency-cruiser rules say
-  the direction: `domain-not-to-features` (a domain folder never imports a
-  feature) and `app-through-feature-index` (the preset's
-  `feature-through-index` doesn't cover `app.ts`). sports-app added the same
-  for plugins (a plugin never imports a feature). Whether the preset carries
-  these is a house-style question (the library's todo on it).
+  OIDC code) move to `domain/<name>/`, with `git mv` and import paths only.
+  Since house-style 1.3.0 the preset says the direction:
+  `domain-not-to-features` (a domain module never imports a feature) and
+  `app-through-feature-index` (`app.ts` through each feature's index). A repo
+  whose domain folders still sit at the root keeps its own rule under the
+  same name, which replaces the preset's `from` (ward-auth). sports-app's
+  "a plugin never imports a feature" is a repo rule, not the preset's.
 - **Break the `FeatureContext` cycle.** A route file that imports
   `type FeatureContext` from `app.ts` closes a cycle (`app.ts` → the
   feature's index → its routes → `app.ts`), and dependency-cruiser counts
@@ -154,6 +155,7 @@ zero.
   is recorded: the rule stays lowered with its dated comment, and lowered
   for the web app only, where the server's cycles are gone (Shelfmark).
 - **Check:** `depcruise` reports no `feature-through-index`,
+  `app-through-feature-index`, `domain-not-to-features`,
   `lib-without-fastify` or `no-circular` error.
 
 ## 4. The type provider, one feature at a time

@@ -44,6 +44,7 @@ and their Q numbers appear below.
     config.ts          the one parse of the environment (zod) into a typed Config
     plugins/           cross-cutting, fastify-plugin wrapped: errors, auth, security headers, static files
     features/<name>/   index.ts, routes.ts (an encapsulated plugin), store.ts (its SQL), service.ts?, *.test.ts
+    domain/<name>/     code several features share that isn't pure: tokens, grants, an OIDC provider; never imports a feature
     db/                open and migrate; a store too big to split (Q54)
     lib/               pure helpers and the ApiError class; no Fastify import
     testing/           buildTestApp, fakes, fixtures
@@ -69,9 +70,9 @@ scope (`@almanac/shared`, `@wicket/shared`).
 | 2 | `app.ts` exports `buildApp(config)`. It builds the `FeatureContext` and registers by name, in a fixed order: external plugins, then the app's `plugins/`, then the features. No `@fastify/autoload` | Fastify loads in registration order, so the order is the architecture; a feature registered by name is found with grep and keeps its option types | Fastify's Plugins guide; the demo's `plugins/external`, `plugins/app`, `routes/`; owner decision 3 | `check-structure` rule 2 (no `app.ts`, or no exported `buildApp`); the order is review |
 | 3 | `config.ts` is the only file that reads `process.env`. Where the server loads a `.env`, it does so by an explicit path; it parses once with zod into a typed `Config` (settings types live here too) and throws naming every bad variable. Nothing reads `NODE_ENV`, `config.ts` included: name a setting for what it switches, or record one exception. A CLI inside the app (the entry, a seed command) reads its settings through `config.ts`; a script run by hand lives outside the roots, in `scripts/` | One place says what the app needs, and it fails at start rather than at the first request; `NODE_ENV` switches behaviour no setting names | Collina's anti-patterns; the demo's `server.ts`; the quiet env loaders the repo briefs found | `check-structure` rule 3 (server and shared roots, tests excepted); `n/no-process-env` (house-style rule 15) |
 | 4 | A cross-cutting plugin (errors, auth, security headers, static files) lives in `plugins/`, wrapped in `fastify-plugin` so it reaches every feature. A feature isn't wrapped, so its hooks stay inside it. Dependencies travel as plugin options; a decorator holds only a request-scoped value (`request.user`) | Every `register` makes a child scope, and that encapsulation is Fastify's architecture; an option is typed and found with grep, a decorator is global | Fastify's Plugins guide and Encapsulation reference; the demo; owner decision 2 (Almanac's `FeatureContext`), Q24 | review |
-| 5 | A server feature is a folder, `features/<name>/`, with an `index.ts` as its public surface. Code outside the folder, `app.ts` included, imports it through that index; another feature does only if it must. No import cycles, type-only imports included: a store two features read lives in `db/` (Q54), a feature names its own options type rather than importing `app.ts`, and test helpers two features share live in `testing/` | A change to one domain stays in one folder, and its insides change without breaking callers | The demo's `routes` README; Collina; Pocock's `setup-ts-deep-modules` (owner decision 7) | dependency-cruiser `feature-through-index` and `no-circular`; `app.ts`'s own imports are review |
+| 5 | A server feature is a folder, `features/<name>/`, with an `index.ts` as its public surface. Code outside the folder, `app.ts` included, imports it through that index; another feature does only if it must. No import cycles, type-only imports included: a store two features read lives in `db/` (Q54), a feature names its own options type rather than importing `app.ts`, and test helpers two features share live in `testing/` | A change to one domain stays in one folder, and its insides change without breaking callers | The demo's `routes` README; Collina; Pocock's `setup-ts-deep-modules` (owner decision 7) | dependency-cruiser `feature-through-index`, `app-through-feature-index` (`app.ts`) and `no-circular` |
 | 6 | Every route declares its schemas through `@fastify/type-provider-zod`: `params`, `querystring` and `body` as it takes them, and `response` for each status its handler sends. Zod from `shared/` when the client imports the schema, else from the feature folder (Q55), or the repo's existing schema library (sports-app's TypeBox, Q28). No handler parses request input. A response schema is transform-free and not strict; pass-through JSON is a loose object (Q25). A declared status encodes every reply on it, so a declared 4xx is the generic body. Streams and binary replies are exempt, declare no response schema, and each has a `conventions.json` entry (Q53) | Validation, typed handlers and fast serialisation from one declaration, and a field the schema doesn't name never leaves the server | Fastify's Validation-and-Serialization and Type-Providers references; Collina; owner decision 4 | `check-structure` rule 6, a heuristic: a route with no `schema`, and request input handed to a `parse`, `safeParse` or `validate` call. A declared `response` is review |
-| 7 | Handlers stay thin. SQL lives in the feature's `store.ts` (a factory returning an interface, house-style rule 20), logic two routes share in `service.ts`, pure code in `lib/`, which never imports Fastify. A store too big to split stays whole in `db/` (Q54) | A handler reads as input, call, reply; a store is faked with a plain object; pure code is tested without a server | The demo's data access through repositories; Collina | dependency-cruiser `lib-without-fastify`; the rest is review |
+| 7 | Handlers stay thin. SQL lives in the feature's `store.ts` (a factory returning an interface, house-style rule 20), logic two routes share in `service.ts`, pure code in `lib/`, which never imports Fastify. A store too big to split stays whole in `db/` (Q54). Code several features share that isn't pure (ward-auth's tokens, grants and OIDC provider) lives in `domain/<name>/`, which the features import and which never imports a feature | A handler reads as input, call, reply; a store is faked with a plain object; pure code is tested without a server; shared domain code sits under the features, so no cycle runs through it | The demo's data access through repositories; Collina; the owner's call (2026-11-13) | dependency-cruiser `lib-without-fastify` and `domain-not-to-features`; the rest is review |
 | 8 | Errors: throw `ApiError(code, message, details?)`, the one error class (Q56), or where every handler sends its own 4xx, none. One handler, set at the root by a `fastify-plugin` plugin registered first, answers in the repo's existing error body (`{ error, message, issues? }` where it has none): an `ApiError` with its code's status, a schema failure with 400 and its issues, a 4xx Fastify or a plugin raised with its status, anything else with 500, a fixed message, and the error logged with the request. The 404 handler answers the same body, rate-limited where `@fastify/rate-limit` is present | Fastify's default handler sends a thrown message verbatim at every status, a 500's included; the web parses one body | Fastify's Errors reference; the demo; Collina; Q43 | review |
 | 9 | Each feature has `inject()` tests through `testing/buildTestApp.ts`: the whole app on a fresh temporary data folder, fakes passed in the context, closed after each test, with a schema-failure case. vitest, except atrium on `node:test` (Q27); Shelfmark tests handlers and plugins without `inject()` (Q26). Every server has a `pretest` that builds what its tests import | `inject()` runs the whole request path (hooks, validation, serialisation) with no socket | Fastify's Testing guide; the demo's test helper; Collina | review |
 | 10 | Web: a feature is a folder, `web/src/features/<name>/`, holding one domain's pages, components, hooks and API calls, used through its `index.ts`. Base UI wrappers live in `components/ui/`, the API client and pure helpers in `lib/` | The client changes with its feature, as the server does | Rule 5 applied to the client; base-ui rule 3 | dependency-cruiser `feature-through-index` and `no-circular`, which match any `features/` path; `check-base-ui` for `ui/`; the rest is review |
@@ -127,15 +128,20 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
   ```
 
 The house dependency-cruiser preset forbids cycles (`no-circular`),
-unresolvable imports, a feature reached past its index
-(`feature-through-index`) and Fastify under `lib/` (`lib-without-fastify`).
-It counts type-only imports. Two repos added rules the preset lacks:
-ward-auth's `domain-not-to-features` and `app-through-feature-index`
-(`app.ts` through a feature's index), and sports-app's "a plugin never imports a
-feature"; whether the preset gets them waits on a house-style release. It runs in every repo from the harness brief
-on; a rule the repo can't pass yet is lowered to a warning by name in its
-own `.dependency-cruiser.cjs`, with a dated comment that says what removes
-it (never a brief number), and the server brief raises it again:
+unresolvable imports, a feature reached past its index from another feature
+(`feature-through-index`) or from `app.ts` (`app-through-feature-index`), a
+`domain/` module that imports a feature (`domain-not-to-features`) and
+Fastify under `lib/` (`lib-without-fastify`), since house-style 1.3.0. It
+counts type-only imports. A feature's own `domain/` folder or `app.ts` is its
+insides, and neither rule reads it. A repo's rule with a preset rule's name
+replaces that rule's `from` and `to`: ward-auth keeps its own
+`domain-not-to-features`, whose list also names its `lib/`, `db/` and
+`plugins/`, until its domain folders move under `domain/`. sports-app's "a
+plugin never imports a feature" stays the repo's own. The preset runs in
+every repo from the harness brief on; a rule the repo can't pass yet is
+lowered to a warning by name in its own `.dependency-cruiser.cjs`, with a
+dated comment that says what removes it (never a brief number), and the
+server brief raises it again:
 
 ```js
 module.exports = {
@@ -167,7 +173,6 @@ A reviewer works through these, skipping what the tools report:
 - **Rule 4.** `fastify-plugin` on each cross-cutting plugin and on none of
   the features; no `decorate` for a dependency; no `declare module
   "fastify"` except for a request-scoped value.
-- **Rule 5.** `app.ts` imports each feature through its index.
 - **Rule 6.** A `response` schema for every status the handler sends itself
   and for no other: a declared status the handler doesn't send (a guard's
   401) answers 500 when the guard's body doesn't match it. No `.transform()`

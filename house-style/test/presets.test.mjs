@@ -122,11 +122,13 @@ describe(".dependency-cruiser.cjs", () => {
     "src/content.ts": 'import { getCollection } from "astro:content";\nexport const c = getCollection;\n',
     "src/routes/home.ts": 'import type { Route } from "./+types/home";\nexport type Props = Route.ComponentProps;\n',
     "src/missing.ts": 'import { gone } from "./gone.js";\nexport const m = gone;\n',
+    "src/domain/tokens/sign.ts": 'import { a } from "../../features/a/index.js";\nexport const sign = a;\n',
+    "src/app.ts": 'import { x } from "./features/a/internal/x.js";\nexport const app = x;\n',
     "vendor/house-style/cycle-a.js": 'import "./cycle-b.js";\n',
     "vendor/house-style/cycle-b.js": 'import "./cycle-a.js";\n',
   });
 
-  it("reports cycles, unresolvable imports (but not a Vite `virtual:` module, an Astro `astro:` module or React Router's `./+types/` route types), a feature's insides and Fastify in lib/, and nothing else", () => {
+  it("reports cycles, unresolvable imports (but not a Vite `virtual:` module, an Astro `astro:` module or React Router's `./+types/` route types), a feature's insides, a domain module that imports a feature, app.ts past a feature's index and Fastify in lib/, and nothing else", () => {
     const run = spawnSync(process.execPath, [bin("depcruise"), "src", "vendor", "--output-type", "json"], {
       cwd: root,
       encoding: "utf8",
@@ -136,6 +138,8 @@ describe(".dependency-cruiser.cjs", () => {
       .summary.violations.map((v) => `${v.rule.name}: ${v.from} -> ${v.to}`)
       .sort();
     assert.deepEqual(found, [
+      "app-through-feature-index: src/app.ts -> src/features/a/internal/x.ts",
+      "domain-not-to-features: src/domain/tokens/sign.ts -> src/features/a/index.ts",
       "feature-through-index: src/features/b/index.ts -> src/features/a/internal/x.ts",
       "lib-without-fastify: src/lib/server.ts -> node_modules/fastify/index.js",
       "no-circular: src/c1.ts -> src/c2.ts",
@@ -148,15 +152,21 @@ describe(".dependency-cruiser.cjs", () => {
     assert.notEqual(run.status, 0, run.stdout);
   });
 
-  it("passes a clean tree: a feature used through its index, its own insides, and lib/ without Fastify", () => {
+  it("passes a clean tree: a feature used through its index, its own insides, a domain module under the features, app.ts through each index, and lib/ without Fastify", () => {
     const clean = join(scratch, "depcruise-clean");
     writeTree(clean, {
       "package.json": JSON.stringify({ name: "fixture", type: "module" }),
       ".dependency-cruiser.cjs": `module.exports = { extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))} };\n`,
       "src/features/a/index.ts": 'import { x } from "./internal/x.js";\nexport const a = x;\n',
       "src/features/a/internal/x.ts": "export const x = 1;\n",
+      // A feature's own domain/ folder and its own app.ts are its insides, not the root's.
+      "src/features/a/domain/model.ts": 'import { x } from "../internal/x.js";\nexport const model = x;\n',
+      "src/features/a/app.ts": 'import { x } from "./internal/x.js";\nexport const featureApp = x;\n',
       "src/features/b/index.ts":
-        'import { a } from "../a/index.js";\nimport { pure } from "../../lib/pure.js";\nexport const b = a + pure;\n',
+        'import { a } from "../a/index.js";\nimport { pure } from "../../lib/pure.js";\nimport { sign } from "../../domain/tokens/sign.js";\nexport const b = a + pure + sign;\n',
+      "src/domain/tokens/sign.ts": 'import { pure } from "../../lib/pure.js";\nexport const sign = pure;\n',
+      "src/app.ts":
+        'import { a } from "./features/a/index.js";\nimport { b } from "./features/b/index.js";\nexport const app = a + b;\n',
       "src/lib/pure.ts": "export const pure = 2;\n",
     });
     const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: clean, encoding: "utf8" });
@@ -175,6 +185,56 @@ describe(".dependency-cruiser.cjs", () => {
     const run = spawnSync(process.execPath, [bin("depcruise"), "src"], { cwd: staged, encoding: "utf8" });
     assert.equal(run.status, 0, run.stdout + run.stderr);
     assert.match(run.stdout, /warn no-circular/);
+  });
+});
+
+describe(".dependency-cruiser.cjs, a repo's own rule with a house rule's name", () => {
+  it("replaces the house rule's from and to, so a repo keeps its wider domain list (ward-auth's tokens/, grants/, lib/)", () => {
+    const staged = join(scratch, "depcruise-domain-own");
+    writeTree(staged, {
+      "package.json": JSON.stringify({ name: "fixture", type: "module" }),
+      ".dependency-cruiser.cjs": `module.exports = {\n  extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))},\n  forbidden: [{ name: "domain-not-to-features", severity: "error", from: { path: "^src/(tokens|grants|lib)/" }, to: { path: "^src/features/" } }],\n};\n`,
+      "src/features/a/index.ts": "export const a = 1;\n",
+      "src/tokens/sign.ts": 'import { a } from "../features/a/index.js";\nexport const sign = a;\n',
+      "src/lib/pure.ts": 'import { a } from "../features/a/index.js";\nexport const pure = a;\n',
+      "src/domain/grants/grant.ts": 'import { a } from "../../features/a/index.js";\nexport const grant = a;\n',
+    });
+    const run = spawnSync(process.execPath, [bin("depcruise"), "src", "--output-type", "json"], {
+      cwd: staged,
+      encoding: "utf8",
+    });
+    const found = JSON.parse(run.stdout)
+      .summary.violations.map((v) => `${v.rule.name}: ${v.from} -> ${v.to}`)
+      .sort();
+    assert.deepEqual(found, [
+      "domain-not-to-features: src/lib/pure.ts -> src/features/a/index.ts",
+      "domain-not-to-features: src/tokens/sign.ts -> src/features/a/index.ts",
+    ]);
+  });
+});
+
+describe(".dependency-cruiser.cjs, a rule scoped to one folder", () => {
+  it("keeps no-circular an error outside web/ and a warning inside it, under a second name", () => {
+    const staged = join(scratch, "depcruise-scoped");
+    writeTree(staged, {
+      "package.json": JSON.stringify({ name: "fixture", type: "module" }),
+      ".dependency-cruiser.cjs": `module.exports = {\n  extends: ${JSON.stringify(join(PACKAGE, ".dependency-cruiser.cjs"))},\n  forbidden: [\n    { name: "no-circular", from: { pathNot: "^web/" }, to: { circular: true } },\n    { name: "no-circular-web", severity: "warn", from: { path: "^web/" }, to: { circular: true } },\n  ],\n};\n`,
+      "web/w1.ts": 'import { w2 } from "./w2.js";\nexport const w1 = (): unknown => w2;\n',
+      "web/w2.ts": 'import { w1 } from "./w1.js";\nexport const w2 = (): unknown => w1;\n',
+      "server/s1.ts": 'import { s2 } from "./s2.js";\nexport const s1 = (): unknown => s2;\n',
+      "server/s2.ts": 'import { s1 } from "./s1.js";\nexport const s2 = (): unknown => s1;\n',
+    });
+    const run = spawnSync(process.execPath, [bin("depcruise"), "web", "server", "--output-type", "json"], {
+      cwd: staged,
+      encoding: "utf8",
+    });
+    const found = JSON.parse(run.stdout)
+      .summary.violations.map((v) => `${v.rule.severity} ${v.rule.name}: ${v.from}`)
+      .sort();
+    // One violation per cycle.
+    assert.deepEqual(found, ["error no-circular: server/s1.ts", "warn no-circular-web: web/w1.ts"]);
+    const web = spawnSync(process.execPath, [bin("depcruise"), "web"], { cwd: staged, encoding: "utf8" });
+    assert.equal(web.status, 0, `the web/ cycle alone is a warning:\n${web.stdout}`);
   });
 });
 

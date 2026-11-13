@@ -24,6 +24,7 @@ server/src/db/open.ts                       open and migrate
 server/src/lib/api-error.ts                 the one error class
 server/src/plugins/errors.ts                the error and 404 handlers
 server/src/features/books/                  store.ts, routes.ts, index.ts, routes.test.ts
+server/src/domain/                          none here: see "Domain modules" below
 server/src/testing/buildTestApp.ts          the app for one test
 ```
 
@@ -768,6 +769,27 @@ export { createBookStore, type BookRow, type BookStore } from "./store.js";
   doesn't; a declared 204 as `z.null()` wants `.send(null)`, not `.send()`
   ([zod-type-provider.md](zod-type-provider.md)). Both forms are fine; use the
   one the file already uses.
+
+## Domain modules: `domain/<name>/`
+
+The books app has none, so this section has no code block. A server whose
+features share code that isn't pure keeps it in `domain/<name>/`, beside
+`features/`, `plugins/`, `db/` and `lib/` (the owner's call, 2026-11-13).
+ward-auth's tokens, grants and OpenID Connect provider are the example: each
+holds keys, a store or a mounted provider, so it isn't `lib/`, and no single
+feature owns it.
+
+- **It sits under the features.** A feature imports a domain module; a
+  domain module never imports a feature (`domain-not-to-features`). It may
+  import `db/` and `lib/`.
+- **`app.ts` builds it**, from the config and the database, and hands it to
+  the features in the `FeatureContext`, as it does a store: a test replaces
+  it there.
+- **Give it an `index.ts`** when more than one feature imports it, as a
+  feature has; no rule checks that yet.
+- **Its routes are routes.** A provider mounted on the app (ward-auth's OIDC
+  mount) is read by `check-structure`'s rule 6 like a feature's, and a raw
+  mount with no schema is a `conventions.json` exception, as a stream is.
 
 ## The test app and the tests
 

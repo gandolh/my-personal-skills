@@ -13,13 +13,15 @@
  *   rule 2   a server root whose app.ts exports no buildApp, or that has no app.ts
  *   rule 3   process.env outside config.ts (or the files conventions.json's "env"
  *            names), and any NODE_ENV, in server and shared roots (tests excepted)
- *   rule 5   a feature reached past its index: house-style's .dependency-cruiser.cjs
- *            (feature-through-index), not this script
+ *   rule 5   a feature reached past its index, from another feature or from app.ts:
+ *            house-style's .dependency-cruiser.cjs (feature-through-index,
+ *            app-through-feature-index), not this script
+ *   rule 7   domain/ importing a feature, and Fastify imported under lib/: the
+ *            dependency-cruiser preset (domain-not-to-features, lib-without-fastify),
+ *            not this script. Code under domain/ is otherwise server code like any other
  *   rule 6   request input parsed by hand (schema.parse(request.body), a parse
  *            helper given request.query), and a route registered with no schema;
  *            a heuristic, tests excepted
- *   rule 7   Fastify imported under lib/: the dependency-cruiser preset
- *            (lib-without-fastify), not this script
  *   rule 11  a file over 400 lines, in any root, test files aside (a warning)
  *
  * Each finding prints as `file:line rule-N severity: message`. Warnings never fail
@@ -69,7 +71,7 @@ function main() {
   const { server, web, shared } = conventions.roots;
   if (server.length + web.length + shared.length === 0) console.log(`${NAME}: no root, so there is nothing to check.`);
   console.log(
-    `${NAME}: checks rules ${RULES.join(", ")}; rules 5 and 7 (a feature through its index, no Fastify in lib/) are dependency-cruiser's, in vendor/house-style/.dependency-cruiser.cjs`,
+    `${NAME}: checks rules ${RULES.join(", ")}; rules 5 and 7 (a feature through its index, app.ts included; domain/ never importing a feature; no Fastify in lib/) are dependency-cruiser's, in vendor/house-style/.dependency-cruiser.cjs`,
   );
 
   const serverFiles = new Set(codeFiles(repo, server));

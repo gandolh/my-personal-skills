@@ -46,8 +46,12 @@ const CASES = [
   {
     rule: 6,
     area: "a heuristic",
-    fail: [{ file: "server/src/rule-6.fail.ts", count: 7 }],
-    pass: ["server/src/features/books/routes.ts", "server/src/features/books/routes.test.ts"],
+    fail: [{ file: "server/src/rule-6.fail.ts", count: 7 }, { file: "server/src/domain/oidc/mount.fail.ts" }],
+    pass: [
+      "server/src/features/books/routes.ts",
+      "server/src/features/books/routes.test.ts",
+      "server/src/domain/tokens/sign.ts",
+    ],
   },
   {
     rule: 11,
@@ -72,6 +76,7 @@ describe("check-structure, rule by rule", () => {
       run.stdout,
       /rules 5 and 7 .* are dependency-cruiser's, in vendor\/house-style\/\.dependency-cruiser\.cjs/,
     );
+    assert.match(run.stdout, /app\.ts included; domain\/ never importing a feature;/);
   });
   it("finds every route that declares no schema, and each hand parse", () => {
     const routes = run.findings.filter((f) => f.file === "server/src/rule-6.fail.ts").map((f) => f.message);
