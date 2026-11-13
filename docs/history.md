@@ -104,3 +104,5 @@ v0.48.0 added `stocktake` (brief 19), an audit of the library's own skills, and 
 - `corpus-flow` now says that `corpus/lint.sh` caps only wiki pages and that a `done/` brief can run longer, so a brief should leave room for its outcome note (a todo from 2026-11-11).
 
 31 skills.
+
+v0.49.0 added a `SessionStart` hook (brief 23), `hooks/session-start.mjs`, that orients a session on the repo's corpus: the `index.md` catalog (one short line per page), the latest `resume` entry when it is newer than the last `done`, and the names of the briefs in `todo/` and `blocked/`, capped at 2,000 characters. It reads only `corpus/`, starts no child process and prints nothing without a corpus. The idea, a compact index up front with detail on demand, comes from claude-mem (thedotmack/claude-mem, read at `ffab839`); the tool itself was not adopted.

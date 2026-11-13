@@ -499,3 +499,53 @@ describe("agent guard", () => {
     assert.equal(run("builder", "not json").code, 0);
   });
 });
+
+describe("SessionStart corpus orientation", () => {
+  const start = (cwd) => hook("session-start.mjs", { session_id: newSession(), cwd, hook_event_name: "SessionStart", source: "startup" });
+  const catalogOf = (lines) => `<!-- BEGIN CATALOG -->\n${lines}\n<!-- END CATALOG -->`;
+  const corpusRepo = ({ log = "", cat = "- [a](wiki/a.md): about a", todo = [], blocked = [] } = {}) => {
+    const files = { "corpus/index.md": `# Index\n\n${catalogOf(cat)}\n`, "corpus/log.md": `# Log\n\n${log}` };
+    for (const n of todo) files[`corpus/briefs/todo/${n}.md`] = "# x";
+    for (const n of blocked) files[`corpus/briefs/blocked/${n}.md`] = "# x";
+    return repo({}, files);
+  };
+  const context = (r) => JSON.parse(r.stdout).hookSpecificOutput;
+
+  it("prints nothing when there is no corpus", () => {
+    const r = start(repo({}));
+    assert.equal(r.code, 0);
+    assert.equal(r.stdout, "");
+  });
+
+  it("injects the catalog and brief names, with no resume", () => {
+    const out = context(start(corpusRepo({ todo: ["01-first", "02-second"], blocked: ["03-wait"], log: "## [2026-11-01] done | Brief 00\n" })));
+    assert.equal(out.hookEventName, "SessionStart");
+    assert.match(out.additionalContext, /about a/);
+    assert.match(out.additionalContext, /todo\/ \(2\): 01-first, 02-second/);
+    assert.match(out.additionalContext, /blocked\/ \(1\): 03-wait/);
+    assert.doesNotMatch(out.additionalContext, /resume/i);
+  });
+
+  it("injects a resume entry newer than the last done entry", () => {
+    const log = "## [2026-11-01] done | Brief 1\n\nold\n\n## [2026-11-02] resume | Pause\n\nNext: do the thing\n";
+    assert.match(context(start(corpusRepo({ log }))).additionalContext, /Next: do the thing/);
+  });
+
+  it("leaves out a stale resume entry", () => {
+    const log = "## [2026-11-02] resume | Pause\n\nNext: do the thing\n\n## [2026-11-03] done | Brief 2\n";
+    assert.doesNotMatch(context(start(corpusRepo({ log }))).additionalContext, /do the thing/);
+  });
+
+  it("caps an oversized catalog", () => {
+    const cat = Array.from({ length: 400 }, (_, i) => `- [p${i}](wiki/p${i}.md): a long enough summary line ${i}`).join("\n");
+    const text = context(start(corpusRepo({ cat, todo: ["01-first"] }))).additionalContext;
+    assert.ok(text.length <= 2000, `length ${text.length}`);
+    assert.match(text, /todo\/ \(1\)/);
+  });
+
+  it("finds the corpus from a subfolder of the repo", () => {
+    const dir = corpusRepo({});
+    mkdirSync(join(dir, "src"));
+    assert.match(context(start(join(dir, "src"))).additionalContext, /about a/);
+  });
+});

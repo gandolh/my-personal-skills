@@ -62,6 +62,8 @@ asked. If it is ambiguous, ask one question, then proceed.
 
 **§4 Complete a brief, log it, fold it into the wiki.** (1) `git mv` it from `todo/` to `done/`, same number, and append a short outcome note at move time (what shipped against the spec, what was deferred). Never edit it after. Work later undone moves to `superseded/` with a one-line top note. (2) Append to `log.md`, newest last: `## [<YYYY-MM-DD>] done | Brief <NN> — <what shipped>` plus 2–5 lines. Other kinds: `todo`, `blocked`, `unblocked`, `maintenance`, `incident`, `decision`, `ingest`, `lint`, `resume`. A `resume` entry is the cold-start checkpoint for a paused run. (3) Fold durable findings into `wiki/`: `status.md` always, plus the concept page, `decisions.md` and `open-questions.md` as they apply. (4) Cross-link a new page from `index.md`. (5) Report the moved path, the log entry and the wiki pages changed. Commit only if asked.
 
+The plugin's `SessionStart` hook (`hooks/session-start.mjs`) puts the `index.md` catalog, the latest `resume` entry (only when newer than the last `done`) and the names of the briefs in `todo/` and `blocked/` in context, capped at about 2,000 characters. The retrieval budget still starts at `index.md`: the hook is a head start, not a replacement.
+
 ## Wiki pages, frontmatter, bootstrap, query, lint, domain modeling
 
 - **The wiki** (spine pages, entity pages, the three-part decision test, the two-graph model): [`references/wiki.md`](references/wiki.md). Standing pages are `overview`, `architecture`, `decisions`, `status`, `open-questions` and `glossary`. Record a decision only when it is hard to reverse, surprising without context and a real trade-off, with the date, the rejected alternatives and the reason.

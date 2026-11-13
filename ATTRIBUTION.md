@@ -139,6 +139,10 @@ Adopted as method into first-party skills, with no code copied:
   gate, bounded escalating fix loop, and ruling ledger in `plan-split-dispatch`; the
   "evidence before claims" iron law on its verify gate; and the approval gate in
   `orchestrate` that scales ceremony but never the gate itself.
+- **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** (Apache-2.0, read at
+  `ffab839`, 2026-11-09) — the progressive-disclosure index: a session starts with a compact
+  index and fetches detail on demand. Idea only; `hooks/session-start.mjs` injects the
+  corpus catalog, not automatic observations.
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** — the frontier-round
   interview method and "find facts yourself, ask only for decisions" rule in `grill-me`,
   plus the glossary/ADR discipline (`domain-modeling`, `grill-with-docs`) now expressed

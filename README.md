@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.48.0, 31 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.49.0, 31 skills.
 
 ## What it does
 
@@ -17,6 +17,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 - Gives design work a vocabulary and a build engine (Hallmark for every redesign, impeccable, 74 brand `DESIGN.md` references, the taste presets on request) instead of one-off styling.
 - Sets one standard for READMEs, docs sites, diagrams and prose across every repo.
 - Keeps TypeScript repos to one house style: shared configs vendored into each repo, `npm run check` as the gate, and two hooks that format each saved file and run the repo's fast check before an agent can finish.
+- Orients each session on the repo's corpus: a `SessionStart` hook puts the catalog, a fresh `resume` checkpoint and the open brief names in context (about 2,000 characters at most), and does nothing in a repo without a `corpus/`.
 
 Use it if you want the same workflow in every repo and are happy with an opinionated one. It is tuned to one person's projects; the rules in it are deliberate, not neutral defaults.
 

@@ -1,6 +1,18 @@
 {
-  "description": "The house-style harness: format each saved file with the repo's own Prettier, and run the repo's check:fast before Claude ends a turn. Both do nothing in a repo without a Prettier config or a check:fast script.",
+  "description": "The house-style harness: format each saved file with the repo's own Prettier, and run the repo's check:fast before Claude ends a turn. Both do nothing in a repo without a Prettier config or a check:fast script. A SessionStart hook puts the corpus catalog, a fresh resume checkpoint and the open brief names in context, and does nothing without a corpus/.",
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/session-start.mjs"],
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
