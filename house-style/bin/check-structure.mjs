@@ -15,13 +15,13 @@
  *            (or the files conventions.json's "env" names), and any read of NODE_ENV,
  *            in server and shared roots (tests excepted). A string that only
  *            mentions NODE_ENV is not a read; one that is the name alone is
+ *   rule 5   a feature reached past its index, from another feature or from app.ts:
+ *            house-style's .dependency-cruiser.cjs (feature-through-index,
+ *            app-through-feature-index), not this script
  *   rule 6   request input parsed by hand (schema.parse(request.body), a parse
  *            helper given the whole request.query), and a route registered with
  *            no schema, its path a literal or, on a Fastify-looking receiver,
  *            computed; a heuristic, tests excepted
- *   rule 5   a feature reached past its index, from another feature or from app.ts:
- *            house-style's .dependency-cruiser.cjs (feature-through-index,
- *            app-through-feature-index), not this script
  *   rule 7   domain/ importing a feature, and Fastify imported under lib/: the
  *            dependency-cruiser preset (domain-not-to-features, lib-without-fastify),
  *            not this script. Code under domain/ is otherwise server code like any other
@@ -194,8 +194,12 @@ function envReaderTest(env, roots) {
 function checkEnvironment(file, { code, bare }, lineOf, envReader, report) {
   const byLine = new Map();
   // NODE_ENV as a name in code, or a string that is the name alone (process.env["NODE_ENV"],
-  // env("NODE_ENV")); a message that mentions it is not a read.
-  const reads = [...bare.matchAll(/\bNODE_ENV\b/g), ...code.matchAll(/(["'`])NODE_ENV\1/g)];
+  // env("NODE_ENV")); a message that mentions it, quoted or not, is not a read. A string's own
+  // quotes survive in `bare` and its contents don't, so quotes still there are the delimiters.
+  const named = [...code.matchAll(/(["'`])NODE_ENV\1/g)].filter(
+    (match) => bare[match.index] === match[1] && bare[match.index + match[0].length - 1] === match[1],
+  );
+  const reads = [...bare.matchAll(/\bNODE_ENV\b/g), ...named];
   for (const match of reads) {
     const line = lineOf(match.index);
     byLine.set(line, "reads NODE_ENV: the app is configured by its own variables, never by NODE_ENV");

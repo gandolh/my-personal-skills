@@ -4,3 +4,7 @@ export function refuse(): never {
 }
 
 export const hint = `unset NODE_ENV, then restart`;
+
+// The name quoted inside a longer message is still a message.
+export const quoted = "unset 'NODE_ENV' first";
+export const ticked = `"NODE_ENV" is ignored`;
