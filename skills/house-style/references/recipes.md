@@ -2,9 +2,9 @@
 
 `houseStyle()` takes no option for a rule that one repo needs differently.
 Flat config already covers it: a block of the repo's own, after `houseStyle()`
-in the array, wins over the house's for the files it names. Each recipe here
-was run once on a scratch repo with the house config (house-style 1.2.0) and
-reported what it says.
+in the array, wins over the house's for the files it names. Each recipe says
+what it was checked with: most were run once on a scratch repo with the house
+config, and two are taken from the repo that needed them.
 
 [adoption.md](adoption.md) says when each comes up.
 
@@ -77,6 +77,94 @@ where `check-structure`'s rules 3 and 11 apply. There is no `node` root kind.
 Run the checker with `node vendor/house-style/bin/check-structure.mjs` from the
 repo root (its argument is the repo root, never a source folder). The full
 example is in [adoption.md](adoption.md), under "The checkers".
+
+## A classic script in `web/public`
+
+A file in `web/public` is copied to the build as it is, so a theme boot script
+there is a browser script, not a module. The house gives `.js` files Node's
+globals, so `document` and `localStorage` are `no-undef` errors, and an unused
+`catch (error)` is an unused variable. Name the browser globals the script uses
+and drop the binding:
+
+```js
+// web/public/theme.js
+/* global document, localStorage */
+(function () {
+  try {
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  } catch {
+    document.documentElement.dataset.theme = "light";
+  }
+})();
+```
+
+Checked with house-style 1.3.0 on a scratch file: without the comment and with
+`catch (error)` it reports three `no-undef` and one `no-unused-vars`; as above
+it lints clean (Postern 03 found it). This is a `.js` file: in an `.mjs` file a
+`/* global */` comment hits `no-redeclare`.
+
+## A preset rule for one folder
+
+dependency-cruiser merges a repo's rule into the preset's by `name`, and the
+repo's `from` and `to` replace the preset's. To keep `no-circular` an error
+everywhere but `web/` and a warning there, narrow the preset's rule and add a
+second one under a name of the repo's own:
+
+```js
+// .dependency-cruiser.cjs
+module.exports = {
+  extends: "./vendor/house-style/.dependency-cruiser.cjs",
+  forbidden: [
+    { name: "no-circular", from: { pathNot: "^web/" }, to: { circular: true } },
+    // 2026-11-12: a warning in the client until <what removes it>.
+    { name: "no-circular-web", severity: "warn", from: { path: "^web/" }, to: { circular: true } },
+  ],
+};
+```
+
+house-style's own tests run this shape (`test/presets.test.mjs`): a cycle in
+`server/` is an error, one in `web/` a warning, and `depcruise web` exits 0.
+Shelfmark 08 kept the web half this way. Use the same shape for any preset
+rule.
+
+## A stylesheet test with Tailwind
+
+A test that reads the compiled stylesheet imports `index.css?inline`, which
+only the Tailwind plugin turns into CSS. In a workspace repo whose vitest runs
+from the root, the root's `vitest.config.ts` loads the plugin and includes the
+CSS, and `@tailwindcss/vite` goes in the root `devDependencies` too, or knip
+reports it as unlisted there (Wicket 12, Lantern 17):
+
+```ts
+// vitest.config.ts, at the root
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  plugins: [tailwindcss()],
+  test: { css: { include: [/\.css\?inline$/] }, include: ["*/src/**/*.test.{ts,tsx}"] },
+});
+```
+
+Taken from Wicket's setup (house-style 1.2.0); not re-run here.
+
+## Playwright in a repo without it
+
+Wicket 12 added Playwright for one flow. What it took:
+
+- `@playwright/test` pinned exactly in the web package, with a `test:e2e`
+  script (`playwright test`).
+- `web/playwright.config.ts` with `testDir: "e2e"`, a `webServer` on a port
+  of its own, and `launchOptions: { executablePath: process.env["CHROME"] }`
+  for a machine where Playwright's browser isn't downloaded.
+- `playwright: ["web/e2e/**"]` in `houseStyle()`'s options, so the specs get
+  the test relaxations and the vitest rules leave them alone.
+- `e2e` and `playwright.config.ts` in the web tsconfig's `include`, and
+  `"node"` in its `types`.
+- `test-results/` and `playwright-report/` in `.gitignore` and
+  `.prettierignore`.
+
+Taken from Wicket's setup (house-style 1.2.0); not re-run here.
 
 ## Astro, a fourth repo shape
 

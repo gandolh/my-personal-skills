@@ -23,7 +23,7 @@ here.
 | `prettier.config.js` | Prettier's defaults (double quotes, semicolons) at width 120, with trailing commas |
 | `tsconfig.base.json` | The compiler flags every package extends |
 | `knip.json` | Unused files and dependencies are errors; unused exports and types are warnings |
-| `.dependency-cruiser.cjs` | No cycles, no unresolvable imports, a feature used through its index only, no Fastify in `lib/` |
+| `.dependency-cruiser.cjs` | No cycles, no unresolvable imports, a feature used through its index only (from another feature or from `app.ts`), no `domain/` module importing a feature, no Fastify in `lib/` |
 | `bin/check-base-ui.mjs` | The Base UI and Tailwind checker, rules numbered as the `base-ui` skill's |
 | `bin/check-structure.mjs` | The code-structure checker, rules numbered as the `code-structure` skill's |
 | `bin/conventions.mjs` | What the two checkers share: reading `conventions.json`, walking the roots, the report |
@@ -145,7 +145,8 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 11 | A file over 400 lines, in any root, test files excepted (a warning) |
 
 The other rules of the two skills are for review, except `code-structure`'s 5
-and 7 (a feature used through its index, no Fastify in `lib/`), which are the
+and 7 (a feature used through its index, `app.ts` included; a `domain/` module
+never importing a feature; no Fastify in `lib/`), which are the
 dependency-cruiser preset's, and unused files and dependencies, which are knip's.
 Rules 9 and 10 see the parts by their own names, `<X.Trigger>` and
 `<Select.Root>` (under whatever name the file imports Select by). A wrapper
@@ -414,6 +415,15 @@ Notes that come with the rules:
   `name` merges with the preset's rule. That is how a rule is lowered to
   `warn` (`{ name: "no-circular", severity: "warn" }`) or given an exempt path
   (`{ name: "no-circular", to: { circular: true, pathNot: "^src/legacy/" } }`).
+  The repo's `from` and `to` replace the preset's whole: ward-auth's own
+  `domain-not-to-features`, which names its root-level domain folders, keeps
+  working beside 1.3.0's. To scope a rule to one folder (`no-circular` a
+  warning in `web/` only), narrow the preset's rule with `from.pathNot` and
+  add a second rule under a name of the repo's own; the house-style skill's
+  [recipes](../skills/house-style/references/recipes.md) have it.
+- `app-through-feature-index` and `domain-not-to-features` (1.3.0) read the
+  root's `app.ts` and `domain/`: a feature's own `app.ts` or `domain/`
+  folder is its insides, and neither rule reads it.
   `not-to-unresolvable` allows `virtual:` module ids (Vite virtual modules)
   Astro's `astro:` modules and React Router's generated `./+types/<route>`
   imports.

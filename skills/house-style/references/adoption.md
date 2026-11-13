@@ -549,7 +549,9 @@ runs it (atrium).
   Roots are source folders, as in `eslint.config.js`: `apps/web/src`, not
   `apps/web`. A root may use `*` within a folder name (`apps/*/src`), and `[]`
   means none. A web root's stylesheet is `styles/index.css` unless
-  `"stylesheet"` names the one it keeps (`"styles.css"`), and Base UI may be
+  `"stylesheet"` names the one it keeps (`"styles.css"`; `"index.css"` for a
+  repo that keeps `src/index.css`, as comercial-website does: put the line in
+  the harness brief's `conventions.json` rather than an exception), and Base UI may be
   imported under `**/components/ui` and `**/features/*/ui` unless `"ui"` says
   otherwise. `"env"` names the files rule 3 lets read `process.env`, and
   mirrors ESLint's `env` option (see above). The house-style README has the
@@ -557,7 +559,13 @@ runs it (atrium).
   roots, `stylesheet`, `env`; `conventions.schema.json` is the schema) and the
   rules each checker reports. A choice no checker reports (a tsconfig
   `module: bundler`) is written in the repo's decisions page, not in
-  `conventions.json`.
+  `conventions.json`. A `match` is a substring of the finding's source line or
+  of its message: write the whole message, or a part of the line no other
+  finding in the file shares (`GET /` matches every GET route's message).
+- **A classic script in `web/public`** (a theme boot script) is linted with
+  Node's globals: [recipes.md](recipes.md) has the `/* global */` line it
+  needs. A stylesheet test with Tailwind and Playwright in a repo without it
+  are recipes there too.
 - **A repo with no HTTP server** runs the checkers as they are: a default root
   that doesn't exist is skipped. A Node app with no server (a gateway bot, a
   protocol library) lists its folders under `shared`, where rules 3 and 11
