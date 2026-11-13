@@ -128,3 +128,9 @@ incomplete, not as a pass.
   `corpus/wiki/evals.md`.
 - `corpus/CLAUDE.md` says when evals run.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-13)
+
+Built in v0.52.0 (e49ff28): `evals/` with three evals on `claude plugin eval` (triggering, 14 cases, one per scenario prompt except grill-me's adversarial one; numbering, 4 layouts; injection, 2 plants), case data in `cases.json`, a generator for the `case.yaml` and `scaffold.sh` files, graders over a transcript with `node --test` tests, `run.mjs` (prints the command, runs only with `--go`), READMEs, `corpus/wiki/evals.md` and the "when evals run" line in `corpus/CLAUDE.md`. Every command carries `--no-publish --max-cost-usd 5`.
+
+Not done: the recorded run of each eval. The controller ruled that the builder makes no paid model call, so the results table in `wiki/evals.md` is empty and the first runs are an owner step. The runner was never started, so four assumptions about the case format are listed on that page for the first run to confirm. The grader fixtures are hand-written, not recorded. `node --test evals/` fails on Node 24 (a bare directory is no longer accepted); use `node --test "evals/**/*.test.mjs"`.

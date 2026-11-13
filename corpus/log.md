@@ -303,3 +303,7 @@ Every dispatch prompt carries a Scope discipline block and hands back a "Noticed
 ## [2026-11-13] done | Brief 18 - the diagnose skill and the skill-writing rules (v0.51.0)
 
 `diagnose` builds a red, deterministic, fast loop before any fix, tests one hypothesis at a time and keeps the loop as a regression test; `docs/writing-skills.md` gives 14 rules for agent-facing text, each with its check. Ideas from mattpocock/skills and obra/superpowers, no text copied. The owner-steps wizard was dropped: the `owner-steps` agent covers it. See [the brief](briefs/done/18-a-diagnose-skill-and-an-owner-steps-wizard-from-pocock.md).
+
+## [2026-11-13] done | Brief 26 - model evals for the library's prompts (v0.52.0)
+
+`evals/` holds three evals run by `claude plugin eval`: triggering (14 cases), numbering (4) and injection (2), with their graders and grader tests. Every run uses `--no-publish --max-cost-usd 5`. No model was called while building; the recorded runs are the owner's step, in [the evals page](wiki/evals.md). Shape from pingdotgg/t3code, no text copied. See [the brief](briefs/done/26-model-evals-for-the-librarys-prompts-from-t3code.md).
