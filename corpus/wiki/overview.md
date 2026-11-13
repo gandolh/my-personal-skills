@@ -17,7 +17,7 @@ front door, `/orchestrate`.
   `diagram-design`, `writing-guidelines`, `unslop`.
 - **Design:** `impeccable`, the taste presets and `design-md-library`.
 - **Code and delivery:** `codegraph`, `ui-test-plans`, `bootstrap-vps-deploy`,
-  `thermo-nuclear-review`, and the Vercel React skills.
+  `thermo-nuclear-review`, `stocktake` (the library audit and the MCP pin check), and the Vercel React skills.
 
 26 skills as of v0.33.0. The first-party ones are listed in
 [ATTRIBUTION.md](../../ATTRIBUTION.md); the rest are vendored with a pinned

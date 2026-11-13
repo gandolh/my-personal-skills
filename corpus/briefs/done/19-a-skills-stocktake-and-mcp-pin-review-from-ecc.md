@@ -155,3 +155,15 @@ load-bearing rule.
   and on unversioned `npx` fixtures. `node --test` passes.
 - Scenario files exist for the five front-door skills.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-13, v0.48.0)
+
+Built as specified, with these differences:
+
+- **Q30 done first.** `corpus-flow` is about 3.5k tokens and `plan-split-dispatch` about 4.4k, with the templates and long sections in `references/`; section and step numbers kept. The brief's token table was measured at v0.35.0; the stocktake page re-measures at v0.47.0 (30 skills, always-on about 6.9k).
+- **The two long descriptions** the Acceptance expected are no longer over 1,024 (`codegraph` 607, `design-md-library` 757, after brief 21). The page reports "none over the limit", with the measured lengths.
+- **Added `scripts/measure.mjs`** (with a test), the mechanical half of the rubric and the `--upto` token count Q30 asks for. Tokens are characters / 2.7, calibrated against `claude plugin details`.
+- **The full run** was made by the builder directly, not as one subagent per batch of five; the page says so.
+- **Pin check** also covers `pnpx`, `yarn dlx`, `npm exec` and `bun x`, and a tag or range counts as unpinned.
+- The todo "leave room in a brief for its outcome note" was folded in: one line in `corpus-flow`'s conventions.
+- Findings left for the owner to pick are on [the stocktake page](../../wiki/stocktake-2026-11-13.md).

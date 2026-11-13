@@ -1,6 +1,6 @@
 ---
 summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12).
-updated: 2026-11-12
+updated: 2026-11-13
 ---
 
 # Status
@@ -22,7 +22,7 @@ anything is built. The questions for it are in
 | 16 Fastify servers adopt the structure | 16 servers, smallest first | done, 17 servers, v0.43.0 |
 | 17 Review comments and finishing a branch | from obra/superpowers | todo |
 | 18 A diagnose skill and an owner-steps wizard | from mattpocock/skills | todo |
-| 19 A skills stocktake and MCP pin review | from affaan-m/ecc | todo |
+| 19 A skills stocktake and MCP pin review | from affaan-m/ecc | done, v0.48.0 |
 | 20 Surgical changes in the chunk contract | from andrej-karpathy-skills | todo |
 | 21 The Agent Skills format | from anomalyco/opencode | built, v0.35.0 |
 | 22 A second model in the review gate | from stablyai/orca | todo |
@@ -161,3 +161,15 @@ the four design agents left draft with the redesign pilot's lessons, and the
 new `design-pipeline` skill runs them in order, director to publish, with a
 tested pair maker. Owner step: update the plugin to 0.47.0. Open: re-run the
 judge's calibration case after the G3 wording change.
+
+## 2026-11-13: brief 19, the stocktake skill and the 5,000-token cut, v0.48.0
+
+The library is at v0.48.0, with 31 skills and 12 agents. Brief 19 is done:
+the new `stocktake` skill audits the library (quick and full modes, a six-item
+rubric, `measure.mjs`), `check-mcp-pins.mjs` fails on unpinned MCP package
+references, and the five front-door skills have scenario files for brief 26.
+Q30 is done: `corpus-flow` and `plan-split-dispatch` keep their rules inside
+their first 5,000 tokens. The first stocktake,
+[stocktake-2026-11-13.md](stocktake-2026-11-13.md), has 13 ranked findings
+for the owner to pick from: the always-on cost is about 6.9k tokens, and no
+description is over the limit. Owner step: update the plugin to 0.48.0.

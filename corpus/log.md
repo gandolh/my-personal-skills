@@ -272,3 +272,18 @@ against today and yields to the controller's rulings. `design-pipeline`
 runs the order and the hand-offs, with `scripts/pairs.mjs`, a node port of
 the pilot's pair maker that matched the atrium judging pixel for pixel. See
 [the brief](briefs/done/30-finish-the-design-team-and-a-design-pipeline-skill.md).
+
+## [2026-11-13] done | Brief 19 - the stocktake skill, the MCP pin check and the 5,000-token cut (v0.48.0)
+
+`stocktake` audits the library (quick and full modes, a six-item rubric,
+`scripts/measure.mjs`) and `scripts/check-mcp-pins.mjs` fails on an unpinned
+`npx`, `@latest` or a git URL with no commit. Scenario files for the five
+front-door skills are in `skills/stocktake/references/scenarios/`. Q30: the
+load-bearing rules of `corpus-flow` (about 3.5k tokens now) and
+`plan-split-dispatch` (about 4.4k) sit inside their first 5,000 tokens, the
+rest in `references/`. The first stocktake page has 13 findings and finds no
+description over the limit. The todo about leaving room for a brief's outcome
+note is folded in and marked done. Verified with the repo's 18 test files, the
+skill checker and `corpus/lint.sh`. See
+[the brief](briefs/done/19-a-skills-stocktake-and-mcp-pin-review-from-ecc.md).
+
