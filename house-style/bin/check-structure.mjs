@@ -274,6 +274,8 @@ function checkSchemas(file, { code, bare }, lineOf, report) {
       const first = code.slice(...args[0]).trim();
       // A string that isn't a path (a header name, a key) is no route; a template with `${` is computed.
       if (/^["']/.test(first) || (first.startsWith("`") && !first.includes("${"))) continue;
+      // A class or a token, as NestJS resolves a provider with app.get(ConfigService<Env, true>), is no path.
+      if (/^[A-Z][a-z0-9][\w$]*\s*(?:<|$)/.test(first)) continue;
       path = first.replace(/\s+/g, " ");
       if (path.length > 60) path = `${path.slice(0, 57)}...`;
     }
