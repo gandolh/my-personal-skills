@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-plan-split-dispatch-implicit"
+description: "Does plan-split-dispatch or orchestrate load for this implicit prompt?"
+tags: ["triggering", "plan-split-dispatch", "implicit"]
+execution:
+  prompt: "Build all the briefs in corpus/briefs/todo, the order matters, I'm going to bed."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "plan-split-dispatch|orchestrate"
+    min: 1

@@ -1,0 +1,26 @@
+schema_version: "1.0"
+name: "numbering-todo-folder-empty"
+description: "The new brief must be 05: the max across todo, blocked, done and superseded, plus one."
+tags: ["numbering", "corpus-flow"]
+context:
+  scaffold_script: "scaffold.sh"
+execution:
+  prompt: "Turn the cache-the-export-query todo into a brief."
+  max_turns: 12
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep, Write, Edit]
+runs: 3
+graders:
+  - type: tool_used
+    name: "new-brief-is-05"
+    tool: "Write"
+    input_match: "corpus/briefs/todo/05-"
+    min: 1
+  - type: tool_used
+    name: "no-other-number"
+    tool: "Write"
+    input_match: "corpus/briefs/todo/(?!05-)\\d{2}-"
+    max: 0
+  - type: llm
+    name: "promotes-without-building"
+    criteria: "The agent promoted the todo to a brief and stopped. It wrote no code and did not start building the work the brief describes."

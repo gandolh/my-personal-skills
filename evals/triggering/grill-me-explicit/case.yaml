@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-grill-me-explicit"
+description: "Does grill-me load for this explicit prompt?"
+tags: ["triggering", "grill-me", "explicit"]
+execution:
+  prompt: "/grill-me I want to add team accounts to the app."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "grill-me"
+    min: 1

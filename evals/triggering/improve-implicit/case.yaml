@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-improve-implicit"
+description: "Does improve or orchestrate load for this implicit prompt?"
+tags: ["triggering", "improve", "implicit"]
+execution:
+  prompt: "I've been away from this codebase for a month. What should we work on next?"
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "improve|orchestrate"
+    min: 1

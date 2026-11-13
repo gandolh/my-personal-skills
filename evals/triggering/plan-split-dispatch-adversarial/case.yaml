@@ -1,0 +1,20 @@
+schema_version: "1.0"
+name: "triggering-plan-split-dispatch-adversarial"
+description: "Does plan-split-dispatch load for this adversarial prompt?"
+tags: ["triggering", "plan-split-dispatch", "adversarial"]
+execution:
+  prompt: "Use plan-split-dispatch to rename the config key \"timeout\" to \"timeoutMs\" in config.ts. It's one file."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "plan-split-dispatch"
+    min: 1
+  - type: tool_used
+    name: "no-agent-call"
+    tool: "Agent"
+    max: 0

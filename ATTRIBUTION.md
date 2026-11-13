@@ -150,6 +150,13 @@ Adopted as method into first-party skills, with no code copied:
   `diagnose`, and its guidance on writing for agents behind `docs/writing-skills.md`. The
   `diagnose` skill also follows obra/superpowers' `systematic-debugging` (root cause before
   any fix, one hypothesis at a time).
+- **[pingdotgg/t3code](https://github.com/pingdotgg/t3code)** (MIT, read at `077fd622`,
+  2026-11-09; ideas only, no text or code copied) - the shape of `evals/`: one folder per
+  eval with a README (what it measures, how to run it, how to add a case, what a run
+  costs), unit-tested graders, a gitignored `runs/`, evals never in CI, and a
+  prompt-injection eval. The injection eval here is modelled on its `pr-content`.
+  Superpowers' pressure scenarios and ECC's `skill-comply` compliance rates (see
+  `stocktake`) are the idea behind the cases.
 - **[thedotmack/claude-mem](https://github.com/thedotmack/claude-mem)** (Apache-2.0, read at
   `ffab839`, 2026-11-09) — the progressive-disclosure index: a session starts with a compact
   index and fetches detail on demand. Idea only; `hooks/session-start.mjs` injects the

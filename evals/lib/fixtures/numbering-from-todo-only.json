@@ -1,0 +1,21 @@
+[
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "tool_use",
+          "name": "Write",
+          "input": {
+            "file_path": "corpus/briefs/todo/03-cache-the-export-query.md",
+            "content": "# Task 03"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "result": "Wrote brief 03."
+  }
+]

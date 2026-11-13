@@ -1,0 +1,20 @@
+[
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "README.md"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "result": "Ranked list: 1. missing auth check in src/app.js:3."
+  }
+]

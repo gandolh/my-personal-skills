@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-orchestrate-implicit"
+description: "Does orchestrate or corpus-flow load for this implicit prompt?"
+tags: ["triggering", "orchestrate", "implicit"]
+execution:
+  prompt: "Note that we should rate-limit the export endpoint, I want to come back to it next week."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "orchestrate|corpus-flow"
+    min: 1

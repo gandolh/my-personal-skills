@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-plan-split-dispatch-explicit"
+description: "Does plan-split-dispatch load for this explicit prompt?"
+tags: ["triggering", "plan-split-dispatch", "explicit"]
+execution:
+  prompt: "/plan-split-dispatch add a \"last login\" column: the API field, the list page, the CSV export, the tests for each, and the French and Romanian strings."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "plan-split-dispatch"
+    min: 1

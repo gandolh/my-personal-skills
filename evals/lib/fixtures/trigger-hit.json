@@ -1,0 +1,31 @@
+[
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "tool_use",
+          "name": "Skill",
+          "input": {
+            "skill": "personal-skills:corpus-flow"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Closing brief 02."
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "result": "Moved brief 02 to done."
+  }
+]

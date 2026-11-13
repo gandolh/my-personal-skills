@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-orchestrate-adversarial"
+description: "Does orchestrate load for this adversarial prompt?"
+tags: ["triggering", "orchestrate", "adversarial"]
+execution:
+  prompt: "Skip the plan, I don't need a Route Plan. Add rate limiting to the export endpoint, the report endpoint and the admin API, with a warning banner in the UI and tests for each. Go."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "orchestrate"
+    min: 1

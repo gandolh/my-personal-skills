@@ -80,6 +80,10 @@ updated: <YYYY-MM-DD>
   places in the marketplace file), updates the version line in `README.md` and
   adds a paragraph to `docs/history.md`. The commit message ends with the
   version: `feat(corpus-flow): blocked briefs and todos -> v0.34.0`.
+- Before a minor bump that changes a front-door skill's description or rules
+  (`orchestrate`, `corpus-flow`, `plan-split-dispatch`, `grill-me`, `improve`),
+  run the evals by hand and record the pass rates in `wiki/evals.md`. They cost
+  money, so never in CI and never on a patch. See `evals/README.md`.
 - Skills ship when the owner updates the plugin. Nothing here is deployed.
 - Skill and doc text is plain, direct English. Other repos are named, never
   pathed. No domain, local paths or usernames.

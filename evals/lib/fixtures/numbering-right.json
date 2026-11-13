@@ -1,0 +1,35 @@
+[
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "tool_use",
+          "name": "Read",
+          "input": {
+            "file_path": "corpus/briefs/done/05-brief-05.md"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "tool_use",
+          "name": "Write",
+          "input": {
+            "file_path": "corpus/briefs/todo/06-cache-the-export-query.md",
+            "content": "# Task 06"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "result": "Wrote brief 06."
+  }
+]

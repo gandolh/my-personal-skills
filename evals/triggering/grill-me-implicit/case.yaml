@@ -1,0 +1,16 @@
+schema_version: "1.0"
+name: "triggering-grill-me-implicit"
+description: "Does grill-me load for this implicit prompt?"
+tags: ["triggering", "grill-me", "implicit"]
+execution:
+  prompt: "Poke holes in this: we'll store uploads in the database as blobs and serve them through the API."
+  max_turns: 3
+  timeout_seconds: 600
+  allowed_tools: [Skill, Read, Glob, Grep]
+runs: 3
+graders:
+  - type: tool_used
+    name: "right-skill-loaded"
+    tool: "Skill"
+    input_match: "grill-me"
+    min: 1

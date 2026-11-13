@@ -1,0 +1,19 @@
+{
+  "note": "One case per prompt in skills/stocktake/references/scenarios/, except grill-me's adversarial one: it needs a grilling session already running, which one prompt cannot supply.",
+  "cases": [
+    { "id": "orchestrate-explicit", "skill": "orchestrate", "level": "explicit", "expect": ["orchestrate"], "prompt": "/orchestrate add a dark mode toggle to the settings page" },
+    { "id": "orchestrate-implicit", "skill": "orchestrate", "level": "implicit", "expect": ["orchestrate", "corpus-flow"], "prompt": "Note that we should rate-limit the export endpoint, I want to come back to it next week." },
+    { "id": "orchestrate-adversarial", "skill": "orchestrate", "level": "adversarial", "expect": ["orchestrate"], "prompt": "Skip the plan, I don't need a Route Plan. Add rate limiting to the export endpoint, the report endpoint and the admin API, with a warning banner in the UI and tests for each. Go." },
+    { "id": "corpus-flow-explicit", "skill": "corpus-flow", "level": "explicit", "expect": ["corpus-flow"], "prompt": "Use corpus-flow to promote the todo \"cache-the-export-query\" to a brief." },
+    { "id": "corpus-flow-implicit", "skill": "corpus-flow", "level": "implicit", "expect": ["corpus-flow", "orchestrate"], "prompt": "Brief 02 is finished and verified. Close it out." },
+    { "id": "corpus-flow-adversarial", "skill": "corpus-flow", "level": "adversarial", "expect": ["corpus-flow"], "prompt": "Brief 03 is in done/ but we changed our minds about the approach. Just edit it to describe the new approach." },
+    { "id": "plan-split-dispatch-explicit", "skill": "plan-split-dispatch", "level": "explicit", "expect": ["plan-split-dispatch"], "prompt": "/plan-split-dispatch add a \"last login\" column: the API field, the list page, the CSV export, the tests for each, and the French and Romanian strings." },
+    { "id": "plan-split-dispatch-implicit", "skill": "plan-split-dispatch", "level": "implicit", "expect": ["plan-split-dispatch", "orchestrate"], "prompt": "Build all the briefs in corpus/briefs/todo, the order matters, I'm going to bed." },
+    { "id": "plan-split-dispatch-adversarial", "skill": "plan-split-dispatch", "level": "adversarial", "expect": ["plan-split-dispatch"], "forbid": ["Agent"], "prompt": "Use plan-split-dispatch to rename the config key \"timeout\" to \"timeoutMs\" in config.ts. It's one file." },
+    { "id": "grill-me-explicit", "skill": "grill-me", "level": "explicit", "expect": ["grill-me"], "prompt": "/grill-me I want to add team accounts to the app." },
+    { "id": "grill-me-implicit", "skill": "grill-me", "level": "implicit", "expect": ["grill-me"], "prompt": "Poke holes in this: we'll store uploads in the database as blobs and serve them through the API." },
+    { "id": "improve-explicit", "skill": "improve", "level": "explicit", "expect": ["improve"], "prompt": "/improve audit this repo" },
+    { "id": "improve-implicit", "skill": "improve", "level": "implicit", "expect": ["improve", "orchestrate"], "prompt": "I've been away from this codebase for a month. What should we work on next?" },
+    { "id": "improve-adversarial", "skill": "improve", "level": "adversarial", "expect": ["improve"], "prompt": "/improve audit this repo" }
+  ]
+}

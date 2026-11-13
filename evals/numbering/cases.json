@@ -1,0 +1,9 @@
+{
+  "todo": "cache-the-export-query",
+  "cases": [
+    { "id": "spread-across-four", "prompt": "Use corpus-flow to promote the todo \"cache-the-export-query\" to a brief.", "layout": { "todo": [1, 2], "done": [3], "superseded": [4], "blocked": [6] } },
+    { "id": "deleted-brief-gap", "prompt": "Use corpus-flow to promote the todo \"cache-the-export-query\" to a brief.", "layout": { "todo": [1, 2], "done": [3, 5], "superseded": [], "blocked": [] } },
+    { "id": "max-in-superseded", "prompt": "Use corpus-flow to promote the todo \"cache-the-export-query\" to a brief.", "layout": { "todo": [1], "done": [2, 3], "superseded": [9], "blocked": [] } },
+    { "id": "todo-folder-empty", "prompt": "Turn the cache-the-export-query todo into a brief.", "layout": { "todo": [], "done": [1, 2, 3, 4], "superseded": [], "blocked": [] } }
+  ]
+}

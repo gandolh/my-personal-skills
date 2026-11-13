@@ -1,0 +1,17 @@
+[
+  {
+    "type": "assistant",
+    "message": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Sure, here is how I would close it."
+        }
+      ]
+    }
+  },
+  {
+    "type": "result",
+    "result": "Done."
+  }
+]
