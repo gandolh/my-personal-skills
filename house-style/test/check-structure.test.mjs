@@ -40,17 +40,26 @@ const CASES = [
       { file: "server/src/rule-3.fail.ts" },
       { file: "rule-3/src/config.ts" },
       { file: "shared/src/rule-3.fail.ts" },
+      { file: "server/src/rule-3-strings.fail.ts", count: 2 },
+      { file: "server/src/ward/config.ts" },
     ],
-    pass: ["server/src/config.ts", "server/src/rule-3.pass.ts", "web/src/App.tsx"],
+    pass: ["server/src/config.ts", "server/src/rule-3.pass.ts", "server/src/rule-3-strings.pass.ts", "web/src/App.tsx"],
   },
   {
     rule: 6,
     area: "a heuristic",
-    fail: [{ file: "server/src/rule-6.fail.ts", count: 7 }, { file: "server/src/domain/oidc/mount.fail.ts" }],
+    fail: [
+      { file: "server/src/rule-6.fail.ts", count: 7 },
+      { file: "server/src/domain/oidc/mount.fail.ts" },
+      { file: "server/src/rule-6-computed.fail.ts", count: 3 },
+      { file: "server/src/rule-6-helpers.fail.ts", count: 4 },
+    ],
     pass: [
       "server/src/features/books/routes.ts",
       "server/src/features/books/routes.test.ts",
       "server/src/domain/tokens/sign.ts",
+      "server/src/rule-6-computed.pass.ts",
+      "server/src/rule-6-helpers.pass.ts",
     ],
   },
   {
@@ -96,6 +105,28 @@ describe("check-structure, rule by rule", () => {
         `${parse}:\n${routes.join("\n")}`,
       );
     }
+  });
+  it("names a computed path by its expression", () => {
+    const messages = run.findings.filter((f) => f.file === "server/src/rule-6-computed.fail.ts").map((f) => f.message);
+    for (const route of ["GET routes.me.path", "GET SOCKET_PATH", "POST `${PREFIX}/items`"]) {
+      assert.ok(
+        messages.includes(`${route} declares no schema: give it its params, querystring, body and response schemas`),
+        `${route}:\n${messages.join("\n")}`,
+      );
+    }
+  });
+  it("keeps its messages: the NODE_ENV one, and process.env outside config.ts", () => {
+    const of = (file) => run.findings.filter((f) => f.file === file).map((f) => f.message);
+    assert.deepEqual(of("server/src/rule-3-strings.fail.ts"), [
+      "reads NODE_ENV: the app is configured by its own variables, never by NODE_ENV",
+      "reads NODE_ENV: the app is configured by its own variables, never by NODE_ENV",
+    ]);
+    assert.deepEqual(of("server/src/rule-3.fail.ts"), [
+      "reads process.env outside config.ts: take the setting from the parsed config",
+    ]);
+    assert.deepEqual(of("server/src/ward/config.ts"), [
+      "reads process.env in a config file below the root: server/src/config.ts is the one reader, so take the setting from it",
+    ]);
   });
   checkCases({ it, root: ROOT, findings: run.findings, cases: CASES, support: SUPPORT });
 });

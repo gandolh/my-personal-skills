@@ -105,24 +105,33 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
   `testing` or `e2e`) are exempt from rules 1, 3 and 6. Comments and strings
   are masked first.
 - Rule 6 reads `app.get(path, handler)`, `app.get(path, options, handler)`,
-  `app.get(path, { schema, handler })` and `app.route({ url, … })` with a
-  literal path. An options object that spreads (`...shared`) counts as
-  having a schema.
-- Rule 6 also misses a route whose path isn't a literal
-  (`app.get(routes.x.path, handler)` with no schema isn't flagged), and
-  flags `fn({ x: request.body.x })` on input a schema already validated:
-  that one is an exception.
+  `app.get(path, { schema, handler })` and `app.route({ url, … })`. A path
+  that isn't a literal (`app.get(routes.x.path, handler)`) is read on `app`,
+  `fastify`, `instance`, `server`, `scope`, `router`, or a name the file
+  registers a literal route on, never on `cache.get(key, fallback)`. An
+  options object that spreads (`...shared`) counts as having a schema.
+- A hand parse is request input given to a `parse`, `safeParse` or
+  `validate` (`X.parse(request.body.x)` included), or a whole
+  `request.body`, `query`, `params` or `headers` given to another
+  `parse…` or `validate…` helper. A property of validated input handed to
+  a helper of the route's own (`parseRange(request.headers.range, size)`)
+  is not one.
+- Rule 3's one reader is the `config.ts` at the top of each server or
+  shared root; a second `config.ts` below it is a finding. A message that
+  names `NODE_ENV` is not a read; `process.env["NODE_ENV"]` is.
 - A finding the repo accepts is an exception in `conventions.json`, with the
   check, the rule, the path, an optional `match` and a required `reason`.
-  `match` is a substring of the finding's message: use the message exactly,
-  or one exception hides every later finding that contains the string:
+  `match` is a substring of the finding's source line or of its message.
+  Use the whole message, or a part of the line no other finding in the file
+  shares: `/api/covers/:id` alone also hides `/api/covers/:id/thumb`, and
+  `GET /` hides every GET route in the file.
 
   ```json
   {
     "check": "structure",
     "rule": 6,
     "path": "server/src/features/covers/routes.ts",
-    "match": "/api/covers/:id",
+    "match": "GET /api/covers/:id declares no schema",
     "reason": "Streams the image file: binary replies have no response schema (Q53)."
   }
   ```

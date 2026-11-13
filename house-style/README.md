@@ -140,8 +140,8 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
 | | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
-| | 3 | `process.env` outside the env reader (`config.ts`, or the files `"env"` names in `conventions.json`), and any `NODE_ENV`, in server and shared roots (tests excepted) |
-| | 6 | Request input parsed by hand (`schema.parse(request.body)`, a helper given `req.query`), and a route registered with no `schema` (a heuristic) |
+| | 3 | `process.env` outside the env reader (the `config.ts` at the top of each server or shared root, or the files `"env"` names in `conventions.json`), and any read of `NODE_ENV` (the name in code, or a string that is the name alone, `process.env["NODE_ENV"]`), in server and shared roots (tests excepted). A `config.ts` further down gets its own message |
+| | 6 | Request input parsed by hand: any request input given to a `parse`, `safeParse` or `validate` (a schema's own, `X.parse(request.body.x)`, or a bare one), or a whole `request.body`, `query`, `params` or `headers` given to another `parse…` or `validate…` helper. A property of validated input handed to a helper (`parseRange(request.headers.range, size)`) is not one. And a route registered with no `schema`, its path a literal or computed (`app.get(routes.x.path, handler)`, read on `app`, `fastify`, `instance`, `server`, `scope`, `router` or a name the file registers a literal route on). A heuristic |
 | | 11 | A file over 400 lines, in any root, test files excepted (a warning) |
 
 The other rules of the two skills are for review, except `code-structure`'s 5
@@ -154,7 +154,9 @@ Dialog.Trigger`) hides its call sites from them, so review covers those. A
 test is `*.test.*`, `*.spec.*`, jest's `*-spec.*` (NestJS's `app.e2e-spec.ts`),
 or a file under a `test`, `tests`, `__tests__`, `testing` or `e2e` folder.
 Comments, strings and regexes are masked before the source rules look, so a
-rule's text in a comment isn't a finding.
+rule's text in a comment or a message isn't a finding. Rule 3 reads one kind
+of string: one that is `NODE_ENV` and nothing else, a key or a helper's
+argument.
 
 ## conventions.json
 
@@ -185,8 +187,8 @@ and its paths are from the repo root wherever it sits.
 | `web`, `server`, `shared` | `web/src`, `server/src`, `shared/src`, where they exist | Source folders, as in `eslint.config.js` (`web/src`, not `web`). `*` matches within a folder name (`apps/*/src`); a root that matches nothing is an error. `[]` means none |
 | `ui` | `["**/components/ui", "**/features/*/ui"]` | Inside each web root, where Base UI may be imported. `*` and `**` |
 | `stylesheet` | `styles/index.css` | Inside each web root, the one stylesheet (`styles.css` in a repo that keeps that name) |
-| `env` | any `config.{ts,js,mts,cts,mjs,cjs}` | Globs from the repo root of the files `check-structure`'s rule 3 lets read `process.env`. It replaces the default, as ESLint's `env` option does, and `NODE_ENV` stays a finding everywhere. Only `*` and `**` are globs (no braces, `?` or `[]`), and a plain path also covers what is under it, so an ESLint `env` list doesn't always copy over verbatim. Keep the two lists the same |
-| `exceptions` | none | Findings the repo accepts: `check` (`base-ui`, `structure`, or `house-style` for a lint rule's record), `rule` (its number in that skill), `path` (a file or folder; `*` and `**`), an optional `match` (text the finding's line or message contains, to accept one finding of several in a file), and a `reason` |
+| `env` | the `config.{ts,js,mts,cts,mjs,cjs}` at the top of each server and shared root | Globs from the repo root of the files `check-structure`'s rule 3 lets read `process.env`. It replaces the default, as ESLint's `env` option does, and `NODE_ENV` stays a finding everywhere. Only `*` and `**` are globs (no braces, `?` or `[]`), and a plain path also covers what is under it, so an ESLint `env` list doesn't always copy over verbatim. Keep the two lists the same |
+| `exceptions` | none | Findings the repo accepts: `check` (`base-ui`, `structure`, or `house-style` for a lint rule's record), `rule` (its number in that skill), `path` (a file or folder; `*` and `**`), an optional `match` (to accept one finding of several in a file: a substring of the finding's source line or of its message, so write the whole message or a part of the line no other finding shares; `GET /` matches every GET route's message), and a `reason` |
 
 - An exception without a `reason`, an unknown key, a rule number past the
   check's last, or a path outside the repo is an error: the checker exits 2 and
