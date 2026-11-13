@@ -20,10 +20,10 @@ anything is built. The questions for it are in
 | 05-14 Whole apps to Tailwind | Shelfmark, Almanac, Postern, Newspapper, ward-auth, Satchel, wicket, the-board, lantern, the mini todo app | superseded by each repo's Tailwind brief, all done |
 | 15 Enforce the two skills in every repo | checkers, rules files, gates | done, 71 repo briefs in 23 repos |
 | 16 Fastify servers adopt the structure | 16 servers, smallest first | done, 17 servers, v0.43.0 |
-| 17 Review comments and finishing a branch | from obra/superpowers | todo |
+| 17 Review comments and finishing a branch | from obra/superpowers | superseded 2026-11-13 (rule folded into 20) |
 | 18 A diagnose skill and an owner-steps wizard | from mattpocock/skills | todo |
 | 19 A skills stocktake and MCP pin review | from affaan-m/ecc | done, v0.48.0 |
-| 20 Surgical changes in the chunk contract | from andrej-karpathy-skills | todo |
+| 20 Surgical changes in the chunk contract | from andrej-karpathy-skills | done, v0.50.0 |
 | 21 The Agent Skills format | from anomalyco/opencode | built, v0.35.0 |
 | 22 A second model in the review gate | from stablyai/orca | todo |
 | 23 A session-start hook on the corpus | from thedotmack/claude-mem | todo |

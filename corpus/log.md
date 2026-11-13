@@ -295,3 +295,7 @@ skill checker and `corpus/lint.sh`. See
 ## [2026-11-13] superseded | Brief 17 - review comments and finishing on main
 
 Superseded by the owner (backlog grill, answer 1): the `brief-builder` agent already verifies, commits on main and closes out, and there are no PRs. Its one surviving rule, classifying each review finding as correct, unclear, wrong or out of scope, moves into brief 20.
+
+## [2026-11-13] done | Brief 20 - surgical changes in the chunk contract, with brief 17's review rule (v0.50.0)
+
+Every dispatch prompt carries a Scope discipline block and hands back a "Noticed, not touched" list; the review gate checks scope and proportion, reports no style, runs reviewers read-only and classifies each review finding as correct, unclear, wrong or out of scope. Ideas from andrej-karpathy-skills (no license, nothing copied). See [the brief](briefs/done/20-surgical-changes-in-the-chunk-contract-from-karpathy.md).

@@ -75,15 +75,33 @@ where drive-by edits hurt most.
    Bash for the checks) rather than by instruction.
 3. The hand-back format gains the "Noticed, not touched" list. The
    controller files those items as corpus todos, not as fixes.
-4. Credit the Karpathy-derived principles in `ATTRIBUTION.md` (Influences,
+4. **Review findings (folded in from superseded brief 17, 2026-11-13).**
+   The review gate classifies each review finding as correct, unclear,
+   wrong or out of scope. A correct one is verified against the code before
+   any change; an unclear one gets one question; a wrong one gets the
+   evidence; an out-of-scope one becomes a corpus todo, and the reply says so.
+5. Credit the Karpathy-derived principles in `ATTRIBUTION.md` (Influences,
    no text copied, and say why: no license), and bump the patch or minor
    version.
+
+> Update 2026-11-13: the "skip style" check (c) already landed in
+> `references/review-and-verify.md` (finders skip style the linter owns) and
+> in `agents/brief-auditor.md`, and `agents/brief-builder.md` already forbids
+> tidying. What remains: the chunk-template block, the "Noticed, not
+> touched" list, checks (a) and (b), the finder tool list, and step 4's rule.
 
 ## Acceptance
 
 - The chunk template and the review gate contain the new blocks, and the
   skill stays under its current length plus about 30 lines.
+- The review gate text carries the four-way classification of review
+  findings and what each one gets (verify, one question, evidence, a corpus
+  todo).
 - A dry run on a scratch repo, with a chunk whose target file has unrelated
   dead code next to it: the hand-back lists the dead code under "Noticed,
   not touched", and the diff doesn't touch it.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-13)
+
+Built in v0.50.0 (b5c8f3a). The chunk template gained a Scope discipline block and the hand-back a "Noticed, not touched" list (`references/templates.md`); the review gate gained the scope and proportion checks, the read-only reviewer rule and the four-way review-finding classification (`references/review-and-verify.md`), with short pointers in `SKILL.md` (4,681 tokens, inside the first 5,000). "Skip style" had already landed. Not done: the scratch-repo dry run, which needs a live dispatch.
