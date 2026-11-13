@@ -307,3 +307,7 @@ Every dispatch prompt carries a Scope discipline block and hands back a "Noticed
 ## [2026-11-13] done | Brief 26 - model evals for the library's prompts (v0.52.0)
 
 `evals/` holds three evals run by `claude plugin eval`: triggering (14 cases), numbering (4) and injection (2), with their graders and grader tests. Every run uses `--no-publish --max-cost-usd 5`. No model was called while building; the recorded runs are the owner's step, in [the evals page](wiki/evals.md). Shape from pingdotgg/t3code, no text copied. See [the brief](briefs/done/26-model-evals-for-the-librarys-prompts-from-t3code.md).
+
+## [2026-11-13] done | Brief 31 - house-style 1.3.0, a domain/ root and the waves' findings (v0.53.0)
+
+The owner's answer 2 of the backlog grill: `domain/<name>/` joins the code structure, and the dependency-cruiser preset takes ward-auth's `domain-not-to-features` and `app-through-feature-index`. `check-structure` stops reading `NODE_ENV` in a message, takes each root's top `config.ts` as the one env reader, reads computed route paths and no longer flags a helper given validated input; `check-base-ui` skips an icon child; `houseStyle()` gains `tailwind.ignore`. A read-only dry-run on the adopters says a re-sync fires wzd_auth's three OIDC interaction routes and imbatranim-apps' three `app.ts` imports. Tagged `house-style-v1.3.0` locally; the estate re-sync waits for imbatranimOS 89. See [the brief](briefs/done/31-house-style-1-3-0-a-domain-root-and-the-wave-findings.md).

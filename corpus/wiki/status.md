@@ -180,3 +180,12 @@ The library is at v0.52.0, with 32 skills. Brief 26 is done: `evals/` holds thre
 evals (triggering, numbering, injection) run by `claude plugin eval`, their case
 data, graders and grader tests. No model was called while building it. Owner step:
 run each eval once and fill the results table in [evals.md](evals.md).
+
+## 2026-11-13: brief 31, house-style 1.3.0, v0.53.0
+
+The library is at v0.53.0, with 32 skills. Brief 31 is done: house-style 1.3.0
+adds the `domain/` root and two preset rules, and fixes the waves' checker
+defects. Its CHANGELOG says what a re-sync fires and what each repo can delete.
+The tag `house-style-v1.3.0` is local. Owner steps: push main with the tag,
+update the plugin to 0.53.0, and re-sync the estate after imbatranimOS 89. Open
+on the board: whether the preset takes sports-app's plugin rule.

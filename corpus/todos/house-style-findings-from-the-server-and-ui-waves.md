@@ -155,4 +155,4 @@ house-style" parts of the UI builders' findings (Postern 02 and 03, Shelfmark
 findings of the controller's build ledger. The matching changes to
 `code-structure` are in v0.43.0 and to `base-ui` in v0.44.0.
 
-Promoted to [brief 31](../briefs/todo/31-house-style-1-3-0-a-domain-root-and-the-wave-findings.md) on 2026-11-13.
+Promoted to [brief 31](../briefs/done/31-house-style-1-3-0-a-domain-root-and-the-wave-findings.md) on 2026-11-13.

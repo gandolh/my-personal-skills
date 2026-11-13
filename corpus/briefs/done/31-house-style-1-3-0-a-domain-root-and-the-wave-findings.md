@@ -128,3 +128,91 @@ message.
 - `house-style/package.json` says 1.3.0; the plugin is 0.53.0 in every place;
   the tag `house-style-v1.3.0` points at the release commit and is not pushed.
 - The outcome note lists the dry-run's findings and every finding not done.
+
+## Outcome (2026-11-13, house-style 1.3.0, v0.53.0)
+
+Built. Commits 5f214c0, a80bded, 8fe267d, 706de0e, 67dc016, 8620c67,
+81324b8 and 24f5df3. The tag `house-style-v1.3.0` is annotated and points at
+the release commit, 24f5df3. It is local only. It was made once on an
+earlier release commit, then deleted and made again after two fixes, never
+pushed.
+
+- **`domain/`.** The preset gains `domain-not-to-features` and
+  `app-through-feature-index`, both with `from.pathNot: "(^|/)features/"`.
+  A test shows that a repo's same-name rule replaces the preset's `from` and
+  `to`: ward-auth's own rules keep working as they are. A second test runs a
+  rule scoped to one folder.
+- **What check-structure knows of `domain/`.** Its banner names the new
+  rules, and a `domain/` fixture is checked like any server code. There is
+  no unknown-folder finding.
+- **code-structure.** It keeps 11 rules: `domain/` is in the layout and in
+  rule 7, and `app-through-feature-index` is in rule 5.
+- **Defects fixed, each reproduced on 1.2.0 by a fixture first:**
+  - rule 3 read `NODE_ENV` inside a message, quoted or not;
+  - rule 3's default reader was any `config.ts`;
+  - rule 6 missed computed paths;
+  - rule 6 flagged a helper given a property of validated input;
+  - rule 9 warned on an icon child;
+  - `houseStyle()` had no way to pass `tailwind.ignore`.
+- **Two more, found by the dry-run and the review:** NestJS's
+  `app.get(ConfigService<Env, true>)` read as a route, and a quoted
+  `'NODE_ENV'` inside a message read as `NODE_ENV`.
+- **Docs:** `match` is a substring of the line or the message, and the
+  skill's example had the trap. Four recipes in the house-style skill: a
+  rule scoped to one folder, a script in `web/public`, a stylesheet test with
+  Tailwind, and Playwright. `"stylesheet": "index.css"` is in the adoption
+  reference. The decision is in `wiki/decisions.md`.
+- **Dry-run, read-only.** The checkers ran on 21 adopters and the preset on
+  20 of them, each with its own rules and options. A re-sync fires:
+  - wzd_auth: `api/src/oidc/interaction.ts:115, 182, 197`, three GET routes
+    on `` `${INTERACTION_INTERNAL_PREFIX}/…` `` with no schema;
+  - imbatranim-apps: three `app-through-feature-index` errors from
+    `server/src/app.ts`.
+
+  It clears postern's two rule-9 warnings and imbatranimOS's
+  `files.controller.ts:137` finding. atrium's `parseRange(` exception and
+  part of comercial-website's `NODE_ENV` exception go unused. sports-app
+  changes in nothing, and its `client/src/domain` passes. game-engine's
+  preset run didn't start from a scratch config. ESLint was not dry-run:
+  its one change is opt-in.
+- **Not done, with why:**
+  - A co-location rule for tests: a new rule is the owner's call.
+  - `NODE_ENV` in `config.ts`: the skill's rule 3 already says no.
+  - Matching the source line by default: it would silently un-except
+    existing entries.
+  - Per-root `ui` and `stylesheet`: a `conventions.json` format change.
+  - A two-token `color-mix`: the skill says a blend is a token, and four
+    exceptions are not a reason to loosen.
+  - A rule 7 motion warning: a new check, with more than 60 warnings in
+    imbatranimOS.
+  - A per-rule count for rule 5: the summary already has one.
+  - Tailwind classes in a bare `const` or a helper's arguments, and a
+    conflicting-class rule: plugin reach, and a new rule.
+  - Failing on knip's unused exports: the owner said they stay warnings.
+  - A check naming where `prefers-color-scheme` may appear: it is wording
+    in the repo briefs.
+  - sports-app's plugin rule in the preset: the owner's answer named two
+    rules. It is asked on the board.
+- **Deviations:**
+  - The skeleton got a prose `domain/` section, not a compiled block. Its
+    claim that the checks report nothing rests on reading `app.ts`'s four
+    imports, not a re-run.
+  - base-ui changed beyond rule 9's cell: SKILL.md's rule 9 bullet and
+    `tooltip.md` and `combobox.md` called the icon child a false positive.
+  - The house-style skill's sync example now names v1.3.0.
+  - `zod-type-provider.md` and `migrating-a-server.md` described 1.2.0's
+    rule 6 as current.
+  - The board refused the tag change from `tracker` to `harness` (exit 2,
+    its server takes no tag changes yet).
+- **Checks:**
+  - house-style `npm test`: 259 of 259 pass.
+  - The other 11 test files: 81 pass, and the 11 Hallmark capture tests
+    skip without a browser.
+  - `check-skills.mjs`, `corpus/lint.sh` and `prettier --check` exit 0.
+  - `measure.mjs`: code-structure is 264 lines, cut at line 109, after its
+    rule table.
+- **Owner steps:**
+  - Push main with the tag.
+  - Update the plugin to 0.53.0.
+  - After imbatranimOS 89, re-sync the estate with the CHANGELOG's 1.3.0
+    steps.
