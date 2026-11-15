@@ -20,12 +20,13 @@ credited in [Influences](#influences) at the bottom.
 | `impeccable` (v4.1.1) + the 4 `impeccable-*` agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | `56f4452` (2026-08-22) |
 | `design-taste-frontend`, `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) · [tasteskill.dev](https://www.tasteskill.dev/) | MIT | `72e2995` (2026-08-22), held; superseded upstream |
 | `unslop`, `thermo-nuclear-review` | [cursor/plugins](https://github.com/cursor/plugins) | MIT | `4612556` (2026-08-20) |
+| `security-audit` | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | MIT | `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8` (2026-09-14) |
 | `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | MIT | `648c2a5` (2026-08-22) |
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
 | `web-design-guidelines`, `writing-guidelines`, `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills`, `vercel-react-view-transitions` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
 
 License texts: [LICENSE-hallmark](LICENSE-hallmark) (also kept as `skills/hallmark/LICENSE`), [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
-[LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
+[LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-cloudflare](LICENSE-cloudflare), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
 and `skills/impeccable/LICENSE` + `skills/impeccable/NOTICE.md` (Apache-2.0 requires both be retained).
 
 ### Notes per source
@@ -100,6 +101,26 @@ per its own instruction that it "must always apply". `thermo-nuclear-review` is 
 extremely strict maintainability review (hard 1000-line file ceiling, bans ad-hoc
 branching on shared paths); it is opinionated enough to fight an existing codebase, so
 reach for it deliberately rather than as the default review.
+
+**security-audit** (MIT, Cloudflare) - the skill that seeded Cloudflare's vulnerability
+discovery harness, read at `c1c8a8c` (2026-09-14, "Clarify guidance and full audit modes") and
+vendored verbatim from `skills/security-audit/` at `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8`: 20 files, byte for byte, including
+its two zero-dependency validators and their tests. Its folder name already matches its
+frontmatter `name`. The skill has two modes: guidance (the default, no files written) and a
+six-phase full audit (reconnaissance and a coverage ledger, coverage-led hunting, candidate
+validation by a fresh verifier, `findings.json` checked against `report-schema.json`,
+independent record verification, a target-neutral report), which runs only when the user asks
+for an audit or a report.
+
+- **Left out:** the rest of upstream's repo (its README and LICENSE; the license is kept as
+  `LICENSE-cloudflare`).
+- **Validators:** `validate-findings.cjs` and `validate-coverage-ledger.cjs` use only `fs`,
+  `path` and `util`, read the one file they are given and write nothing; their tests write
+  only to a temporary folder and spawn `node` and `mkfifo`. Run them with
+  `node --test skills/security-audit/*.test.cjs` (Node 24 reads a bare folder as one
+  file; use the glob).
+- **Routing:** `improve` points to it for a dedicated security audit, and `orchestrate` has a
+  security audit intent. Nothing inside the vendored folder is edited.
 
 **diagram-design** (MIT) — 39 editorial diagram types rendering to self-contained
 HTML+SVG. PNG export needs Playwright + Chromium; some scripts need Python 3. It

@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.53.0, 32 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.54.0, 33 skills.
 
 ## What it does
 
@@ -74,6 +74,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 
 | Skill | What it does |
 |---|---|
+| `security-audit` | A security review in six phases with isolated agents: reconnaissance and a coverage ledger, coverage-led hunting, a fresh verifier that tries to disprove each candidate, structured `findings.json`, independent record verification, and a target-neutral report; zero-dependency validators with tests; guidance mode by default, the full audit only when asked (MIT, Cloudflare) |
 | `hallmark` | The design skill every web UI's redesign uses: a Floor of 16 rules no page ships without, a tiered browser lint, themes dealt per page, credited Wikimedia photographs; `/hallmark redesign <path>` or `audit <path>` (MIT) |
 | `impeccable` | The design build engine: 23 sub-commands, an anti-pattern detector, live browser iteration (Apache-2.0) |
 | `design-taste-frontend` + `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | Anti-slop frontend direction and presets, held at their 2026-08 pin and run only when called by name; each defers to impeccable on conflict (MIT) |

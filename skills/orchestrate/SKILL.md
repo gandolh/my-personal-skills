@@ -102,6 +102,7 @@ that — never substitute `Agent`/`WebFetch` for a named tool.
 | Ready to build, 1–2 files | build (small) | brief → implement inline |
 | Research a topic / compare options / sourced report | research | inline web search (gated — see below) |
 | "what should we work on" / audit the repo / find the debt | audit | improve (gated — returns a ranked list) |
+| Security audit / find vulnerabilities / audit auth | security audit | security-audit (full audit only on an explicit audit request; findings go to the owner as options, never an auto-fix) |
 | Redesign an existing web UI / audit one by path | redesign | hallmark, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>`; in the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28) |
 | Design a new frontend / UI polish | design | impeccable (+ design-md-library for direction) |
 | Accessibility / UI-compliance check on code | design (check) | web-design-guidelines |
@@ -184,6 +185,7 @@ generic spine:
 | Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
 | Research a topic / compare options / sourced report | **research** | inline web search, then propose options — never auto-build |
 | "what should we work on next" / audit / find the tech debt | **audit** | `improve` — survey, vet, rank; promoted findings become briefs |
+| "security audit", "find vulnerabilities", "audit auth", pen test | **security audit** | `security-audit` — guidance mode by default; the six-phase full audit only when the request is explicit. Findings become options for the owner, then briefs |
 | Redesign an existing web UI, or audit one by path | **redesign** | `hallmark`, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>` (its description keeps it off existing designs otherwise). In the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28): proposals first, code only after the owner approves the app on the board. `design-md-library`'s `dealt-by-trade.md` and `copy-layer.md` go with it. **Guard:** never set `TOGETHER_API_KEY`, never run Hallmark's `imagegen.mjs` unless the owner asks, never install anything globally; `puppeteer-core` and Chrome stay per repo |
 | Design a new frontend, UI polish, design critique | **design** | `impeccable` — the build engine; `design-md-library` first if the visual direction is unset |
 | "is this accessible" / UI compliance on source | **design (check)** | `web-design-guidelines` — static, rules fetched fresh |

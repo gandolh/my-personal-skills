@@ -78,6 +78,8 @@ Reserve **opus for at most one finder** on the highest-risk lens for this repo
 network surface does not need a security finder. **Five lenses is a normal audit;
 more than seven means the scope is too wide — narrow `READ` instead.**
 
+For a dedicated security audit (an auth provider, a server that fetches user-supplied URLs), use `security-audit` instead; the security lens here is a first pass among six.
+
 Each finding must come back as `{file, line, summary, failure_scenario}`. A finding
 with no concrete failure scenario is an opinion, and gets dropped in Step 3.
 
