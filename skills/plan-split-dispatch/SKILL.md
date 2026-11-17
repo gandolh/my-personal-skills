@@ -13,16 +13,15 @@ That is what makes the run cheap and failure-resistant.
 
 Dispatch the library's **`brief-builder`** agent when it is installed, else the
 built-in `general-purpose` agent with the run's common rules file, with an explicit
-`model` per chunk either way. The workflow agents (`brief-builder`,
-`screen-capturer`, `brief-auditor`, `owner-steps`) are installed at user level by
-`scripts/install-agents.mjs`, because Claude Code ignores frontmatter hooks in
-plugin agents. Dispatch the bare name (`brief-builder`), never the plugin copy
+`model` per chunk either way. Dispatch the bare name (`brief-builder`, installed
+at user level by `scripts/install-agents.mjs`), never the plugin copy
 (`personal-skills:brief-builder`), which runs without its guard.
 
 **Front door.** This is the generic implement target of `orchestrate`, which
 passes the brief and the matched rows of the project's **READ / SKIP / SKILLS**
-table from `corpus/routing.md`. Use them to fill each chunk's `Read` / `Skip` /
-`Skills`. Invoked directly, read `corpus/routing.md` yourself if it exists.
+table from `corpus/routing.md`, with its `Branching` and `Worktrees` lines. Use
+them to fill each chunk's `Read` / `Skip` / `Skills`. Invoked directly, read
+`corpus/routing.md` yourself if it exists.
 
 Templates (the chunk block, the plan, the dispatch prompt, the delivery, the ledger)
 are in [`references/templates.md`](references/templates.md). The finder fan-out and
@@ -39,8 +38,6 @@ Wave mode in full, the configuration and the failure modes are in
   This is the commonest misfire.
 - One indivisible hard problem: inline on opus. Pure review: a review skill.
   Research only: the `Explore` agent.
-- Undersizing backfires: a sonnet chunk that stalls, goes `BLOCKED` and is
-  re-dispatched on opus costs more than opus once.
 
 ## The steps, in order
 
@@ -69,7 +66,8 @@ Wave mode in full, the configuration and the failure modes are in
    one line on why each tier, parallel-safe groups, estimated dispatches. Wait for
    `yes`, `re-classify` or `re-scope`. Dispatch nothing before the reply.
 4. **Dispatch**, per chunk, in dependency order. Send a parallel-safe group as
-   multiple `Agent` calls **in one message**. `model: opus` for senior, `sonnet` for
+   multiple `Agent` calls **in one message**, never past the **agent cap**
+   (Configuration): count the running agents first. `model: opus` for senior, `sonnet` for
    junior. Fill the prompt template from the chunk and curated context. Every
    dispatch asks for a Status (DONE, DONE_WITH_CONCERNS, BLOCKED, NEEDS_CONTEXT),
    files changed, tests, concerns or blocker, and a **Handoff for dependents** (the
@@ -90,8 +88,9 @@ Wave mode in full, the configuration and the failure modes are in
    same prompt: something must change between attempts.
 6. **Run straight through.** After step 3, execute the whole plan without checking
    in between chunks. Valid stops: an unresolvable BLOCKED, a genuinely blocking
-   ambiguity, all chunks done, and in wave mode each wave boundary. Between chunks
-   send a few status lines; never echo a subagent's diff or re-narrate the plan.
+   ambiguity, all chunks done, and in wave mode each wave boundary. Send **one
+   status line at every dispatch and every hand-back** (what finished, what runs,
+   what is next), and one when a wait has nothing new. Never echo a subagent's diff or re-narrate the plan.
 7. **Review gate (mandatory for any multi-file run).** Review the cumulative diff.
    For a substantial build dispatch 2–3 focused finders in parallel, scoped by
    area or risk, each returning `{file, line, summary, failure_scenario}`. Finders
@@ -158,11 +157,12 @@ The briefs already are the chunks: order, dispatch, verify and integrate them.
 - **Build the DAG** from each brief's depends-on, *Files you OWN* and *Files you must
   NOT touch*. A **wave** is every brief whose dependencies are all done. Two briefs
   are parallel-safe in one wave **iff their OWN sets are disjoint**; dispatch a
-  wave as multiple `Agent` calls in one message.
+  wave as multiple `Agent` calls in one message, within the agent cap.
 - **Carry contracts forward:** paste each finished brief's Handoff for dependents
   into the prompts of the briefs that depend on it.
 - **Verify gate and checkpoint between waves**, then commit each brief separately if
-  asked (never to a protected branch without asking). Show a one-line wave plan up
+  asked, where `routing.md`'s `Branching` line says (absent: never to a protected
+  branch without asking). Show a one-line wave plan up
   front (`01 → 02‖08 → 03 → 04‖06 → 05 → 07`).
 - **Standing authorization:** if the user pre-authorized the build ("build all the
   briefs", "just go"), present the wave plan once and run through it. Closeout (done,
@@ -178,6 +178,11 @@ The briefs already are the chunks: order, dispatch, verify and integrate them.
 
 Routing: trivial haiku, junior sonnet, senior opus, controller opus; bias to the
 cheapest tier that can do the chunk. Parallel dispatch only over disjoint files, with
-file lanes before a worktree. At most two retries per chunk. The full text and the
-failure modes are in
+file lanes first and a worktree only where `routing.md` says `Worktrees: yes`. At
+most two retries per chunk.
+
+**Agent cap:** at most 3 agents at once, or the number the user set. Count the
+running agents before every dispatch and every resume. One committing agent per
+checkout. Heavy checks (full suites, benchmarks, long end-to-end runs) stay out
+unless the user allows them. The full text and the failure modes are in
 [`references/wave-mode-and-configuration.md`](references/wave-mode-and-configuration.md).

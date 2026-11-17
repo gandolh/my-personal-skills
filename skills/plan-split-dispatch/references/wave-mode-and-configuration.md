@@ -94,9 +94,40 @@ dependents** section.
   transient typecheck errors from the other's half-done hub edits are expected; verify
   the *combined* gates after both land. Reach for worktree only when the edits can't be
   cleanly laned apart.
-- **Worktree**: if chunks mutate files in parallel and could conflict, dispatch
-  with `isolation: "worktree"`. On a protected branch (main/dev), refuse and ask
-  the user to branch first.
+- **Worktree**: only where `corpus/routing.md` says `Worktrees: yes`. There, if
+  chunks mutate files in parallel and could conflict, dispatch with
+  `isolation: "worktree"`. Where it says `no`, sequence the chunks instead. Where
+  the line is absent, ask once and write the answer into `routing.md`.
+- **Branching**: follow `routing.md`'s `Branching` line. `main only`: work and
+  commit on the main checkout, with no branch. `a branch per task`: if the work
+  is still on the protected branch, ask the user to branch first. Absent: read the
+  repo's instruction file for a branch rule, else ask once.
+- **Agent cap**: the most agents running at once, builders and finders together.
+  The user sets it, and the default is **3**. The default is a guess for one
+  laptop: the owner moved the cap between 1 and 10 in one week, by the machine's
+  load.
+  1. Count the running agents before every dispatch. A resume of a paused agent
+     (a `SendMessage` continuation) counts as a dispatch.
+  2. When the user states a cap, it replaces the default for the rest of the run.
+     Write it into the ruling ledger, so it survives compaction.
+  3. When the cap goes down, let the running agents finish and start none until
+     the count is under the new cap. Never stop a running agent to meet it.
+  4. A parallel-safe group larger than the cap goes out in several messages.
+- **One committing agent per checkout**: an agent that commits (the
+  `brief-builder`) runs one per repo at a time, because it stops on a dirty tree.
+  Parallel chunks inside one repo are for subagents that do not commit. In a run
+  across several repos, parallelism comes from the repos.
+- **Heavy checks stay out by default**: a chunk runs typecheck, lint and the tests
+  for the code it changed. Full cross-workspace suites, benchmarks, repeated timing
+  runs, long end-to-end runs and full-site crawls wait for the user's word, and
+  never two at once. A brief whose acceptance needs one closes on the rest, and
+  its outcome says what was skipped. Don't give a slow test a time budget; skip it.
+- **Status lines**: one line at every dispatch and every hand-back, in plain
+  words: what finished, what is running, what is next. During a long wait with
+  nothing new, say what the run is waiting for. A quiet run reads as a stuck one.
+- **Run notes**: keep what a resume needs (the common rules file, the ruling
+  ledger, fixture sources, walk plans) in the repo or the run's own folder, and
+  commit it. A session scratch folder does not survive a restart.
 - **Max retry per chunk**: 2. After two failures, escalate.
 
 ## Failure modes
@@ -106,5 +137,7 @@ dependents** section.
 - **Junior BLOCKED on a senior-only area** → re-classify, re-dispatch as senior.
   Signal, not failure.
 - **Senior BLOCKED on a design call** → escalate to user; don't invent the design.
-- **Two parallel juniors edit the same file** → controller bug; sequence them or
-  use worktree isolation.
+- **Two parallel juniors edit the same file** → controller bug; sequence them, or
+  use worktree isolation where `routing.md` allows it.
+- **More agents running than the cap** → controller bug: the count before the
+  dispatch was skipped. Start nothing new until the count is back under it.
