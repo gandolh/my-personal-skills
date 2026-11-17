@@ -158,7 +158,7 @@ session ([decisions.md](decisions.md)). What follows from it:
 | 43 Builders edit files through the shell | cause found (the model batches in the shell; one line does not change it), a recommendation waits for the owner's pick | todo, findings in the brief |
 
 Owner steps: the paid evals for `plan-split-dispatch`, the plugin update to
-0.61.0, a re-run of `scripts/install-agents.mjs`, the push. One question is on
+0.61.1, a re-run of `scripts/install-agents.mjs`, the push. One question is on
 ticket 41: whether five `effort: high` lines in the library's agent
 definitions stay, now that effort follows the session. Briefs 38 and 42 need
 real builds, so they run inside the next brief run of any repo.

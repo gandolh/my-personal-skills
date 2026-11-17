@@ -13,7 +13,9 @@ The trial has not run. The owner's session transcripts from 2026-10-19 to
 
 **Picked by the owner, 2026-11-17: run the trial first, on Opus.** Brief 39
 set the agent's model to opus, since review runs on Opus. The agent keeps its
-DRAFT sentence until the trial's verdict.
+DRAFT sentence until the trial's verdict. The user-level copy of the agent
+keeps its old model until the owner re-runs `scripts/install-agents.mjs`, so
+pass `model: opus` on every trial dispatch.
 
 What the trial will cost, as a rough guide: the nine per-brief review runs in
 those transcripts wrote between 3k and 26k output tokens each (eight on sonnet,

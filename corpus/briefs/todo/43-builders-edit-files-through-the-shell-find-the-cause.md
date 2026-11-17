@@ -93,11 +93,12 @@ commands."
 - **The line changed nothing.** Both builders read every file with `cat` and
   wrote every file in one or two shell commands of about 3,000 characters.
   Neither called Read, Edit or Write once.
-- **The habit is batching, and it is cheap.** A whole brief took six API
-  calls. The same work through Read and Edit is one call per file read and
-  one per edit, and every call re-reads the conversation. Brief 42 found that
-  the number of calls is the largest cost, so the shell habit works in the
-  owner's favour there.
+- **The habit is batching.** A whole brief took six API calls: the builder
+  read several files in one command and wrote several in another. What the
+  same brief costs through Read and Edit was not measured, because neither
+  run used them. Brief 42 found that the number of calls is the largest cost,
+  so a rule that splits these commands into more calls could cost more. That
+  is an inference.
 - **So the cause is the model's own way of working in this agent**, not a
   prompt file, a hook or a missing tool. It shows on a six-call run with no
   prompt files at all. The log append of step 1 is a symptom, not the cause.
@@ -105,7 +106,7 @@ commands."
 One pair of runs on a toy brief is thin. It is enough to say a one-line rule
 will not move it.
 
-**What the habit costs.** Not tokens. The plugin's `Stop` check finds each
+**What the habit skips.** The plugin's `Stop` check finds each
 project's `check:fast` from the files the `PostToolUse` hook noted, and that
 hook fires only on Edit and Write. A builder that never calls either leaves
 no note, so the turn can end without `check:fast`, and nothing formats the
@@ -115,8 +116,9 @@ hand-back.
 
 **Recommendation for the owner's pick.**
 
-1. **No rule for the builder (recommended).** The instruction does not hold,
-   and holding it would add calls.
+1. **No rule for the builder (recommended).** The measured part: the added
+   line did not change the tools used, on one pair of runs. A stronger rule
+   (a hook that refuses shell writes) was not tried and may add calls.
 2. **Optionally, on the hook side:** the `Stop` check also reads
    `git status` for changed files, so a shell-written file triggers
    `check:fast` like a saved one. Worth a brief only if a build is found
