@@ -335,3 +335,7 @@ The listings of `code-structure` (1,343 to 654 characters), `design-pipeline` (1
 ## [2026-11-17] blocked | Briefs 36, 37 and 38 - three owner picks
 
 Filed in `briefs/blocked/`, each waiting on the owner: 36, prune or keep the four Vercel skills with no recorded call (about 620 tokens a session, the stocktake's F1); 37, stop the plugin registering the four workflow agents, which a session lists twice (about 800 tokens, and an unguarded copy); 38, `brief-auditor` leaves draft, goes, or gets its trial. Each brief gives the options and a recommendation. Nothing is built.
+
+## [2026-11-17] fix | corpus-flow's grill and plan-split-dispatch's wave rule match the day's releases (v0.58.1)
+
+Found on a read-back of briefs 32 and 34. `corpus-flow` §3 and §3a asked for one batch of questions and now ask one explained question per message. `plan-split-dispatch` states when a wave runs at once (across repos, or with subagents that do not commit) and when briefs of one repo run in turn (the `brief-builder` commits). Briefs 36 and 37, still blocked, had two facts corrected: `disable-model-invocation` does take a skill out of a session's list, so brief 36 offers a name-only pick, and `claude plugin details` prints `Agents (0)`. The done briefs are unchanged.

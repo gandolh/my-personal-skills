@@ -1,6 +1,6 @@
 # Task 36: the four unused Vercel skills, prune or keep
 
-**Blocked by:** the owner's pick between pruning the four skills and keeping them.
+**Blocked by:** the owner's pick between pruning the four skills, making them name-only and keeping them.
 
 ## Context
 
@@ -19,8 +19,11 @@ They are vendored and pinned, so the stocktake left the call to the owner.
 The other two Vercel wrappers, `web-design-guidelines` and
 `writing-guidelines`, are used and stay.
 
-A `disable-model-invocation` key is not a middle way: `claude plugin details`
-still charges the taste presets, which carry it, about 100 tokens each.
+The 620 is the tool's estimate. It does not model the `disable-model-invocation`
+key: it still charges the taste presets, which carry it, about 100 tokens each,
+while a session's skill list on 2026-11-17 left those five skills out entirely.
+So the key is a real middle way, and the taste presets are the precedent for
+putting it on a vendored skill.
 
 ## The pick
 
@@ -28,6 +31,9 @@ still charges the taste presets, which carry it, about 100 tokens each.
   rows, README rows and the "Vercel suite" clause of the plugin description.
   Saves about 620 tokens a session. They can be vendored again from upstream
   at any time.
+- **Name-only.** Add `disable-model-invocation: true` to the four, as the taste
+  presets have. They leave the session's skill list and load only when called by
+  name. Nothing is deleted. `check-skills` notes the key is Claude Code only.
 - **Keep.** Close this brief as superseded with one line, so the next
   stocktake does not raise F1 again.
 - **Prune some.** Name which.

@@ -16,8 +16,8 @@ four appears twice in the agent list, once bare and once as
 
 - **Tokens.** The four descriptions are about 2,100 characters together,
   roughly 800 tokens, loaded a second time in every session of every repo.
-  `claude plugin details` does not count agents, so this is missing from the
-  plugin's always-on figure.
+  `claude plugin details` prints `Agents (0)` for the plugin, so this is missing
+  from its always-on figure.
 - **A wrong pick.** The plugin copy runs without its guard.
   `plan-split-dispatch` has to say "never the plugin copy", which is a rule
   only because the copy exists.
