@@ -331,3 +331,7 @@ The controller counts the running agents before every dispatch and resume and ke
 ## [2026-11-17] done | Brief 35 - shorter descriptions for the five largest listings (v0.58.0)
 
 The listings of `code-structure` (1,343 to 654 characters), `design-pipeline` (1,308 to 835), `design-md-library` (1,172 to 791), `base-ui` (1,129 to 750) and `codegraph` (1,020 to 678) keep what the skill is, its trigger phrases and its "not for" line, and drop the restated body. `claude plugin details`: about 6,600 tokens always-on, from about 7,400. `check-skills` and `corpus/lint.sh` pass. No board ticket. See [the brief](briefs/done/35-shorter-descriptions-for-the-five-largest-listings.md).
+
+## [2026-11-17] blocked | Briefs 36, 37 and 38 - three owner picks
+
+Filed in `briefs/blocked/`, each waiting on the owner: 36, prune or keep the four Vercel skills with no recorded call (about 620 tokens a session, the stocktake's F1); 37, stop the plugin registering the four workflow agents, which a session lists twice (about 800 tokens, and an unguarded copy); 38, `brief-auditor` leaves draft, goes, or gets its trial. Each brief gives the options and a recommendation. Nothing is built.

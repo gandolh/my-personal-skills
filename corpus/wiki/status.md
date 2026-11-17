@@ -1,6 +1,6 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12).
-updated: 2026-11-13
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38).
+updated: 2026-11-17
 ---
 
 # Status
@@ -189,3 +189,16 @@ defects. Its CHANGELOG says what a re-sync fires and what each repo can delete.
 The tag `house-style-v1.3.0` is local. Owner steps: push main with the tag,
 update the plugin to 0.53.0, and re-sync the estate after imbatranimOS 89. Open
 on the board: whether the preset takes sports-app's plugin rule.
+
+## 2026-11-17: briefs 32-35 from the session history, v0.58.0
+
+The library is at v0.58.0, with 33 skills. Four briefs came from reading the
+session history against the stocktake of 2026-11-13: `grill-me` asks one
+explained question at a time (32), `orchestrate` holds its gate under the
+5,000-token cut (33, closing F5, F8 and F9), `plan-split-dispatch` has an agent
+cap and status lines and reads `routing.md`'s `Branching` and `Worktrees` (34),
+and the five largest listings are shorter (35, closing F2). Always-on is about
+6,600 tokens. Blocked on the owner's pick: 36 (the unused Vercel skills, F1), 37
+(the workflow agents listed twice) and 38 (`brief-auditor` still a draft). Owner
+steps: the paid evals for the three front-door skills, the plugin update, the
+push. Still open from the stocktake: F3, F4, F6, F7 and F11 to F13.
