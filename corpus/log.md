@@ -327,3 +327,7 @@ The `routing.md` template and the generic intent table moved to `references/`, s
 ## [2026-11-17] done | Brief 34 - plan-split-dispatch gets an agent cap, status lines and the branching setting (v0.57.0)
 
 The controller counts the running agents before every dispatch and resume and keeps to the cap (3 unless the user set one), runs one committing agent per checkout, keeps heavy checks out unless allowed, sends a status line at every dispatch and hand-back, and keeps run notes in the repo. A worktree and "branch first" now follow `corpus/routing.md`'s `Worktrees` and `Branching` lines. One line per rule in SKILL.md, the detail in the configuration reference. `check-skills`, `measure.mjs` (no cut) and `corpus/lint.sh` pass. Owner step: the paid evals before the plugin update. No board ticket. See [the brief](briefs/done/34-plan-split-dispatch-an-agent-cap-status-lines-and-the-branching-setting.md).
+
+## [2026-11-17] done | Brief 35 - shorter descriptions for the five largest listings (v0.58.0)
+
+The listings of `code-structure` (1,343 to 654 characters), `design-pipeline` (1,308 to 835), `design-md-library` (1,172 to 791), `base-ui` (1,129 to 750) and `codegraph` (1,020 to 678) keep what the skill is, its trigger phrases and its "not for" line, and drop the restated body. `claude plugin details`: about 6,600 tokens always-on, from about 7,400. `check-skills` and `corpus/lint.sh` pass. No board ticket. See [the brief](briefs/done/35-shorter-descriptions-for-the-five-largest-listings.md).
