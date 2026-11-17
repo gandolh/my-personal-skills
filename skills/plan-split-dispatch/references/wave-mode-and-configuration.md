@@ -77,7 +77,7 @@ dependents** section.
   exception (novel/risky/security/data), not the default. Current-generation Sonnet is a
   strong *executor* — reliable on well-specified, well-gated chunks **including medium-hard
   ones** (not just mechanical copies), so **bias borderline chunks → junior** rather than
-  reflexively senioring them. Review finders default to Sonnet (Step 7). **Keep opus in the
+  reflexively senioring them. Review finders run on opus (Step 7). **Keep opus in the
   controller/verify seat — do NOT promote Sonnet to it**: the controller's value is planning
   the grounded briefs the executors succeed *inside*, plus being a *stronger second opinion*
   at verify time and making the expensive-if-wrong calls (design/contract decisions,

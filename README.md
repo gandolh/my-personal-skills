@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.58.1, 33 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.59.0, 33 skills.
 
 ## What it does
 
@@ -117,7 +117,7 @@ node scripts/install-agents.mjs             # agents and the guard hook into the
 |---|---|---|
 | `brief-builder` | sonnet | Builds one brief in one repo and commits locally. It can't push, start sub-agents, pkill, build docker images, read `.env` files or kill another agent's process |
 | `screen-capturer` | sonnet | Screenshots of one or more apps, seeded and headless. It writes only to its marked folders and changes no repo |
-| `brief-auditor` | sonnet | A draft. Checks a built brief's acceptance lines and review-only rules, read only |
+| `brief-auditor` | opus | A draft. Checks a built brief's acceptance lines and review-only rules, read only |
 | `owner-steps` | haiku | Compiles the deploy list per stack from the board, read only, and flags a wrong deploy phase |
 
 `node scripts/verify-brief.mjs <repo> <base>` is the mechanical half of the verify gate, the one the controller runs on each result.

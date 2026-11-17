@@ -34,7 +34,7 @@ If two chunks have no dependency and edit disjoint files, mark them
 
 **Parallel-safe groups:** {1, 2} can run in parallel; 3 depends on 1.
 
-**Estimated dispatches:** N senior (opus), M junior (sonnet), K trivial (haiku){, + review (sonnet finders)}.
+**Estimated dispatches:** N senior (opus), M junior (sonnet), K trivial (haiku){, + review (opus finders)}.
 <!-- If N dominates, re-check the reference-pattern rule — pattern-copies should be junior. -->
 
 Proceed? (yes / re-classify / re-scope)

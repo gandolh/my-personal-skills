@@ -93,8 +93,8 @@ Wave mode in full, the configuration and the failure modes are in
    what is next), and one when a wait has nothing new. Never echo a subagent's diff or re-narrate the plan.
 7. **Review gate (mandatory for any multi-file run).** Review the cumulative diff.
    For a substantial build dispatch 2–3 focused finders in parallel, scoped by
-   area or risk, each returning `{file, line, summary, failure_scenario}`. Finders
-   default to sonnet; at most one opus finder, on the highest-risk lens.
+   area or risk, each returning `{file, line, summary, failure_scenario}`. Every
+   finder runs on **opus**: review is never routed down.
    The gate also checks **scope** (a file outside the chunk's declared files is
    a finding unless the hand-back justifies it) and **proportion** (a diff much
    larger than the plan's estimate gets a second look). Reviewers report gaps
@@ -106,7 +106,8 @@ Wave mode in full, the configuration and the failure modes are in
    the fix**, re-verify, and stop. For a brief-backed run the gate is
    `brief-auditor` on each brief, plus `/security-review` on briefs that touch auth,
    tokens, cookies or personal data. Skip only a 1–2 file, one-chunk run, and
-   say so. **The fix loop is bounded and escalates:** rounds 1–3 the fix tier
+   say so. Done when the delivery names each review run and its verdict, or why
+   the gate was skipped. **The fix loop is bounded and escalates:** rounds 1–3 the fix tier
    follows the fix, with the gates re-verified after each; rounds 4–5 escalate one
    tier above the original implementer; **past round 5, stop** and report
    `needs-discussion`: the chunk was mis-specified. Only **Critical** and

@@ -11,10 +11,11 @@ If the run was non-trivial (or the user asks), review the cumulative diff
 multi-file build, **don't rely on one broad review agent** — dispatch **2–3 focused
 finder agents in parallel, scoped by area/risk** (e.g. one on cross-file integration +
 wiring correctness, one on the new module's own logic, one on reuse/cleanup/conventions),
-each returning concrete `{file, line, summary, failure_scenario}` findings. **Finders
-default to sonnet** — reading a diff and pattern-matching for bugs is mostly junior work;
-reserve **opus for at most one finder on the highest-risk integration/correctness lens**,
-or to adversarially verify an uncertain finding before acting. Then **consolidate + dedup**
+each returning concrete `{file, line, summary, failure_scenario}` findings. **Every
+finder runs on opus**, and so does an agent that adversarially verifies an uncertain
+finding before you act on it. Review is the one seat that is never routed down (the
+owner's rule, 2026-11-17). It is also cheap: in a month of the owner's runs, 17 review
+runs wrote 148k output tokens between them. Then **consolidate + dedup**
 their findings yourself, and dispatch **one fix agent whose tier follows the fix**
 (haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
 correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
@@ -60,7 +61,7 @@ For a brief-backed run, the gate per brief result is three passes, in this order
   above. It runs them one at a time, prints one line each with its exit code, and
   re-runs a test file on the repo's known-flaky list alone. You run it, so the iron law
   holds without spending a model's tokens.
-- **`brief-auditor`** (a light slot, read only): each acceptance line met, unmet or
+- **`brief-auditor`** (a light slot, read only, on opus): each acceptance line met, unmet or
   unverifiable with its evidence, plus the review-only rules for the brief's kind. Hand
   it the brief, the range, the builder's report and the `verify-brief` output.
 - **Your own pass:** read the risky diffs (auth, tokens, personal data), look at one or
