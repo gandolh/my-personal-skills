@@ -30,6 +30,14 @@ with the judges unanimous and today losing every pair.
 | `design-judge` | opus, read only | one JSON line per pair, returned | only its folder of pairs |
 | `design-critic` | opus | one findings file | the build's renders, today's shots, the judge result |
 
+Dispatch each by its agent type, as the plugin registers it
+(`personal-skills:design-director`, `personal-skills:design-sketcher`,
+`personal-skills:design-judge`, `personal-skills:design-critic`), with the
+model in the table. Never paste a definition into a `general-purpose` agent:
+that run loses the definition's tool list (the judge has Read and Glob only)
+and starts from a larger context. If the session's agent list lacks the four,
+tell the user before you fall back.
+
 The full build is not one of these. It is a sonnet builder with the hallmark
 skill and the project's own rules for redesign proposals, started from the
 winning sketch.
