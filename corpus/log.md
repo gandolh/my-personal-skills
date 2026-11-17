@@ -355,3 +355,7 @@ Every review finder and `brief-auditor` run on opus, and step 7 is done when the
 ## [2026-11-17] done | Brief 40 - an opus dispatch names its reason, and the trivial tier goes (v0.60.0)
 
 `plan-split-dispatch` has two tiers. An opus dispatch names the senior criterion it meets; with none it goes out on sonnet. From a month of runs: 33 of 84 opus builds met no listed criterion (3.26M output tokens, an upper bound), and nothing was ever classed trivial. `check-skills`, `measure.mjs` (4,864 tokens on invoke, no cut) and `corpus/lint.sh` pass. Owner step: the paid evals before the plugin update. On the board as my-personal-skills-40. See [the brief](briefs/done/40-an-opus-dispatch-names-its-reason-and-the-trivial-tier-goes.md).
+
+## [2026-11-17] done | Brief 41 - the design pipeline dispatches its agents by type (v0.61.0)
+
+`design-pipeline` says to dispatch the director, sketcher, judge and critic by agent type, never as `general-purpose` with the definition pasted in: 110 runs went out pasted in a month, without the definitions' tool lists. `check-skills`, `measure.mjs` (3,128 tokens on invoke, no cut) and `corpus/lint.sh` pass. One question for the owner is on the ticket: whether five `effort: high` lines stay. On the board as my-personal-skills-41. See [the brief](briefs/done/41-the-design-pipeline-dispatches-its-agents-by-type.md).
