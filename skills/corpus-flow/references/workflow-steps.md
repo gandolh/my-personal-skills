@@ -167,8 +167,9 @@ line) and don't start it. Moving it out is the owner's call (§2b).
 ### 3a — Grill the design (inline, or via the `grill-me` skill)
 
 Interrogate the brief until the design is unambiguous. Ask the user pointed
-questions — one tight batch, not a stream — covering whichever of these actually
-have open branches:
+questions, one per message, each with a line on why it matters and a recommended
+answer (the `grill-me` shape), covering whichever of these actually have open
+branches:
 
 - **Scope boundary.** What's explicitly in vs. out? What's the smallest version
   that counts as done?

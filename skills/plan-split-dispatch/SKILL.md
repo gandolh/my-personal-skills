@@ -157,7 +157,8 @@ The briefs already are the chunks: order, dispatch, verify and integrate them.
 - **Build the DAG** from each brief's depends-on, *Files you OWN* and *Files you must
   NOT touch*. A **wave** is every brief whose dependencies are all done. Two briefs
   are parallel-safe in one wave **iff their OWN sets are disjoint**; dispatch a
-  wave as multiple `Agent` calls in one message, within the agent cap.
+  wave as multiple `Agent` calls in one message, within the agent cap. A
+  `brief-builder` commits, so two briefs of one repo run one after the other.
 - **Carry contracts forward:** paste each finished brief's Handoff for dependents
   into the prompts of the briefs that depend on it.
 - **Verify gate and checkpoint between waves**, then commit each brief separately if
@@ -182,7 +183,7 @@ file lanes first and a worktree only where `routing.md` says `Worktrees: yes`. A
 most two retries per chunk.
 
 **Agent cap:** at most 3 agents at once, or the number the user set. Count the
-running agents before every dispatch and every resume. One committing agent per
-checkout. Heavy checks (full suites, benchmarks, long end-to-end runs) stay out
+running agents before every dispatch and every resume. One `brief-builder` per
+checkout at a time. Heavy checks (full suites, benchmarks, long end-to-end runs) stay out
 unless the user allows them. The full text and the failure modes are in
 [`references/wave-mode-and-configuration.md`](references/wave-mode-and-configuration.md).

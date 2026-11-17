@@ -34,14 +34,18 @@ of `blocked/` without the owner (`corpus-flow` §2b).
 2. **Group into waves.** A wave = every brief whose dependencies are all already done.
    Two briefs are **parallel-safe in the same wave iff their OWN sets are disjoint** —
    this, not worktrees, is the cheap parallelism lever (see Configuration → Parallel
-   dispatch). Dispatch a wave as multiple `Agent` calls in **one** message.
+   dispatch). Dispatch a wave as multiple `Agent` calls in **one** message. The
+   `brief-builder` commits and stops on a dirty tree, so with it two briefs of one
+   repo run one after the other even inside a wave: the wave runs at once across
+   repos, or with subagents that leave the commit to you.
 3. **Carry contracts forward.** Harvest each completed brief's **Handoff for dependents**
    and paste the relevant pieces into the prompts of briefs that depend on it. Dependent
    briefs are only as accurate as the contracts you thread in — don't make them re-derive
    an interface a prior brief already pinned down.
 4. **Verify gate + checkpoint between waves.** After each wave, run the **Verify gate**.
    Then, if the user asked for per-brief / per-wave commits, commit each completed brief
-   separately on the current branch (never a protected branch without asking). Only then
+   separately where `routing.md`'s `Branching` line says (absent: on the current
+   branch, never a protected branch without asking). Only then
    dispatch the next wave. Present a one-line wave plan up front so the user sees the
    shape (`01 → 02‖08 → 03 → 04‖06 → 05 → 07`).
 5. **Standing authorization.** If the user pre-authorized the whole build ("build all the
@@ -114,8 +118,9 @@ dependents** section.
      the count is under the new cap. Never stop a running agent to meet it.
   4. A parallel-safe group larger than the cap goes out in several messages.
 - **One committing agent per checkout**: an agent that commits (the
-  `brief-builder`) runs one per repo at a time, because it stops on a dirty tree.
-  Parallel chunks inside one repo are for subagents that do not commit. In a run
+  `brief-builder`, in a brief-backed run) runs one per repo at a time, because it
+  stops on a dirty tree. Parallel chunks inside one repo are for subagents that do
+  not commit, which is every subagent of a fresh chunked task (step 4). In a run
   across several repos, parallelism comes from the repos.
 - **Heavy checks stay out by default**: a chunk runs typecheck, lint and the tests
   for the code it changed. Full cross-workspace suites, benchmarks, repeated timing
