@@ -339,3 +339,15 @@ Filed in `briefs/blocked/`, each waiting on the owner: 36, prune or keep the fou
 ## [2026-11-17] fix | corpus-flow's grill and plan-split-dispatch's wave rule match the day's releases (v0.58.1)
 
 Found on a read-back of briefs 32 and 34. `corpus-flow` §3 and §3a asked for one batch of questions and now ask one explained question per message. `plan-split-dispatch` states when a wave runs at once (across repos, or with subagents that do not commit) and when briefs of one repo run in turn (the `brief-builder` commits). Briefs 36 and 37, still blocked, had two facts corrected: `disable-model-invocation` does take a skill out of a session's list, so brief 36 offers a name-only pick, and `claude plugin details` prints `Agents (0)`. The done briefs are unchanged.
+
+## [2026-11-17] decision | Review runs on Opus, the advisor stays, effort follows the session
+
+The owner was shown a month of subagent runs (2026-10-19 to 2026-11-17, 624 runs) and answered three questions. Review runs on Opus: this replaces `plan-split-dispatch`'s "finders default to sonnet, at most one opus finder" and `brief-auditor`'s sonnet pin (brief 39). The advisor model set in the owner's settings stays as it is, inside subagents too. Effort is set by the session, so no dispatch names an effort level. The first is recorded in [decisions.md](wiki/decisions.md); the other two change no file here.
+
+## [2026-11-17] done | Brief 39 - review runs on Opus (v0.59.0)
+
+Every review finder and `brief-auditor` run on opus, and step 7 is done when the delivery names each review run and its verdict, or why the gate was skipped. `check-skills`, `measure.mjs` (4,869 tokens on invoke, no cut), `corpus/lint.sh` and the install-agents test pass. Owner steps: the paid evals, the plugin update, a re-run of `scripts/install-agents.mjs`. On the board as my-personal-skills-39. See [the brief](briefs/done/39-review-runs-on-opus.md).
+
+## [2026-11-17] maintenance | status.md split at the page cap
+
+`wiki/status.md` reached 200 body lines. Its six entries of 2026-11-10 and 2026-11-11 moved verbatim to [status-2026-11-10-and-11.md](wiki/status-2026-11-10-and-11.md), with a pointer left behind.

@@ -1,5 +1,5 @@
 ---
-summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38).
+summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38). Then the model-routing review of the same day: review runs on Opus (brief 39, v0.59.0), with the follow-up briefs listed in the last section.
 updated: 2026-11-17
 ---
 
@@ -50,73 +50,11 @@ in briefs 02 and 03.
 Owner steps: the grilling on 2026-11-10, then review the PRs. Nothing is
 deployed.
 
-## 2026-11-10: grilled, trackers written
+## 2026-11-10 and 2026-11-11
 
-The owner's grilling of 2026-11-10 is done (Q1-62 answered; see
-[grilling-2026-11-10.md](grilling-2026-11-10.md) and
-[grilling-2026-11-10-technical-calls.md](grilling-2026-11-10-technical-calls.md)).
-The corpus follows it, still specs only, nothing built:
-
-- Briefs 04, 15 and 16 are **trackers** of each repo's own briefs.
-- Briefs 05-14 are **superseded** by each repo's own Tailwind brief.
-- Briefs 02, 03 and 27 carry the answers and the Round 8 and later facts as
-  dated decisions. Brief 19 takes Q30, 25 takes Q34, 26 takes Q35.
-- Brief 17 is now "finish on main" (Q31). Brief 24 is now "Vendor Hallmark,
-  and adopt taste-skill 2.5's ideas" (Q39).
-- Brief 22 is **blocked**: no second vendor's CLI is installed (Q32).
-- Brief 28, *The estate redesign board*, is new and depends on 24.
-- The work happens on `main` in each repo, with no PRs (Q4). Phase B builds
-  the Base UI bumps first.
-
-## 2026-11-10: brief 27's library half, v0.36.0
-
-The library is at v0.36.0, with 27 skills. Brief 27 is in progress: the
-`house-style` skill, the plugin's first hooks (`hooks/hooks.json`: the
-formatter and the `Stop` check) and the measurements
-([house-style.md](house-style.md)) are built. Its `house-style/` folder, the
-tag `house-style-v1.0.0` and Wicket's proof run are left. Owner step: update
-the plugin to 0.36.0 so the skill and hooks are live.
-
-## 2026-11-11: brief 02, the base-ui skill, v0.37.0
-
-The library is at v0.37.0, with 28 skills. Brief 02 is done: `base-ui`
-states 17 numbered rules for React UI on Base UI 1.9.0 with Tailwind, each
-with its `check-base-ui` rule or "review", and 16 references of wrappers to
-copy, every TypeScript block compiled against the 1.9.0 types. House-style
-1.0.0 (still untagged) takes exceptions for base-ui rules 1-17, and its rule
-9 no longer warns on a trigger's own parts. Each app's Tailwind and Base UI
-briefs now have the skill to follow, in the owner's Q20 order. Owner step:
-update the plugin to 0.37.0.
-
-## 2026-11-11: brief 03, the code-structure skill, v0.38.0
-
-The library is at v0.38.0, with 29 skills. Brief 03 is done:
-`code-structure` states 11 numbered rules for the Fastify servers and their
-React apps, each with its source and its `check-structure` rule,
-dependency-cruiser rule or "review", and five references: a server skeleton
-and a web API client whose 23 TypeScript blocks compile and whose tests
-pass against Fastify 5.12.8 and the zod type provider, the provider's
-measured behaviour, the research, and `migrating-a-server.md`, the order
-each repo's server brief follows (brief 16 tracks them; wicket's brief 13 is the
-first to use it). The checker was already built in house-style 1.0.0 and was not
-changed. Owner step: update the plugin to 0.38.0.
-
-## 2026-11-11: brief 27, house-style 1.0.0, v0.39.0
-
-The library is at v0.39.0, with 29 skills. Brief 27 is done: `house-style`
-1.0.0 is released in its CHANGELOG (the controller tags `house-style-v1.0.0`
-after the closeout commit), with the findings of wicket's proof run folded
-into the package, the `house-style` skill and the `base-ui` skill. Owner
-step: update the plugin to 0.39.0.
-
-## 2026-11-11: brief 24, Hallmark, v0.40.0
-
-The library is at v0.40.0, with 29 skills. Brief 24 is done. Hallmark is
-vendored at `407fa68` without its two installers, and its Together AI comp
-step sits behind a written guard. taste-skill 2.5's trade palettes and copy
-layer are in `design-md-library`. The taste suite is opt-in at its old pin,
-and `orchestrate` routes a redesign to Hallmark. Brief 28, the estate
-redesign board, can start. Owner step: update the plugin to 0.40.0.
+The six entries of these two days (the grilling and the trackers, and the
+releases v0.36.0 to v0.40.0) are in
+[status-2026-11-10-and-11.md](status-2026-11-10-and-11.md).
 
 ## 2026-11-12: brief 16 done, the server wave folded into code-structure, v0.43.0
 
@@ -202,3 +140,17 @@ and the five largest listings are shorter (35, closing F2). Always-on is about
 (the workflow agents listed twice) and 38 (`brief-auditor` still a draft). Owner
 steps: the paid evals for the three front-door skills, the plugin update, the
 push. Still open from the stocktake: F3, F4, F6, F7 and F11 to F13.
+
+## 2026-11-17: the model-routing review, from v0.59.0
+
+A month of the owner's subagent runs (2026-10-19 to 2026-11-17, 624 runs) was
+read against the library's routing rules, and the owner answered three
+questions: review runs on Opus, the advisor model stays, effort follows the
+session ([decisions.md](decisions.md)). What follows from it:
+
+| Brief | What it is for | State |
+|---|---|---|
+| 39 Review runs on Opus | every finder and `brief-auditor` on opus, a completion line on step 7 | built, v0.59.0 |
+
+Owner steps: the paid evals for `plan-split-dispatch`, the plugin update, a
+re-run of `scripts/install-agents.mjs`, the push.

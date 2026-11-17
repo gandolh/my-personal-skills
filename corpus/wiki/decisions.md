@@ -1,6 +1,6 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13).
-updated: 2026-11-13
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13). Also review runs on Opus (2026-11-17), with the advisor and effort answers of the same day.
+updated: 2026-11-17
 ---
 
 # Decisions
@@ -186,3 +186,14 @@ is for pure code. Two scope calls in the build: the preset's
 lists its `lib/`, `db/`, `plugins/` and `testing/`, but the skill lets
 `testing/` import a feature), and sports-app's "a plugin never imports a
 feature" stayed a repo rule, because the owner's answer named two rules.
+
+## Review runs on Opus
+_2026-11-17_ (v0.59.0, brief 39, the owner's pick) - Every review finder in
+`plan-split-dispatch` and the `brief-auditor` agent run on opus. Rejected:
+the skill's rule until then, finders on sonnet with at most one opus finder
+on the highest-risk lens. The owner's standing rule is that code review runs
+on Opus, and a month of transcripts put the price of that rule at 148k output
+tokens (the 17 review runs that had gone to sonnet). Two related answers of
+the same day change no file: the advisor model in the owner's settings stays,
+and effort follows the session, so a dispatch names a model and never an
+effort level.
