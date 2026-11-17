@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: "Generic, repo-agnostic work-intake router that runs ON TOP OF corpus-flow. Use at the START of any work request in any project — \"let's work on X\", \"fix the Y bug\", \"open a PR\", \"add a todo\", \"work on brief 7\", or `/orchestrate`. It ensures a corpus/ workspace exists (bootstrapping one via corpus-flow if missing), reads corpus/routing.md to learn this project's intent routing + READ/SKIP/SKILLS + which implement/review/PR skills to use, classifies the request, presents a Route Plan, and hands off after approval — capture to corpus-flow, build to plan-split-dispatch, questions to the wiki. Router, never the worker. Improves quality (workspace memory + grilled briefs), token efficiency (model-routed dispatch + scoped context), and UX (one front door)."
+description: "Generic, repo-agnostic work-intake router that runs ON TOP OF corpus-flow. Use at the START of any work request in any project — \"let's work on X\", \"fix the Y bug\", \"open a PR\", \"add a todo\", \"work on brief 7\", or `/orchestrate`. It ensures a corpus/ workspace exists (bootstrapping one via corpus-flow if missing), reads corpus/routing.md to learn this project's intent routing + READ/SKIP/SKILLS + which implement/review/PR skills to use, classifies the request, presents a Route Plan, and hands off after approval — capture to corpus-flow, build to plan-split-dispatch, questions to the wiki. Router, never the worker."
 ---
 
 # Orchestrate — Generic Work Intake & Router (corpus-flow front door)
@@ -63,12 +63,19 @@ Look for **`corpus/routing.md`**.
     code graph / grep / guard test). Obey it before fanning out with grep+read.
   - `READ / SKIP / SKILLS` table — passed to the implement skill so each chunk
     reads the right slice and skips the rest.
-- **Absent** → the workspace isn't set up. **Bootstrap it now** (don't ask for a
-  ticket first): run `corpus-flow`'s bootstrap (§0) to create the `corpus/`
+  - `Branching` / `Worktrees` — where a build commits and whether parallel chunks
+    may use a worktree; passed to the implement skill. Absent: take the branch
+    rule from the repo's instruction file, else ask once and write it into
+    `routing.md`.
+- **Absent, but `corpus/` exists** → this is a workspace the skill did not create,
+  with its own layout. Do not bootstrap and write nothing into it. Say what you
+  found and ask once: add a `routing.md` here, or use the repo's own router.
+- **Absent, and no `corpus/`** → the workspace isn't set up. **Bootstrap it now**
+  (don't ask for a ticket first): run `corpus-flow`'s bootstrap (§0) to create the `corpus/`
   skeleton, then scan the repo (one `Explore` agent, "very thorough":
   package manager + languages, top-level layout, any existing skills, test/lint/
   build commands, tracker/host from `git remote`) and seed `corpus/routing.md`
-  from the template below. Announce it in one line ("Bootstrapped corpus/ +
+  from [`references/routing-template.md`](references/routing-template.md). Announce it in one line ("Bootstrapped corpus/ +
   routing.md — tune routing.md anytime"), then continue. Never route without it.
 
 **Code-graph layer.** If `.claude/skills/codegraph/` is absent, mention once that
@@ -79,55 +86,6 @@ the project.
 
 **Named-tool override (all modes):** if the user names a tool/MCP, use exactly
 that — never substitute `Agent`/`WebFetch` for a named tool.
-
-### `corpus/routing.md` template (what the bootstrap writes)
-
-```markdown
-# Routing — how work routes in this project
-<!-- Read by the orchestrate skill. Tune freely; keep it short. -->
-
-**Implement skill:** plan-split-dispatch      <!-- or a repo-specific implement skill -->
-**Brief folders:** corpus/briefs/{todo,blocked,done,superseded}   <!-- only todo/ is open work -->
-**Review skill:** <repo review cmd, or "a general-purpose agent over the diff">
-**PR skill:** <repo PR cmd, or "propose git commands">
-**Issue tracker:** <none | Jira/Linear/GitHub Issues + how to query>
-**Code host:** <GitHub (gh) | GitLab (glab) | none>
-
-## Intent routing
-| Signal | Intent | Route to |
-|--------|--------|----------|
-| New idea/task to capture | capture | corpus-flow: add todo |
-| Park work until something outside happens / unblock / what's blocked | capture | corpus-flow §2b: block and unblock |
-| Ready to build, ≥3 chunks | build | brief → plan-split-dispatch |
-| Ready to build, 1–2 files | build (small) | brief → implement inline |
-| Research a topic / compare options / sourced report | research | inline web search (gated — see below) |
-| "what should we work on" / audit the repo / find the debt | audit | improve (gated — returns a ranked list) |
-| Security audit / find vulnerabilities / audit auth | security audit | security-audit (full audit only on an explicit audit request; findings go to the owner as options, never an auto-fix) |
-| Redesign an existing web UI / audit one by path | redesign | hallmark, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>`; in the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28) |
-| Design a new frontend / UI polish | design | impeccable (+ design-md-library for direction) |
-| Accessibility / UI-compliance check on code | design (check) | web-design-guidelines |
-| Docs or prose need a style pass | docs | writing-guidelines (+ unslop if AI-drafted) |
-| Need a diagram for docs or a design | docs | diagram-design |
-| MR/PR open, not ready | review | <review skill> |
-| Branch ahead, ship intent | PR open | <PR skill> |
-| "what do we call this" / define a term / record a decision | domain | corpus-flow §9 |
-| "what does the wiki say about X" | query | corpus-flow: query wiki |
-
-## Knowledge routing — which layer answers which question
-<!-- The corpus is the WHY; a code graph is the WHAT. Neither substitutes. -->
-| Question shape | Route to |
-|---|---|
-| "Why is it built this way?" / "what was decided?" | `corpus/wiki/` (start at `index.md`; budget: ≤3 pages) |
-| "Who calls X?" / "blast radius of X?" / "where does feature Y live?" | the `codegraph` **project** skill, if bootstrapped |
-| **"Did I get _every_ usage?"** (rename/refactor/delete) | **`grep -rnw`** — the graph undercounts |
-| A symbol name exported by two sibling packages | **`grep`**, scoped by path — the graph conflates them |
-| A correctness invariant (dependency rule, determinism, palette) | **run the guard test** |
-
-## READ / SKIP / SKILLS
-| Task type | READ | SKIP | SKILLS |
-|-----------|------|------|--------|
-| feature   | corpus/wiki/decisions.md, the brief, <key dirs> | unrelated areas | <skills to load> |
-```
 
 ---
 
@@ -174,29 +132,9 @@ state, relevant wiki pages. Don't read whole files here — paths + one-liners s
 
 ## Step 3 — Classify Intent
 
-Walk routing.md's **Intent routing** table top-down; first match wins. The
-generic spine:
-
-| Signal | Intent | Hand off to |
-|---|---|---|
-| New idea/task to keep | **capture** | `corpus-flow` §1 — add a todo |
-| "park this until", "this is blocked on", "unblock", "what's blocked" | **capture** | `corpus-flow` §2b — block or unblock |
-| Ready to build, decomposes into ≥3 chunks | **build (dispatched)** | ensure a brief (`corpus-flow` §2), then `plan-split-dispatch` |
-| Ready to build, 1–2 files / one indivisible piece | **build (inline)** | ensure a brief, then implement inline |
-| Research a topic / compare options / sourced report | **research** | inline web search, then propose options — never auto-build |
-| "what should we work on next" / audit / find the tech debt | **audit** | `improve` — survey, vet, rank; promoted findings become briefs |
-| "security audit", "find vulnerabilities", "audit auth", pen test | **security audit** | `security-audit` — guidance mode by default; the six-phase full audit only when the request is explicit. Findings become options for the owner, then briefs |
-| Redesign an existing web UI, or audit one by path | **redesign** | `hallmark`, called by name: `/hallmark redesign <path>` or `/hallmark audit <path>` (its description keeps it off existing designs otherwise). In the estate, through the repo's redesign brief and the estate redesign board (the skills library's brief 28): proposals first, code only after the owner approves the app on the board. `design-md-library`'s `dealt-by-trade.md` and `copy-layer.md` go with it. **Guard:** never set `TOGETHER_API_KEY`, never run Hallmark's `imagegen.mjs` unless the owner asks, never install anything globally; `puppeteer-core` and Chrome stay per repo |
-| Design a new frontend, UI polish, design critique | **design** | `impeccable` — the build engine; `design-md-library` first if the visual direction is unset |
-| "is this accessible" / UI compliance on source | **design (check)** | `web-design-guidelines` — static, rules fetched fresh |
-| Review docs/prose voice, tone, terminology | **docs** | `writing-guidelines`; run `unslop` first if the text was AI-drafted |
-| A diagram would explain it better than prose | **docs** | `diagram-design` |
-| Strict maintainability review of a diff | **review** | `thermo-nuclear-review` — very opinionated; use deliberately |
-| MR/PR open, not "ready to merge" | **review** | routing.md review skill, else a `general-purpose` agent over the diff |
-| Branch ahead of base, ship intent | **PR open** | routing.md PR skill, else propose git commands |
-| Name a concept, settle a term, or record a locked decision | **domain** | `corpus-flow` §9 — glossary + decisions; `grill-me` if the term is still contested |
-| "what does the wiki say about X" | **query** | `corpus-flow` §5 — query the wiki |
-| Work finished, needs recording | **closeout** | `corpus-flow` §4 — done + log + fold into wiki |
+Walk routing.md's **Intent routing** table top-down; first match wins. For a
+signal it has no row for, walk the generic spine in
+[`references/intent-spine.md`](references/intent-spine.md) the same way.
 
 **A redesign goes to Hallmark even where the repo's `routing.md` still sends design or redesign to impeccable.** Most corpora were bootstrapped before the owner made Hallmark the redesign skill (2026-11-10); each repo's own redesign brief adds the `redesign` row. Until then this line overrides an older row.
 
@@ -206,9 +144,13 @@ If two match, prefer the later phase. If still ambiguous, present alternatives i
 gets one sentence of plan and a two-word confirmation; a twelve-brief backlog gets a
 full Route Plan. What does *not* change is that the user says go before anything is
 written, dispatched, or committed. Do not invoke an implementation skill, scaffold,
-or edit source until you have said what you intend and the user has agreed — on
+or edit source until you have said what you intend and the user has agreed, on
 *every* path above, including the ones that look too small to bother with. "It was
 obviously what they wanted" is how a router turns into an unreviewed agent.
+
+**The one exception is the Step 1 trivial edit.** It never reaches this table: it
+is made inline, the diff is shown, and nothing is committed. Anything classified as
+a task waits for `go`, however small.
 
 **Research, audit and design are gated, not auto-built.** A `redesign` in the estate stops at the board: the proposal goes on the estate redesign board, and no code changes until the owner approves that app there. `research`, `audit` and new-feature `design` are terminal deliverables that produce **options for the user to choose from** — never a licence to start building. Hard sequence: *research/explore → propose the ideas → **user picks** what to promote → write brief(s) → build.* Do not skip from a research result or an `improve` audit straight to a brief or to `plan-split-dispatch`; surface the options and stop for the pick. For a non-trivial new feature, route the design through **`grill-me`** first (interview the user to resolve the open decisions), *then* write the briefs. The user asks for exactly this shape ("propose the ideas… let me pick what should be promoted to todo briefs", "grill me about it, then we'll write the briefs"). Any web search this involves runs **inline** in the main thread, not fanned out to a subagent, unless the user asks otherwise.
 
@@ -277,9 +219,8 @@ Adjustments (anything but approval) → update the plan, re-present, loop until 
 ## Principles
 
 - **Router, not worker.** Your artifacts are the Route Plan + the hand-off.
-- **Workspace first.** No routing without `corpus/routing.md`; bootstrap it if missing.
-- **Quality comes from the workspace.** Grilled, immutable briefs + a curated
-  wiki mean each build starts from settled decisions, not a cold prompt.
+- **Workspace first.** No routing without `corpus/routing.md`; bootstrap it where there
+  is no `corpus/` at all, and ask where a `corpus/` exists without it.
 - **Token efficiency is the model + scope levers.** `plan-split-dispatch` puts
   sonnet on mechanical chunks and keeps the controller lean; READ/SKIP keeps each
   subagent's context scoped. Don't dispatch 1–2 chunk work — implement inline.
@@ -288,10 +229,9 @@ Adjustments (anything but approval) → update the plan, re-present, loop until 
 - **Answer questions, don't task them.** Honor any tool the user names.
 - **No chaining past the first hand-off** — except the build→closeout pair, which
   you own (dispatch, then route closeout to corpus-flow).
-- **Commit completed briefs at closeout; never push without the user's go.** When
-  a brief's build lands and closeout has recorded it, **commit** the work (one
-  commit per brief, plus a separate commit for the corpus/wiki change, per the
-  repo's "one commit per meaningful corpus change" convention) so git history and
-  the corpus stay in step — don't leave finished briefs sitting uncommitted across
-  a long multi-brief run. Pushing, PRs, tags, and force operations remain the
-  user's explicit call. If the work isn't on a feature branch yet, branch first.
+- **Commit completed briefs at closeout; never push without the user's go.** Once
+  closeout has recorded a brief, commit it: one commit for the code and one for
+  the corpus change, so finished briefs don't sit uncommitted across a long run.
+  Pushing, PRs, tags and force operations remain the user's explicit call. Where
+  the commit goes follows routing.md's `Branching` line (main only, or a branch
+  per task); never guess it.
