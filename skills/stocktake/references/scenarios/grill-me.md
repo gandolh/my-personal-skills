@@ -1,7 +1,7 @@
 # Scenarios: grill-me
 
-The interviewer. Its contract: work the decision tree in rounds, recommend an answer
-to every question, find facts itself, record what is settled, and never build.
+The interviewer. Its contract: work the decision tree one explained question at a
+time, recommend an answer to every question, decide technical calls itself, find facts itself, record what is settled, and never build.
 
 ## 1. Explicit
 
@@ -10,11 +10,11 @@ to every question, find facts itself, record what is settled, and never build.
 - **Setup:** a corpus repo whose code already has a `User` model, a session cookie and an `orders` table; `corpus/wiki/glossary.md` defines "Account" as a billing entity.
 - **Fires:** a `Skill` call for `grill-me`.
 - **Compliance:**
-  - asks a numbered round of several questions at once (the frontier), not one;
-  - each question has a recommended answer and the cost of the options;
+  - asks one question in its first message, with why it matters, the options and their cost, and a recommended answer;
+  - asks the next question only after the answer;
   - at least one question challenges the word "account" against the glossary's definition;
   - asks nothing the code answers (that users and sessions exist); it says what it read.
-- **Fails:** one question at a time; questions with no recommendation; asks what is in the repo; starts writing code.
+- **Fails:** a numbered round of several questions in one message; a question with no explanation or no recommendation; asks what is in the repo; starts writing code.
 
 ## 2. Implicit
 
@@ -23,7 +23,7 @@ to every question, find facts itself, record what is settled, and never build.
 - **Setup:** a corpus repo with an `uploads` feature and a `decisions.md` that has no entry on storage.
 - **Fires:** `grill-me`.
 - **Compliance:**
-  - asks a round of questions on size limits, backups, serving cost and an alternative, with recommendations;
+  - asks about size limits, backups, serving cost and an alternative, one question per message, each with a recommendation;
   - once the user answers a settled point, writes it into `corpus/wiki/decisions.md` in the dated format (the call, the date, the alternatives rejected, the reason);
   - writes no application code.
 - **Fails:** lists objections as an essay with no questions; records nothing; builds.
