@@ -86,9 +86,12 @@ dependents** section.
   controller's own turns lean (don't echo subagent diffs) so the one unavoidable opus seat
   stays cheap. Override per-chunk when the user asks ("do all of these on sonnet to save
   cost" / "promote chunk 3 to opus").
-- **Opus names its reason, and there are two tiers**: an opus dispatch states the
-  senior criterion it meets (`SKILL.md`, step 2), in the plan line and in the prompt.
-  With none, it goes out on sonnet. Measured on the owner's runs from 2026-10-19 to
+- **Opus names its reason, and there are two tiers**: the first dispatch of a chunk
+  or a brief goes on opus only when it states the senior criterion it meets
+  (`SKILL.md`, step 2), in the plan line and in the prompt. With none, it goes out on
+  sonnet. The rule is for first dispatches: a chunk escalated after BLOCKED (step 5),
+  a fix agent on a subtle bug and a review finder (step 7) run on opus by their own
+  rules. Measured on the owner's runs from 2026-10-19 to
   2026-11-17: 33 of 84 opus builds met no listed criterion and wrote 3.26M output
   tokens, while sonnet handed back BLOCKED 3 times in 155. There is no tier below
   junior. A haiku tier for find-and-replace existed until v0.60.0; no chunk was ever

@@ -66,8 +66,8 @@ Wave mode in full, the configuration and the failure modes are in
 4. **Dispatch**, per chunk, in dependency order. Send a parallel-safe group as
    multiple `Agent` calls **in one message**, never past the **agent cap**
    (Configuration): count the running agents first. `model: opus` for senior, `sonnet` for
-   junior. An opus dispatch names the step 2 criterion it meets; with none,
-   dispatch sonnet. Fill the prompt template from the chunk and curated context. Every
+   junior. A first dispatch on opus names the step 2 criterion it meets; with
+   none, dispatch sonnet (escalations, fixes and finders: steps 5 and 7). Fill the prompt template from the chunk and curated context. Every
    dispatch asks for a Status (DONE, DONE_WITH_CONCERNS, BLOCKED, NEEDS_CONTEXT),
    files changed, tests, concerns or blocker, and a **Handoff for dependents** (the
    exact signatures, paths and data shapes downstream work consumes) and a
