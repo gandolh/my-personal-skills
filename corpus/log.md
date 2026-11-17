@@ -359,3 +359,11 @@ Every review finder and `brief-auditor` run on opus, and step 7 is done when the
 ## [2026-11-17] done | Brief 41 - the design pipeline dispatches its agents by type (v0.61.0)
 
 `design-pipeline` says to dispatch the director, sketcher, judge and critic by agent type, never as `general-purpose` with the definition pasted in: 110 runs went out pasted in a month, without the definitions' tool lists. `check-skills`, `measure.mjs` (3,128 tokens on invoke, no cut) and `corpus/lint.sh` pass. One question for the owner is on the ticket: whether five `effort: high` lines stay. On the board as my-personal-skills-41. See [the brief](briefs/done/41-the-design-pipeline-dispatches-its-agents-by-type.md).
+
+## [2026-11-17] unblocked | Brief 38 - the owner picked "run the trial first, on Opus"
+
+`brief-auditor` keeps its DRAFT sentence and gets its five-brief trial, on opus (brief 39 set the model). The transcripts show the trial never ran: 48 `brief-builder` runs since 2026-11-12 and no `brief-auditor` run. The brief is back in `briefs/todo/` with a "Trial results" section to fill.
+
+## [2026-11-17] todo | Briefs 42 and 43 - two findings that need runs before a rule
+
+Filed, not built. 42: a trial of splitting a long brief into parts with a hand-off note, because the 29% of subagent runs with 100 or more API calls carried 78% of the month's cache-read tokens; no budget number enters a skill before the trial. 43: builders write repo files through the shell (sonnet: 3 Edit and 66 Write calls against 16,357 shell calls), which skips the plugin's format hook; the brief finds the cause before any rule is written. Its two steps ran the same day: the transcripts, then one toy brief built twice on sonnet, once with a line telling the builder to use Edit and Write. Both builds used the shell for every read and write, in six API calls each, so the cause is the model's way of working and a one-line rule does not move it. The brief now holds a recommendation (no rule for the builder) for the owner's pick. On the board as my-personal-skills-42 and -43.
