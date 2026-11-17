@@ -319,3 +319,7 @@ Cloudflare's `security-audit` is vendored verbatim from `skills/security-audit/`
 ## [2026-11-17] done | Brief 32 - grill-me asks one explained question at a time (v0.55.0)
 
 `grill-me` asks one frontier question per message, in dependency order, each with why it matters, the options and a recommendation; a bundle of defaults is a round too. Technical calls that a convention settles are decided, recorded and reported, not asked. From the owner's corrections of 2026-10-07 to 2026-11-09. The scenarios and the README row match. `check-skills`, `measure.mjs` (2,828 tokens on invoke, no cut) and `corpus/lint.sh` pass. Owner step: the paid evals before the plugin update. No board ticket. See [the brief](briefs/done/32-grill-me-asks-one-explained-question-at-a-time.md).
+
+## [2026-11-17] done | Brief 33 - orchestrate keeps its gate under the cut, and three fixes (v0.56.0)
+
+The `routing.md` template and the generic intent table moved to `references/`, so `orchestrate` is about 4,800 tokens on invoke (6,858 before) with no cut. The Step 1 trivial edit is the one named exception to the approval gate. A `corpus/` without `routing.md` is no longer bootstrapped: the skill asks once. `Branching` and `Worktrees` lines in the template replace "branch first"; a file without them falls back to the repo's instruction file, then one question. `check-skills`, `measure.mjs` and `corpus/lint.sh` pass. Owner step: the paid evals before the plugin update. No board ticket. See [the brief](briefs/done/33-orchestrate-the-gate-under-the-cut-and-three-fixes.md).
