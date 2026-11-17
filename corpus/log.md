@@ -351,3 +351,7 @@ Every review finder and `brief-auditor` run on opus, and step 7 is done when the
 ## [2026-11-17] maintenance | status.md split at the page cap
 
 `wiki/status.md` reached 200 body lines. Its six entries of 2026-11-10 and 2026-11-11 moved verbatim to [status-2026-11-10-and-11.md](wiki/status-2026-11-10-and-11.md), with a pointer left behind.
+
+## [2026-11-17] done | Brief 40 - an opus dispatch names its reason, and the trivial tier goes (v0.60.0)
+
+`plan-split-dispatch` has two tiers. An opus dispatch names the senior criterion it meets; with none it goes out on sonnet. From a month of runs: 33 of 84 opus builds met no listed criterion (3.26M output tokens, an upper bound), and nothing was ever classed trivial. `check-skills`, `measure.mjs` (4,864 tokens on invoke, no cut) and `corpus/lint.sh` pass. Owner step: the paid evals before the plugin update. On the board as my-personal-skills-40. See [the brief](briefs/done/40-an-opus-dispatch-names-its-reason-and-the-trivial-tier-goes.md).

@@ -151,6 +151,7 @@ session ([decisions.md](decisions.md)). What follows from it:
 | Brief | What it is for | State |
 |---|---|---|
 | 39 Review runs on Opus | every finder and `brief-auditor` on opus, a completion line on step 7 | built, v0.59.0 |
+| 40 An opus dispatch names its reason, and the trivial tier goes | the senior list is binding, two tiers | built, v0.60.0 |
 
 Owner steps: the paid evals for `plan-split-dispatch`, the plugin update, a
 re-run of `scripts/install-agents.mjs`, the push.
