@@ -1,7 +1,7 @@
 ---
 name: codegraph
-description: Understand and safely change unfamiliar code using a code knowledge graph as a fast navigation layer, verified by grep+read where correctness matters. The graph scopes cheaply (impact/blast radius, who-calls, first map of a feature); grep+read confirms and is exhaustive (renames, duplicate names, correctness invariants). Use when the user says "impact of X", "what calls X", "who uses X", "blast radius", "explore <feature>", "is it safe to rename X", "find all usages", "where is X used", or "what breaks if I change X". Repo-agnostic methodology - bootstraps a pinned code-graph tool if none is present.
-when_to_use: Understanding or planning a change to existing code in a non-trivial codebase - impact/blast radius of a symbol, callers/callees, orienting in an unfamiliar feature, or judging rename safety across a monorepo. Combines a code graph (fast, approximate) with grep+read (exact) instead of choosing one. Not needed for a one-file change you already understand, or for exact string/config lookups (that is plain grep).
+description: "Understand and safely change unfamiliar code using a code knowledge graph as a fast navigation layer, verified by grep+read where correctness matters: the graph scopes cheaply, grep+read confirms and is exhaustive. Use when the user says \"impact of X\", \"what calls X\", \"blast radius\", \"is it safe to rename X\", \"find all usages\", or \"explore <feature>\". Bootstraps a pinned code-graph tool if none is present."
+when_to_use: "Planning a change to existing code in a non-trivial codebase: the blast radius of a symbol, its callers, orienting in an unfamiliar feature, or rename safety. Not needed for a one-file change you already understand, or for exact string lookups (plain grep)."
 ---
 
 # Codegraph - navigate with the graph, verify with grep
