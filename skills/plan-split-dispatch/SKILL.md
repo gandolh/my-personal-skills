@@ -53,8 +53,6 @@ Wave mode in full, the configuration and the failure modes are in
    - **Junior (sonnet):** a single-file edit with clear acceptance; a call, query
      or component that follows an existing pattern; tests for existing logic;
      copy and i18n; formatting, lint fixes, dead code; type propagation.
-   - **Trivial (haiku):** find-and-replace against an explicit spec, with zero
-     judgement.
    - **The reference-pattern rule, the biggest cost lever:** the chunk that
      FIRST establishes a pattern, contract or subsystem is senior; later chunks
      that copy that in-repo reference are junior, even when they look large. A
@@ -68,7 +66,8 @@ Wave mode in full, the configuration and the failure modes are in
 4. **Dispatch**, per chunk, in dependency order. Send a parallel-safe group as
    multiple `Agent` calls **in one message**, never past the **agent cap**
    (Configuration): count the running agents first. `model: opus` for senior, `sonnet` for
-   junior. Fill the prompt template from the chunk and curated context. Every
+   junior. An opus dispatch names the step 2 criterion it meets; with none,
+   dispatch sonnet. Fill the prompt template from the chunk and curated context. Every
    dispatch asks for a Status (DONE, DONE_WITH_CONCERNS, BLOCKED, NEEDS_CONTEXT),
    files changed, tests, concerns or blocker, and a **Handoff for dependents** (the
    exact signatures, paths and data shapes downstream work consumes) and a
@@ -178,7 +177,7 @@ The briefs already are the chunks: order, dispatch, verify and integrate them.
 
 ## Configuration, at a glance
 
-Routing: trivial haiku, junior sonnet, senior opus, controller opus; bias to the
+Routing: junior sonnet, senior opus, controller and review opus; bias to the
 cheapest tier that can do the chunk. Parallel dispatch only over disjoint files, with
 file lanes first and a worktree only where `routing.md` says `Worktrees: yes`. At
 most two retries per chunk.

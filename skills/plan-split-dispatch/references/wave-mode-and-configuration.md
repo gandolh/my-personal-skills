@@ -72,8 +72,8 @@ dependents** section.
 
 ## Configuration
 
-- **Default model routing**: trivial = haiku, junior = Sonnet, senior = opus,
-  controller = opus. **Bias to the cheapest tier that can do the chunk** — opus is the
+- **Default model routing**: junior = Sonnet, senior = opus, controller = opus.
+  **Bias to the cheapest tier that can do the chunk** — opus is the
   exception (novel/risky/security/data), not the default. Current-generation Sonnet is a
   strong *executor* — reliable on well-specified, well-gated chunks **including medium-hard
   ones** (not just mechanical copies), so **bias borderline chunks → junior** rather than
@@ -86,6 +86,13 @@ dependents** section.
   controller's own turns lean (don't echo subagent diffs) so the one unavoidable opus seat
   stays cheap. Override per-chunk when the user asks ("do all of these on sonnet to save
   cost" / "promote chunk 3 to opus").
+- **Opus names its reason, and there are two tiers**: an opus dispatch states the
+  senior criterion it meets (`SKILL.md`, step 2), in the plan line and in the prompt.
+  With none, it goes out on sonnet. Measured on the owner's runs from 2026-10-19 to
+  2026-11-17: 33 of 84 opus builds met no listed criterion and wrote 3.26M output
+  tokens, while sonnet handed back BLOCKED 3 times in 155. There is no tier below
+  junior. A haiku tier for find-and-replace existed until v0.60.0; no chunk was ever
+  classed into it, and the work it described came to about 0.12M tokens in that month.
 - **Parallel dispatch**: only within a parallel-safe group, and only for chunks
   that edit disjoint files. Never run two implementers against the same file in
   parallel.

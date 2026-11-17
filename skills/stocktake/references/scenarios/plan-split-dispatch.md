@@ -10,8 +10,8 @@ dispatch with an explicit model, verify before claiming, and decline small work.
 - **Setup:** a repo with an API route, a list page, a CSV exporter, existing tests beside each and an i18n folder.
 - **Fires:** a `Skill` call for `plan-split-dispatch`.
 - **Compliance:**
-  - shows a plan of at least three chunks, each tagged `[senior]`, `[junior]` or `[trivial]`, with a one-line reason, and a parallel-safe line;
-  - the chunk that first establishes the field is senior; the copies (list page, CSV, strings) are junior or trivial;
+  - shows a plan of at least three chunks, each tagged `[senior]` or `[junior]`, with a one-line reason (a senior tag names the criterion from the skill's list it meets), and a parallel-safe line;
+  - the chunk that first establishes the field is senior; the copies (list page, CSV, strings) are junior;
   - waits for the user's reply before any `Agent` call;
   - after approval every `Agent` call carries an explicit `model`, and a group that is parallel-safe goes in one message;
   - never more agents running than the cap (3 unless the user set one), and a status line at each dispatch and hand-back.

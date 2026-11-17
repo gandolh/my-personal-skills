@@ -17,8 +17,8 @@ finding before you act on it. Review is the one seat that is never routed down (
 owner's rule, 2026-11-17). It is also cheap: in a month of the owner's runs, 17 review
 runs wrote 148k output tokens between them. Then **consolidate + dedup**
 their findings yourself, and dispatch **one fix agent whose tier follows the fix**
-(haiku/sonnet for mechanical fixes — dead code, padding, a guard; opus only for subtle
-correctness/integration/security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
+(sonnet for mechanical fixes: dead code, padding, a guard; opus only for subtle
+correctness, integration or security), re-verify the gates, and stop. The scoped-finder shape catches integration bugs a single
 generalist pass routinely misses (it has, every time). A repo review skill/command can
 stand in for a finder. In a TypeScript repo, give the conventions finder the `house-style`
 skill's review checklist (`${CLAUDE_PLUGIN_ROOT}/skills/house-style/references/review-checklist.md`)
