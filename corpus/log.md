@@ -387,3 +387,7 @@ The owner picked prune. `vercel-composition-patterns`, `vercel-react-best-practi
 ## [2026-11-19] unblocked | Brief 37 - the owner picked "move the sources out of agents/"
 
 The four workflow agents move to a folder the plugin does not register, and `scripts/install-agents.mjs` reads them from there. The brief is back in `briefs/todo/`.
+
+## [2026-11-19] done | Brief 37 - the workflow agents' sources moved out of agents/ (v0.63.0)
+
+The four workflow agents' sources moved to `agent-sources/`, which the plugin does not register, so each shows once in the agent list (about 800 tokens a session saved) and the unguarded plugin copies no longer exist. `install-agents.mjs` and its test follow; `plan-split-dispatch` dropped its "never the plugin copy" clause. The install-agents test, `check-skills` and `corpus/lint.sh` pass.

@@ -166,3 +166,7 @@ real builds, so they run inside the next brief run of any repo.
 ## 2026-11-19: brief 36, the unused Vercel skills pruned, v0.62.0
 
 The library is at v0.62.0, with 29 skills. Brief 36 is done on the owner's pick: the four unused Vercel skills are removed (about 620 tokens a session). Owner step: the plugin update to 0.62.0.
+
+## 2026-11-19: brief 37, the workflow agents listed once, v0.63.0
+
+The library is at v0.63.0, with 29 skills and 8 registered agents. Brief 37 is done on the owner's pick: the four workflow agents' sources sit in `agent-sources/`. Owner steps: the plugin update to 0.63.0, then re-run `scripts/install-agents.mjs` (a machine that has not run it has no workflow agents; one that ran it earlier keeps its guarded copies, and the plugin update removes the duplicates).

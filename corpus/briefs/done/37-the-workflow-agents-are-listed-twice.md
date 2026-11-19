@@ -47,3 +47,7 @@ four appears twice in the agent list, once bare and once as
 - No text tells the controller to avoid a plugin copy that no longer exists.
 - The version is bumped in both plugin files, the README and
   `docs/history.md`.
+
+## Outcome (2026-11-19)
+
+The owner picked the move. `brief-builder`, `screen-capturer`, `brief-auditor` and `owner-steps` now live in `agent-sources/`, moved with `git mv` and not edited. `.claude-plugin/plugin.json` lists eight agents, and `scripts/install-agents.mjs` reads the four from the new folder. Its test gained a case that the sources are in `agent-sources/`, not in `agents/` and not registered. `plan-split-dispatch` lost its "never the plugin copy" clause, and the README says a machine that has not run the script has no workflow agents. v0.63.0. The install-agents test (5 of 5), `check-skills` (29, 0 failing), the hook and verify-brief tests and `corpus/lint.sh` pass. The install script was run as a dry run only, into a scratch folder. Not checked here: that a new session lists each agent once, which needs the plugin update and a re-run of the script.
