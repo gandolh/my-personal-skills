@@ -23,7 +23,7 @@ credited in [Influences](#influences) at the bottom.
 | `security-audit` | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | MIT | `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8` (2026-09-14) |
 | `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | MIT | `648c2a5` (2026-08-22) |
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
-| `web-design-guidelines`, `writing-guidelines`, `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills`, `vercel-react-view-transitions` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
+| `web-design-guidelines`, `writing-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
 
 License texts: [LICENSE-hallmark](LICENSE-hallmark) (also kept as `skills/hallmark/LICENSE`), [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
 [LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-cloudflare](LICENSE-cloudflare), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
@@ -131,20 +131,17 @@ per-brand `README.md`, byte-identical to upstream. Each file is the upstream aut
 official design system; the brands are their owners' trademarks. See the skill's own
 boundary section on reference-vs-imitation.
 
-**vercel-labs/agent-skills** (MIT) — six of the nine skills vendored verbatim. Directories are
-named for each skill's frontmatter `name` (`composition-patterns/` →
-`vercel-composition-patterns/`, and likewise for the other three `react-*` skills), because
-Claude Code resolves skills by directory.
+**vercel-labs/agent-skills** (MIT) — two of the nine skills vendored: `web-design-guidelines` and
+`writing-guidelines`. Neither carries its rules: each is a ~39-line shim that fetches them from
+[web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) and
+[writing-guidelines](https://github.com/vercel-labs/writing-guidelines) on every run, so they
+stay current but need network access. v0.62.0 removed the four self-contained React skills
+(`composition-patterns`, `react-best-practices`, `react-native-skills`, `react-view-transitions`):
+no session called them. They can be vendored again from upstream.
 
 *Licensing note:* the repo ships **no `LICENSE` file**; MIT is declared in its `README.md`
 and in the frontmatter of five of the nine skills. Vendored on that basis — if you want the
-stricter reading, the two guidelines skills are trivially replaceable, since each is a
-~39-line shim that fetches its real rules at runtime.
-
-Those two do not carry their rules: `web-design-guidelines` and `writing-guidelines` fetch
-from [web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) and
-[writing-guidelines](https://github.com/vercel-labs/writing-guidelines) on every run, so they
-stay current but need network access. The other four are self-contained.
+stricter reading, the two guidelines skills are trivially replaceable.
 
 Not vendored: `deploy-to-vercel`, `vercel-cli-with-tokens` and `vercel-optimize` target
 Vercel's platform, which this plugin does not deploy to — `bootstrap-vps-deploy` (Caddy +
