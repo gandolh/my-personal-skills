@@ -81,3 +81,22 @@ Split by the controller at the brief's steps (way 1). Calls are API calls, dedup
 |---|---|---|---|---|
 | 1 | imbatranimOS 90 (Image Viewer by date; 2026-11-19, sonnet) | 1 logic: 17 / 7 / 0.9M. 2 view: 31 / 8 / 2.6M. 3 walk, shots, closeout: 112 / 18 / 10.2M | None | Parts 1 and 2 stayed small. Part 3 passed 100 calls: the in-container walk itself (seeding, the browser, ten shots) is most of it, and it found two view defects (a phone toolbar, focus after Enter) that the two earlier parts' unit tests could not. |
 | 2 | wzd_auth, a shared-library change (2026-11-19, opus) | 1: 97 / 43 / 17.3M. 2: 108 / 41 / 19.9M | None | Each part still ran about 100 calls. The fresh part 2 spent 41 calls reading before its first edit, nearly what part 1 did, so the split bought a fresh context but no saving. |
+| 3 | imbatranimOS 96 (spinners, kit menus, touch targets, a walk; 2026-11-19, sonnet) | 1 spinners and a motion test: 14 / 6 / 0.56M. 2 menus, targets, the error cue, the walk, closeout: 55 / 9 / 3.79M | None | Part 2 used part 1's note (where the kit's menus live, which phone variant the kit uses) and started editing after 9 calls. Both parts stayed far under 100 calls. |
+
+### Comparison with one-run builds (2026-11-19, the same day's transcripts)
+
+| Run | Calls | Cache read | Per call |
+|---|---|---|---|
+| imbatranimOS 91, one run (opus; kit, themes, File Manager, a walk) | 196 | 38.5M | 196k |
+| wzd_auth library change, one run (opus) | 100 | 17.6M | 176k |
+| imbatranim-apps 17, one run (sonnet; kit sync and a walk) | 90 | 8.2M | 91k |
+| public-resource-map 08, one run (sonnet) | 63 | 6.1M | 97k |
+| imbatranimOS 90, three parts (sonnet) | 17 + 31 + 112 | 13.7M | 53k-91k |
+| imbatranimOS 96, two parts (sonnet) | 14 + 55 | 4.3M | 40k-69k |
+
+Each call re-reads the whole context so far, so a run's cache read grows faster than its calls: past about 100 calls a call costs about twice what it did. A split at the brief's steps cuts that tail. Its price is the fresh part's re-reading before its first edit: 6 to 9 calls in the OS splits, 41 in the library one (a large shared library to read again). No part in the three trials did rework because its note was thin.
+
+### Recommendation
+
+Way 1 (the controller splits at the brief's steps before dispatch) is enough; no builder counting and no hook. Split a brief the controller expects to pass about 100 calls: several packages, or an in-browser walk, which goes in a part of its own, last, with the closeout. Don't split a brief that reads a large codebase before it can edit (the library case), unless it is also long. The hand-off note keeps the shape used here: steps done, commits, files touched, the state of each check, what the next part needs. Where it lives: `plan-split-dispatch`'s controller reference (when to split) and the `brief-builder` agent (the note's shape).
+
