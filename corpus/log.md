@@ -383,3 +383,7 @@ The four unused Vercel skills go: `vercel-composition-patterns`, `vercel-react-b
 ## [2026-11-19] done | Brief 36 - the four unused Vercel skills pruned (v0.62.0)
 
 The owner picked prune. `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills` and `vercel-react-view-transitions` are removed, with their `ATTRIBUTION.md` and README rows and the "Vercel suite" clauses of the plugin descriptions. About 620 tokens a session once the plugin updates. 29 skills; `check-skills` and `corpus/lint.sh` pass.
+
+## [2026-11-19] unblocked | Brief 37 - the owner picked "move the sources out of agents/"
+
+The four workflow agents move to a folder the plugin does not register, and `scripts/install-agents.mjs` reads them from there. The brief is back in `briefs/todo/`.

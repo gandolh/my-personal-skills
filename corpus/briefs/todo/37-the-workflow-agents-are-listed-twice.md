@@ -1,7 +1,5 @@
 # Task 37: the workflow agents are listed twice
 
-**Blocked by:** the owner's pick on whether the plugin stops registering the four workflow agents.
-
 ## Context
 
 Claude Code ignores `hooks` in a plugin agent's frontmatter, so
