@@ -379,3 +379,7 @@ The skill shipped in v0.54.0 on 2026-11-15. Its first run, source-only on ward-a
 ## [2026-11-19] unblocked | Brief 36 - the owner picked "prune"
 
 The four unused Vercel skills go: `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills` and `vercel-react-view-transitions`. `web-design-guidelines` and `writing-guidelines` stay. The brief is back in `briefs/todo/`.
+
+## [2026-11-19] done | Brief 36 - the four unused Vercel skills pruned (v0.62.0)
+
+The owner picked prune. `vercel-composition-patterns`, `vercel-react-best-practices`, `vercel-react-native-skills` and `vercel-react-view-transitions` are removed, with their `ATTRIBUTION.md` and README rows and the "Vercel suite" clauses of the plugin descriptions. About 620 tokens a session once the plugin updates. 29 skills; `check-skills` and `corpus/lint.sh` pass.

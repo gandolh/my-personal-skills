@@ -162,3 +162,7 @@ Owner steps: the paid evals for `plan-split-dispatch`, the plugin update to
 ticket 41: whether five `effort: high` lines in the library's agent
 definitions stay, now that effort follows the session. Briefs 38 and 42 need
 real builds, so they run inside the next brief run of any repo.
+
+## 2026-11-19: brief 36, the unused Vercel skills pruned, v0.62.0
+
+The library is at v0.62.0, with 29 skills. Brief 36 is done on the owner's pick: the four unused Vercel skills are removed (about 620 tokens a session). Owner step: the plugin update to 0.62.0.

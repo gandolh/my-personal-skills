@@ -53,3 +53,7 @@ putting it on a vendored skill.
   about 620 tokens.
 - The version is bumped in both plugin files, the README and
   `docs/history.md`.
+
+## Outcome (2026-11-19)
+
+The owner picked prune. The four folders, their `ATTRIBUTION.md` rows and text, the README row and the "Vercel suite" clauses of both plugin descriptions are gone. `web-design-guidelines` and `writing-guidelines` stay. v0.62.0, 29 skills. `check-skills` counts 29 with 0 failing and `corpus/lint.sh` is clean. `claude plugin details` still reads the installed plugin, so the drop of about 620 tokens shows after the owner's plugin update. `wiki/stocktake-2026-11-13.md` keeps the four names as a dated record.
