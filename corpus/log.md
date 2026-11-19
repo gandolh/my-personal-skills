@@ -395,3 +395,7 @@ The four workflow agents' sources moved to `agent-sources/`, which the plugin do
 ## [2026-11-19] done | Brief 43 - builders' shell writes: no rule, on the owner's pick
 
 The cause is the model's own way of working in this agent: whole files written in one or two shell commands. The owner took recommendation 1, no rule for the builder. No skill, agent or hook file changed and the version stays at v0.63.0.
+
+## [2026-11-19] done | Brief 28 - the estate redesign board
+
+All 23 redesigns on the board were approved on 2026-11-13 and built: 20 wait for the owner's deploys, 3 are done. The brief moves to `done/`; no skill changed and the version stays at v0.63.0.

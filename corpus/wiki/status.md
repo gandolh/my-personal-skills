@@ -1,6 +1,6 @@
 ---
 summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38). Then the model-routing review of the same day: review runs on Opus (brief 39, v0.59.0), with the follow-up briefs listed in the last section.
-updated: 2026-11-17
+updated: 2026-11-19
 ---
 
 # Status
@@ -31,6 +31,7 @@ anything is built. The questions for it are in
 | 25 Cloudflare's security audit, on ward-auth first | cloudflare/security-audit-skill | done, v0.54.0; ward-auth run 2026-11-17 (9 needs_validation, no report: owner) |
 | 26 Model evals for the library's prompts | pingdotgg/t3code, `claude plugin eval` | done, v0.52.0 (first paid run is an owner step) |
 | 27 A house style and a quality harness | the measured style, lint, format, hooks | built, v0.39.0 |
+| 28 The estate redesign board | Hallmark, the owner's approvals | done 2026-11-19: all 23 redesigns approved (2026-11-13) and built; 20 Ready for deploy, 3 Done |
 
 Other repos got their own briefs on the same day:
 
