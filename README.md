@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.62.0, 29 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.63.0, 29 skills.
 
 ## What it does
 
@@ -105,7 +105,7 @@ Restart Claude Code (or reload) so the command, skills and hooks are picked up. 
 
 ### Workflow agents
 
-Four agents for brief runs carry hooks that enforce their rules. Claude Code ignores hooks in a plugin's agents, so install user-level copies:
+Four agents for brief runs carry hooks that enforce their rules. Claude Code ignores hooks in a plugin's agents, so the plugin does not register them: their sources sit in `agent-sources/` and the script below installs them at user level. A machine that has not run it has no workflow agents.
 
 ```
 node scripts/install-agents.mjs --dry-run   # what it would write

@@ -13,9 +13,8 @@ That is what makes the run cheap and failure-resistant.
 
 Dispatch the library's **`brief-builder`** agent when it is installed, else the
 built-in `general-purpose` agent with the run's common rules file, with an explicit
-`model` per chunk either way. Dispatch the bare name (`brief-builder`, installed
-at user level by `scripts/install-agents.mjs`), never the plugin copy
-(`personal-skills:brief-builder`), which runs without its guard.
+`model` per chunk either way. `brief-builder` is installed at user level by
+`scripts/install-agents.mjs`; the plugin does not register it.
 
 **Front door.** This is the generic implement target of `orchestrate`, which
 passes the brief and the matched rows of the project's **READ / SKIP / SKILLS**

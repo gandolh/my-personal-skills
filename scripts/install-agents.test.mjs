@@ -11,6 +11,8 @@ import { after, describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import { WORKFLOW_AGENTS } from "./install-agents.mjs";
 
+const pluginDir = join(dirname(fileURLToPath(import.meta.url)), "..");
+
 const here = dirname(fileURLToPath(import.meta.url));
 const script = join(here, "install-agents.mjs");
 const scratch = mkdtempSync(join(tmpdir(), "install-agents-test-"));
@@ -22,6 +24,15 @@ const install = (...args) => {
 };
 
 describe("install-agents", () => {
+  it("reads the sources from agent-sources/, which the plugin does not register", () => {
+    const registered = JSON.parse(readFileSync(join(pluginDir, ".claude-plugin", "plugin.json"), "utf8")).agents;
+    for (const name of WORKFLOW_AGENTS) {
+      assert.ok(existsSync(join(pluginDir, "agent-sources", `${name}.md`)), name);
+      assert.ok(!existsSync(join(pluginDir, "agents", `${name}.md`)), `${name} is also in agents/`);
+      assert.ok(!registered.some((p) => p.endsWith(`/${name}.md`)), `${name} is registered`);
+    }
+  });
+
   it("writes nothing on --dry-run", () => {
     const target = mkdtempSync(join(scratch, "dry-"));
     const r = install("--dry-run", "--target", target);

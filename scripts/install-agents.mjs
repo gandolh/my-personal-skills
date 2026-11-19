@@ -4,9 +4,10 @@
 //
 //   node scripts/install-agents.mjs [--dry-run] [--target <dir>] [--force]
 //
-// Claude Code ignores `hooks` in a plugin agent's frontmatter, so the plugin
-// copies (personal-skills:brief-builder and the rest) run unguarded. This
-// script writes user-level copies instead:
+// Claude Code ignores `hooks` in a plugin agent's frontmatter, so these four
+// agents live in agent-sources/, which the plugin does not register, and
+// this script is the only way they reach a machine. It writes user-level
+// copies:
 //
 //   <target>/hooks/personal-skills/agent-guard.mjs   the guard, copied as is
 //   <target>/agents/<name>.md                        each agent, its hook
@@ -66,7 +67,7 @@ function main() {
 
   for (const name of WORKFLOW_AGENTS) {
     const dst = join(opts.target, "agents", `${name}.md`);
-    const text = installedText(readFileSync(join(root, "agents", `${name}.md`), "utf8"), guardDst);
+    const text = installedText(readFileSync(join(root, "agent-sources", `${name}.md`), "utf8"), guardDst);
     const now = existsSync(dst) ? readFileSync(dst, "utf8") : null;
     let action = now === null ? "write" : now === text ? "same" : "update";
     if (action === "update" && !now.includes(STAMP) && !opts.force) action = "keep";
