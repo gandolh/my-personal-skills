@@ -111,3 +111,45 @@ repo's `log.md`, and decide whether the next targets run.
   `findings.json` (its validator passes) and a report, and a brief or todo
   for each confirmed or `needs_validation` finding.
 - `bash corpus/lint.sh` passes, and the version is bumped.
+
+## Outcome (2026-11-19)
+
+Steps 1 and 2 shipped on 2026-11-15 as v0.54.0: the skill vendored at
+`c1c8a8c`, its validator tests passing, the license, attribution, README,
+history and routing lines.
+
+Step 3, the run on ward-auth, finished on 2026-11-17. It was source-only
+with the quick profile, because no agent here has an OS sandbox, and it ran
+on `api/` and `shared-library/`.
+
+- **Result.** Nine records, all `needs_validation`: none confirmed, none
+  rejected. `findings.json` and the coverage ledger pass their validators.
+  The open facts are mostly deploy settings and browser probes the owner
+  checks on the box.
+- **The owner changed step 3's output (2026-11-15).** ward-auth's GitHub repo
+  is public, so the order became "fix first", and then no report at all.
+  - No `corpus/security/` folder was written in ward-auth.
+  - No todo, brief or ticket names a lead.
+  - `findings.json`, the ledger and five fix briefs stay in a private build
+    folder outside every repo.
+  - The fixes land in ward-auth with plain commit messages.
+
+  This replaces the acceptance item about a dated folder in ward-auth.
+- **Fixes.** Two were built and verified on 2026-11-17. A third was half
+  built and resumed on 2026-11-19. Two more follow, the last in the shared
+  library, with a re-vendor brief per app after it.
+- **Cost (step 4).** 25 dispatches against a planned 24; the owner allowed
+  the 25th after a verifier died with its session. They were 4 recon runs,
+  10 hunters, 1 coverage critic and 10 verifier runs, one of them a re-run.
+  - Tokens: about 2.8M recorded (recon 0.33M, hunters 1.95M, critic 0.27M,
+    two verifiers 0.28M), plus about 1M more for the seven verifiers whose
+    counts weren't logged.
+  - Hunters ran from 99 s to 21 min each. Opus hunters cost 170k to 265k
+    tokens each, sonnet hunters 127k to 170k.
+  - Wall time: about 4 h 15 min, over three sessions on 2026-11-15 and
+    2026-11-17, against the hour the owner accepted.
+- **For the next targets** (the `wardAuth` plugin, Newspapper's scraper,
+  Shelfmark's cover fetch): budget about 4M tokens and half a day for a
+  target this size. Put the cheaper hunters on sonnet from the start.
+  Without a sandbox, expect `needs_validation` leads, not confirmed ones.
+  Whether to run them is the owner's call.

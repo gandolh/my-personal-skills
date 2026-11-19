@@ -371,3 +371,7 @@ Filed, not built. 42: a trial of splitting a long brief into parts with a hand-o
 ## [2026-11-17] fix | The opus-reason rule covers first dispatches only (v0.61.1)
 
 Found on a read-back of brief 40. Step 4's new sentence would also have sent an escalated chunk, a fix agent and a review finder to sonnet, since none of them meets a step 2 criterion. It now says "a first dispatch on opus", and the configuration reference names the three exceptions. Brief 43's findings were corrected the same way: its cost claims are marked as inferences, because neither test run used Edit. Brief 38 tells the controller to pass `model: opus` on each trial dispatch until the install script is re-run. The done briefs are unchanged.
+
+## [2026-11-19] done | Brief 25 - Cloudflare's security audit, vendored and run on ward-auth
+
+The skill shipped in v0.54.0 on 2026-11-15. Its first run, source-only on ward-auth's `api/` and `shared-library/`, finished on 2026-11-17 with nine `needs_validation` records and none confirmed or rejected. The owner chose to fix first and keep no report, because ward-auth's repo is public, so nothing about a lead is in any repo; the fixes land there with plain commit messages. Step 4's numbers: 25 dispatches, about 3.8M tokens (2.8M of them recorded), about 4 h 15 min of wall time over three sessions against the 1 h accepted. The next targets are the owner's call, at about 4M tokens and half a day each. See [the brief](briefs/done/25-vendor-cloudflare-security-audit-and-run-it-on-ward-auth.md).

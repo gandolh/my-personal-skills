@@ -28,7 +28,7 @@ anything is built. The questions for it are in
 | 22 A second model in the review gate | from stablyai/orca | todo |
 | 23 A session-start hook on the corpus | from thedotmack/claude-mem | todo |
 | 24 Vendor Hallmark, adopt taste-skill 2.5's ideas | nutlope/hallmark, leonxlnx/taste-skill 2.5.1 | built, v0.40.0 |
-| 25 Cloudflare's security audit, on ward-auth first | cloudflare/security-audit-skill | todo |
+| 25 Cloudflare's security audit, on ward-auth first | cloudflare/security-audit-skill | done, v0.54.0; ward-auth run 2026-11-17 (9 needs_validation, no report: owner) |
 | 26 Model evals for the library's prompts | pingdotgg/t3code, `claude plugin eval` | done, v0.52.0 (first paid run is an owner step) |
 | 27 A house style and a quality harness | the measured style, lint, format, hooks | built, v0.39.0 |
 
