@@ -75,4 +75,9 @@ alone.
 
 ## Trial results
 
-None yet.
+Split by the controller at the brief's steps (way 1). Calls are API calls, deduplicated by message id; "first edit" is the calls a fresh part made before its first file write.
+
+| # | Repo and brief | Parts: calls / before first edit / cache read | Rework from a thin note | Notes |
+|---|---|---|---|---|
+| 1 | imbatranimOS 90 (Image Viewer by date; 2026-11-19, sonnet) | 1 logic: 17 / 7 / 0.9M. 2 view: 31 / 8 / 2.6M. 3 walk, shots, closeout: 112 / 18 / 10.2M | None | Parts 1 and 2 stayed small. Part 3 passed 100 calls: the in-container walk itself (seeding, the browser, ten shots) is most of it, and it found two view defects (a phone toolbar, focus after Enter) that the two earlier parts' unit tests could not. |
+| 2 | wzd_auth, a shared-library change (2026-11-19, opus) | 1: 97 / 43 / 17.3M. 2: 108 / 41 / 19.9M | None | Each part still ran about 100 calls. The fresh part 2 spent 41 calls reading before its first edit, nearly what part 1 did, so the split bought a fresh context but no saving. |
