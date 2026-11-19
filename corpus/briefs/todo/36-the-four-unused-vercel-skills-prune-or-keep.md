@@ -1,7 +1,5 @@
 # Task 36: the four unused Vercel skills, prune or keep
 
-**Blocked by:** the owner's pick between pruning the four skills, making them name-only and keeping them.
-
 ## Context
 
 The stocktake of 2026-11-13 (finding F1) found four vendored Vercel skills
