@@ -123,3 +123,7 @@ hand-back.
    `git status` for changed files, so a shell-written file triggers
    `check:fast` like a saved one. Worth a brief only if a build is found
    that ended its turn with a failing `check:fast`; none was looked for here.
+
+## Outcome (2026-11-19)
+
+Closed on the owner's pick: recommendation 1, no rule for the builder. The one-line rule did not change the tools used on one pair of runs, and a stronger fix (a hook that refuses shell writes) was not tried and may add calls, which brief 42 found to be the largest cost. No skill, agent or hook file changed, and there is no version bump. The optional second recommendation (a `Stop` check that also reads `git status`) is not filed; it is worth a brief only if a build ends its turn with a failing `check:fast`.

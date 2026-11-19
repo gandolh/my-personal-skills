@@ -170,3 +170,7 @@ The library is at v0.62.0, with 29 skills. Brief 36 is done on the owner's pick:
 ## 2026-11-19: brief 37, the workflow agents listed once, v0.63.0
 
 The library is at v0.63.0, with 29 skills and 8 registered agents. Brief 37 is done on the owner's pick: the four workflow agents' sources sit in `agent-sources/`. Owner steps: the plugin update to 0.63.0, then re-run `scripts/install-agents.mjs` (a machine that has not run it has no workflow agents; one that ran it earlier keeps its guarded copies, and the plugin update removes the duplicates).
+
+## 2026-11-19: brief 43 closed
+
+Brief 43 is done with no change to a shipped file: the owner chose no rule for the builder. Brief 36 and 37 are built (v0.62.0, v0.63.0). Brief 38 and 42 still need real builds.

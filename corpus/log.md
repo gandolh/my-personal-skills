@@ -391,3 +391,7 @@ The four workflow agents move to a folder the plugin does not register, and `scr
 ## [2026-11-19] done | Brief 37 - the workflow agents' sources moved out of agents/ (v0.63.0)
 
 The four workflow agents' sources moved to `agent-sources/`, which the plugin does not register, so each shows once in the agent list (about 800 tokens a session saved) and the unguarded plugin copies no longer exist. `install-agents.mjs` and its test follow; `plan-split-dispatch` dropped its "never the plugin copy" clause. The install-agents test, `check-skills` and `corpus/lint.sh` pass.
+
+## [2026-11-19] done | Brief 43 - builders' shell writes: no rule, on the owner's pick
+
+The cause is the model's own way of working in this agent: whole files written in one or two shell commands. The owner took recommendation 1, no rule for the builder. No skill, agent or hook file changed and the version stays at v0.63.0.
