@@ -65,7 +65,8 @@ For a brief-backed run, the gate per brief result is three passes, in this order
   unverifiable with its evidence, plus the review-only rules for the brief's kind. Hand
   it the brief, the range, the builder's report and the `verify-brief` output.
 - **Your own pass:** read the risky diffs (auth, tokens, personal data), look at one or
-  two screenshots, and make the rulings.
+  two screenshots, and make the rulings. Check the closeout by the files, not the commit
+  message: the brief is in `done/` with its outcome note, and `log.md` has its entry.
 
 For a chunked run, run in order, and do **not** proceed past a failure:
 

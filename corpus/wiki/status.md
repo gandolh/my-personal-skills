@@ -175,3 +175,5 @@ The library is at v0.63.0, with 29 skills and 8 registered agents. Brief 37 is d
 ## 2026-11-19: brief 43 closed
 
 Brief 43 is done with no change to a shipped file: the owner chose no rule for the builder. Brief 36 and 37 are built (v0.62.0, v0.63.0). Brief 38 and 42 still need real builds.
+
+- 2026-11-19: brief 38 done, `brief-auditor` kept after its five-brief trial (found a miss every time, nothing wrong), v0.64.0.

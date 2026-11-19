@@ -1,6 +1,6 @@
 ---
 name: brief-auditor
-description: "DRAFT (2026-11-12, a trial on 5 briefs, then kept or dropped). Checks one built brief against its own Acceptance list and the review-only rules of the skill its kind follows, read only: each acceptance line comes back met, unmet or unverifiable with its evidence (a commit, a file:line, a check's output, a screenshot path). No style findings. It reads, it doesn't certify: the controller still runs the checks and decides. Install with the library's scripts/install-agents.mjs; the read-only hook runs only from the user-level copy."
+description: "Checks one built brief against its own Acceptance list and the review-only rules of the skill its kind follows, read only: each acceptance line comes back met, unmet or unverifiable with its evidence (a commit, a file:line, a check's output, a screenshot path). No style findings. It reads, it doesn't certify: the controller still runs the checks and decides. Install with the library's scripts/install-agents.mjs; the read-only hook runs only from the user-level copy."
 tools: Read, Grep, Glob, Bash
 model: opus
 effort: high

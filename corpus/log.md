@@ -399,3 +399,7 @@ The cause is the model's own way of working in this agent: whole files written i
 ## [2026-11-19] done | Brief 28 - the estate redesign board
 
 All 23 redesigns on the board were approved on 2026-11-13 and built: 20 wait for the owner's deploys, 3 are done. The brief moves to `done/`; no skill changed and the version stays at v0.63.0.
+
+## [2026-11-19] done | Brief 38 - brief-auditor kept after its trial (v0.64.0)
+
+Five built briefs in four repos; the auditor found a defect the controller had missed in each and marked nothing wrong, at about 88k tokens a run. The owner picked keep, after every builder. The DRAFT sentence goes; the controller's own pass checks a closeout by its files.
