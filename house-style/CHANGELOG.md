@@ -64,11 +64,12 @@ below names.
   `cache.get(key, fallback)`. A quoted string that isn't a path, and a class or
   token (NestJS's `app.get(ConfigService<Env, true>)`), are no route. The
   message names the expression: `GET routes.x.path declares no schema: …`.
-  **May fire:** wzd_auth's `api/src/oidc/interaction.ts:115, 182 and 197`,
-  three GET routes on `` `${INTERACTION_INTERNAL_PREFIX}/…` `` with no schema;
-  they hand the uid to `uidParams.safeParse` on purpose, so wzd_auth adds an
-  exception per route with the message's start as `match`, or declares
-  `params`. imbatranim-apps' WebSocket route was already excepted.
+  **May fire:** wzd_auth's `api/src/oidc/interaction.ts`, four GET routes on
+  `` `${INTERACTION_INTERNAL_PREFIX}/…` `` with no schema (`/:uid`,
+  `/:uid/continue`, `/:uid/client` and `/:uid/abort`; this note first said
+  three, and wzd_auth's sync on 2026-11-19 found the fourth); they hand the uid
+  to `uidParams.safeParse` on purpose, so wzd_auth adds an exception per route
+  with the message's start as `match`, or declares `params`. imbatranim-apps' WebSocket route was already excepted.
 - **`check-structure` rule 6, a helper given validated input** (atrium 04,
   wzd_auth 06). A `parse…` or `validate…` helper of the route's own given a
   property of the input (`parseRange(request.headers.range, size)`) is no
@@ -117,7 +118,7 @@ To move a repo from 1.2.0:
    multi-project repo), and commit the copy with steps 2 and 3, so no commit is
    red.
 2. `npm run check:conventions`, then answer each new finding the list above
-   names for the repo: wzd_auth's three interaction routes, imbatranim-apps'
+   names for the repo: wzd_auth's four interaction routes, imbatranim-apps'
    three `app.ts` imports.
 3. Delete what the list says the repo can: wzd_auth's own
    `app-through-feature-index`, atrium's `parseRange(` exception, an exception
