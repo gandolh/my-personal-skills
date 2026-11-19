@@ -52,5 +52,10 @@ one on opus).
 
 ## Trial results
 
-None yet. One row per brief: the repo and brief, lines confirmed unmet, lines
-wrong, missed by the auditor, tokens.
+One row per brief: the repo and brief, lines confirmed unmet, lines wrong,
+missed by the auditor, tokens.
+
+| # | Repo and brief | Confirmed unmet | Wrong | Missed by the auditor | Tokens |
+|---|---|---|---|---|---|
+| 1 | imbatranimOS 89 (VP8 video regions; 2026-11-19, opus, 23 tool calls, 6 min) | 1 the controller had missed: "looks no worse" fails, VP8 colours shift (the controller sampled the shots: green 0,181,2 against 0,215,0 lossless). 2 more the controller had already ruled as deviations (no memory cap, H.264 offline only; the Android walk left to the owner). Review-only: no fallback when the decoder keeps failing, and no test for the connect URL. Both were missed by the controller and both went into the fix round. | 0. Marking the research numbers "unverifiable" was strict but fair: no raw logs back the offline CPU figures. | Nothing. The controller's own pass (diff read, full check, host tests) found no defect. | 119,203 |
+
