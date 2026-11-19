@@ -42,6 +42,15 @@ of `blocked/` without the owner (`corpus-flow` §2b).
    and paste the relevant pieces into the prompts of briefs that depend on it. Dependent
    briefs are only as accurate as the contracts you thread in — don't make them re-derive
    an interface a prior brief already pinned down.
+3b. **Split a long brief at its steps.** Before dispatch, split a brief you expect to pass
+   about 100 builder calls (several packages, or an in-browser walk) into two or three parts
+   at its own steps, each a dispatch of its own with a prompt that says "part N of M" and
+   names the steps. The walk goes in a part of its own, last, with the end move and the
+   closeout; earlier parts make no end move. Each call re-reads the run's whole context, so
+   past about 100 calls a call costs about twice what it did (brief 42's trial: one 196-call
+   run read 38.5M cached tokens, split runs 40k to 91k a call). A fresh part re-reads before
+   its first edit (6 to 9 calls in the trial), so don't split a brief that must read a large
+   codebase before it can edit unless it is also long. Hand each part the last one's note.
 4. **Verify gate + checkpoint between waves.** After each wave, run the **Verify gate**.
    Then, if the user asked for per-brief / per-wave commits, commit each completed brief
    separately where `routing.md`'s `Branching` line says (absent: on the current

@@ -403,3 +403,7 @@ All 23 redesigns on the board were approved on 2026-11-13 and built: 20 wait for
 ## [2026-11-19] done | Brief 38 - brief-auditor kept after its trial (v0.64.0)
 
 Five built briefs in four repos; the auditor found a defect the controller had missed in each and marked nothing wrong, at about 88k tokens a run. The owner picked keep, after every builder. The DRAFT sentence goes; the controller's own pass checks a closeout by its files.
+
+## [2026-11-19] done | Brief 42 - long briefs split at their steps (v0.65.0)
+
+Three trial rows and a comparison with the day's one-run builds: a run's cost per call doubles past about 100 calls, and the split parts stayed at 40k to 91k cached tokens a call with no rework from their notes. The owner adopted the controller's split at the brief's steps; the rule is in wave mode step 3b and the builder's "A part of a brief".

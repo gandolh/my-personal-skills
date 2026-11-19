@@ -100,3 +100,7 @@ Each call re-reads the whole context so far, so a run's cache read grows faster 
 
 Way 1 (the controller splits at the brief's steps before dispatch) is enough; no builder counting and no hook. Split a brief the controller expects to pass about 100 calls: several packages, or an in-browser walk, which goes in a part of its own, last, with the closeout. Don't split a brief that reads a large codebase before it can edit (the library case), unless it is also long. The hand-off note keeps the shape used here: steps done, commits, files touched, the state of each check, what the next part needs. Where it lives: `plan-split-dispatch`'s controller reference (when to split) and the `brief-builder` agent (the note's shape).
 
+## Outcome (2026-11-19)
+
+**Adopted** (the owner's pick, after the three rows and the comparison above): way 1, the controller splits at the brief's steps before dispatch. `plan-split-dispatch`'s wave-mode reference gains step 3b (when to split, why, when not), `brief-builder` gains "A part of a brief" (the hand-off note's fixed shape; no end move before the last part). No budget number sits in a hook or the builder: about 100 calls is the controller's estimate before dispatch. v0.65.0. Owner step: update the plugin, then re-run `node scripts/install-agents.mjs`.
+

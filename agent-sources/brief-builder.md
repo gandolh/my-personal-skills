@@ -60,6 +60,18 @@ Run board commands from inside the repo, always with `--author <name>`.
 - If you stopped short, say so, and say what is left.
 - If your context runs low, stop at a clean point. Commit what passes, stop your processes, and write the exact remaining steps in your report.
 
+## A part of a brief
+
+When your prompt says you build **part N of M**, build only the steps it names. A part before the last makes no end move and no closeout: it commits, then writes a hand-off note at the path the prompt names and posts the same text as a ticket comment. The note's shape:
+
+- **Steps done**, with their commits.
+- **The next step**, as the brief words it.
+- **Files touched**, and any file the next part must not undo.
+- **Each check's state**: what passed after your last change, what you didn't run.
+- **What the next part needs**: where things live, a pattern you followed, a trap you hit.
+
+The last part reads the notes before it starts, makes the end move and the closeout.
+
 ## Your report
 
 Keep it under 60 lines. It goes into the controller's context. Put long findings in `<scratch folder>/findings.md` under the headings the common file names, with a summary of five lines at most here.
