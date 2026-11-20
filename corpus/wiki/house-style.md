@@ -1,6 +1,6 @@
 ---
 summary: The house-style measurements for brief 27, collated from the 23 repo harness briefs of 2026-11-09 and 2026-11-10 (not re-measured) - Prettier churn per repo at width 120 and its least-churn width, the TypeScript flag error counts, and the calls made on the four rules whose counts looked wrong. Rule findings, timings, knip and the gaps are on house-style-part-2.md.
-updated: 2026-11-11
+updated: 2026-11-20
 ---
 
 # House style: the measurements
@@ -15,7 +15,7 @@ from that repo's harness brief, where the files and commands are named.
 Rule findings, timings, knip and the list of gaps are on
 [house-style-part-2.md](house-style-part-2.md). The rules these numbers led
 to are the `house-style` skill's; the decisions are on
-[decisions.md](decisions.md).
+[decisions-house-style.md](decisions-house-style.md).
 
 **How to read the churn.** The briefs counted three ways: old lines changed
 (the lines Prettier rewrites), added and removed lines (`+` / `-`, so a

@@ -1,6 +1,6 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, house-style as a library folder vendored into each repo, Prettier at one width of 120, and the house tsconfig flags (2026-11-10); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13). Also review runs on Opus (2026-11-17), with the advisor and effort answers of the same day.
-updated: 2026-11-17
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, and house-style's three calls of 2026-11-10 (on decisions-house-style.md); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13). Also review runs on Opus (2026-11-17), with the advisor and effort answers of the same day, and pstack's no-comments vendored with its suite on the owner's ask (2026-11-20).
+updated: 2026-11-20
 ---
 
 # Decisions
@@ -83,52 +83,11 @@ bake-off on one page. The reason: Hallmark's tiered lint makes the floor of a
 redesign mechanical (contrast, focus, reduced motion, invented facts, the
 phone layout), and its pages are built from each business's job.
 
-## `house-style` is vendored, not installed
-_2026-11-10_ - The shared tooling (Prettier, ESLint and tsconfig presets, the
-checkers) is copied into each repo with a version header and refreshed by a
-`house-style:sync` script that finds the checkout by name. Rejected: an exact
-git dependency, and a GitHub tarball URL. npm locks GitHub dependencies as git
-URLs, and the estate's Docker build stages run `npm ci` with no git or SSH, so
-every image build would break. Vendoring is already how Ward's library and the
-imbatranim kit travel between repos.
-
-**It lives in this library** (the owner's call, 2026-11-10): the package is the
-`house-style/` folder here, with its own version (`house-style/package.json`)
-and tags `house-style-v<version>`, apart from the plugin's. The sync finds the
-`my-personal-skills` checkout by name and copies that folder at a ref into each
-repo's `vendor/house-style/`. Rejected: a separate `house-style` repo, brief
-27's first default. The reasons: one repo and no new remote, the skill and the
-configs it describes change in one commit, and Ward's `shared-library/` folder
-is the precedent. The cost: the library is one lane for agents, so
-house-style work and library briefs no longer run side by side.
-
-## Prettier, at one estate width of 120
-_2026-11-10_ (Q8, Q51) - Every TypeScript repo formats with Prettier at
-`printWidth: 120`, `trailingComma: "all"` and Prettier's defaults otherwise
-(double quotes, semicolons), in one reformat commit per repo listed in
-`.git-blame-ignore-revs`. Markdown stays out. Rejected: each repo's own
-least-churn width (90 in SocialEvents, 100 in Newspapper and ward-auth, 150 in
-brief-board, 180 in Postern), which would make the estate's code wrap
-differently from repo to repo; 130, which is lower churn in Almanac, Shelfmark
-and Wicket but higher in atrium and public-resource-map; and Biome as the
-formatter, which is faster and 3D-sandbox's today, but formats slightly
-differently and would split the estate between two tools. The reason: 120 has
-the least or nearly the least churn in most house repos, it is a common
-convention, and a reformat at any width is a one-off. The numbers are on
-[house-style.md](house-style.md).
-
-## The house tsconfig takes the erasable flags, not `exactOptionalPropertyTypes`
-_2026-11-10_ (Q11, Q50) - The shared base adds `verbatimModuleSyntax` and
-`erasableSyntaxOnly` to the lineage's flags, so every file can run under Node's
-type stripping. Parameter properties become declared fields (168 in
-game-engine, 10 in Satchel). `exactOptionalPropertyTypes` waits for a later
-brief per repo (0-158 errors), and so does `noUncheckedIndexedAccess` where it
-is off (86-740). A repo that can't take a flag turns it off in its own
-tsconfig with a dated comment; imbatranimOS's NestJS backend is exempt from
-`erasableSyntaxOnly`. Rejected: keeping the lineage's flags only (the deploy
-scaffold and imbatranim-apps' server already run on Node's type stripping),
-and taking every strict flag at once (thousands of errors for no behaviour
-gained).
+## house-style's calls are on their own page
+The three calls of 2026-11-10 for house-style (vendored into each repo, not
+installed; Prettier at one width of 120; the tsconfig flags) are on
+[decisions-house-style.md](decisions-house-style.md), split off on
+2026-11-20 when this page passed 200 lines.
 
 ## Server code grouped in `features/<name>/` folders
 _2026-11-09_ (v0.38.0, brief 03; Q23) - Each server groups its code by
@@ -197,3 +156,15 @@ tokens (the 17 review runs that had gone to sonnet). Two related answers of
 the same day change no file: the advisor model in the owner's settings stays,
 and effort follows the session, so a dispatch names a model and never an
 effort level.
+
+## Vendor pstack's no-comments, with the suite it needs
+_2026-11-20_ (v0.66.0, the owner's ask) - `no-comments` is vendored with the
+`comment-sicko` agent, `poteto-mode`, `why`, `architect` and pstack's Claude
+Code adapter, all run only by name. Rejected: the research verdict of the same
+morning ([skill-sources-2026-11-20.md](skill-sources-2026-11-20.md)), which
+was not to add it, because Comment Sicko deletes the why-comments house-style
+rule 24 asks for and because it needs half of pstack. The owner wants the pass
+available anyway. house-style rule 24 is not revisited: the pass is a deliberate
+choice on a scope someone names, not part of any review gate. The rest of pstack
+(`poteto-agent`, `setup-pstack`, `arena`, the principle skills) stays out until
+something here calls for it.

@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.65.0, 29 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.66.0, 33 skills.
 
 ## What it does
 
@@ -65,6 +65,7 @@ Every route stops for your approval before it does anything. Briefs are grilled 
 |---|---|
 | `codegraph` | Scope a change with a code graph (impact, callers), confirm with grep + read |
 | `thermo-nuclear-review` | A very strict maintainability review; use it deliberately (MIT) |
+| `no-comments` | pstack's comment pass, run only by name: the `comment-sicko` agent deletes every comment outside a short keep list and flags the code that needed one for a rename or reshape; with `poteto-mode`, `why` and `architect`, which it leans on, and a Claude Code adapter in `docs/harness/` (MIT). It deletes the why-comments house-style rule 24 asks for, so use it deliberately |
 | `diagnose` | Debug by building a fast, deterministic pass/fail loop first, then one hypothesis at a time, then a fix that keeps the loop as a regression test; stops and asks when no loop can be built |
 | `stocktake` | Audits the library's own skills for token cost, rules past the compaction cut and stale text, and ranks what is worth fixing; also a static check that MCP servers are pinned |
 | `house-style` | The house TypeScript style as numbered rules, each with its lint rule or a review check, and how a repo adopts the harness: configs vendored from `house-style/`, one reformat commit, `npm run check` and `check:fast` |

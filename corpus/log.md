@@ -407,3 +407,15 @@ Five built briefs in four repos; the auditor found a defect the controller had m
 ## [2026-11-19] done | Brief 42 - long briefs split at their steps (v0.65.0)
 
 Three trial rows and a comparison with the day's one-run builds: a run's cost per call doubles past about 100 calls, and the split parts stayed at 40k to 91k cached tokens a call with no rework from their notes. The owner adopted the controller's split at the brief's steps; the rule is in wave mode step 3b and the builder's "A part of a brief".
+
+## [2026-11-20] research | Four skill sources: anidoodle, pstack's no-comments and statechart, Google's EGM
+
+The owner asked whether four outside sources belong in the library. Read at pinned commits, nothing installed: anidoodle not now (no page in the estate asks for drawn art), no-comments no (it deletes what house-style rule 24 asks for, and needs half of pstack), statechart worth vendoring from cursor/plugins after a trial (refused this session: no JRE download), EGM not installed but three ideas worth writing fresh. Nothing filed; the owner's three questions are at the end of [the page](wiki/skill-sources-2026-11-20.md).
+
+## [2026-11-20] answers | The four skill sources: anidoodle kept for later, statechart and EGM dropped
+
+The owner's answers to the morning's research. anidoodle stays out of the library with its own page for a future project, [anidoodle.md](wiki/anidoodle.md), which also answers whether it could serve game-engine's animation engine: not at run time, possibly as an offline drafter of pixel frames, with two ideas to borrow. statechart is dropped; a flow view for brief-board was researched in brief-board's own wiki instead. The three EGM ideas are dropped and none is filed.
+
+## [2026-11-20] done | no-comments vendored with its suite (v0.66.0)
+
+On the owner's ask, pstack's `no-comments` with the `comment-sicko` agent, `poteto-mode`, `why`, `architect` and the Claude Code adapter (`docs/harness/claude-code.md`, its agent names moved to the `personal-skills:` prefix), from cursor/plugins' Claude Code tree at `aaeb0ea`. All run only by name; poteto-mode's `scripts/` stay out, and its PR-landing and worktree-cleanup playbooks don't run here. The decision is on [decisions.md](wiki/decisions.md); house-style rule 24 is unchanged. `decisions.md` passed 200 lines, so its three house-style calls moved, unchanged, to [decisions-house-style.md](wiki/decisions-house-style.md). `check-skills` (33 skills), the script tests (16) and `corpus/lint.sh` pass.

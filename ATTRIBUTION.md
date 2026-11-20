@@ -20,6 +20,7 @@ credited in [Influences](#influences) at the bottom.
 | `impeccable` (v4.1.1) + the 4 `impeccable-*` agents | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | Apache-2.0 | `56f4452` (2026-08-22) |
 | `design-taste-frontend`, `minimalist-ui`, `industrial-brutalist-ui`, `high-end-visual-design` | [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) · [tasteskill.dev](https://www.tasteskill.dev/) | MIT | `72e2995` (2026-08-22), held; superseded upstream |
 | `unslop`, `thermo-nuclear-review` | [cursor/plugins](https://github.com/cursor/plugins) | MIT | `4612556` (2026-08-20) |
+| `no-comments`, `poteto-mode`, `why`, `architect` + the `comment-sicko` agent | [cursor/plugins `pstack/`](https://github.com/cursor/plugins/tree/main/pstack), from its Claude Code tree `harness/pstack/claude-code/` | MIT | `aaeb0ea` (2026-11-19, pstack 0.15.46) |
 | `security-audit` | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | MIT | `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8` (2026-09-14) |
 | `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | MIT | `648c2a5` (2026-08-22) |
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
@@ -101,6 +102,47 @@ per its own instruction that it "must always apply". `thermo-nuclear-review` is 
 extremely strict maintainability review (hard 1000-line file ceiling, bans ad-hoc
 branching on shared paths); it is opinionated enough to fight an existing codebase, so
 reach for it deliberately rather than as the default review.
+
+**pstack: no-comments and what it needs** (MIT, Lauren Tan; the license text is the one in
+[LICENSE-cursor](LICENSE-cursor)) - added on the owner's ask of 2026-11-20. `no-comments`
+spawns Comment Sicko, an agent that deletes every comment except licence headers, comments
+about an outside rule the code can't change, `prettier-ignore`, doc comments that define a
+public API and issue links, and flags the code a deleted comment excused (`MUST KILL`) for a
+rename or reshape. Vendored from cursor/plugins' generated Claude Code tree,
+`harness/pstack/claude-code/` at `aaeb0ea`, which is what Claude Code installs for pstack:
+each skill there points at the Claude Code adapter. Folder names already match each
+frontmatter `name`.
+
+- **In:** `skills/no-comments/`, `skills/why/`, `skills/architect/`, `skills/poteto-mode/`
+  (`SKILL.md`, `worker.md`, 22 playbooks, `references/bugbot-triage.md`),
+  `agents/comment-sicko.md`, and the adapter at `docs/harness/claude-code.md`. The skills link
+  to it as `../../docs/harness/claude-code.md`, so it sits at the plugin root. `no-comments`
+  needs the agent, poteto-mode's Subagents section (the model for each subagent) and `why`
+  (Comment Sicko traces a "do not remove" claim with it); it hands a reshape to `architect`.
+- **Cost:** all four skills carry `disable-model-invocation: true`, so they load only when
+  called by name. The agent's description joins the agent list (about 30 tokens).
+- **Left out, for safety:** `skills/poteto-mode/scripts/`. `watch-pr` installs its packages
+  with bun into its own folder, which here is the plugin cache, and `worktree-audit.sh` reads
+  Cursor's transcript folder. They serve the babysit and worktree-cleanup playbooks only.
+- **Left out, not needed by no-comments:** the rest of pstack, including `poteto-agent`
+  (poteto-mode's delegate; its `model:` line is a Cursor name), `setup-pstack` (it writes
+  `~/.claude/rules/pstack-models.md`), `arena` (architect sends a large design there),
+  `principle-fix-root-causes` and `principle-redesign-from-first-principles` (no-comments names
+  them for intent only) and the skills poteto-mode's playbooks call (`swarm`, `interrogate`,
+  `figure-it-out` and more). `/poteto-mode` run on its own finds those missing; here it is the
+  reference no-comments reads.
+- **Local lines:** the adapter names the agents and commands with the `personal-skills:` prefix
+  instead of `pstack:`, in three rows (running another skill, the agent names, the
+  `poteto-agent` model line). Nothing else is edited.
+- **The guard:** poteto-mode's shipping, babysit, autopilot-full, autopilot-stack and
+  opening-a-pr playbooks push branches and open or merge PRs, and worktree-cleanup deletes
+  worktrees and simulators. Agents in the estate never push and use no worktrees, so those
+  playbooks don't run here.
+- **The conflict:** Comment Sicko deletes the comments house-style rule 24 asks for (why in
+  full sentences, documented exports, dated decisions). house-style is unchanged. Run
+  `/no-comments` by choice, on a scope you name, and read its diff before keeping it.
+- **Models:** without `~/.claude/rules/pstack-models.md`, the adapter maps poteto-mode's
+  defaults: Opus at xhigh for code, prose and judgment, Opus at high for small edits.
 
 **security-audit** (MIT, Cloudflare) - the skill that seeded Cloudflare's vulnerability
 discovery harness, read at `c1c8a8c` (2026-09-14, "Clarify guidance and full audit modes") and
