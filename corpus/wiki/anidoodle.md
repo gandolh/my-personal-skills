@@ -1,5 +1,5 @@
 ---
-summary: What anidoodle is (alexgreensh/anidoodle, Apache-2.0, read at 4ae27d2, v0.10.1), how its engine and method work, what adopting it would cost, the steps to bring it in when a project needs drawn art or animation, and whether it can serve game-engine's animation engine (not at run time; possibly as an offline drafter of pixel frames, plus two ideas to borrow). Not in the library as of 2026-11-20.
+summary: What anidoodle is (alexgreensh/anidoodle, Apache-2.0, read at 4ae27d2, v0.10.1), how its engine and method work, what adopting it would cost, the steps to bring it in when a project needs drawn art or animation, and whether it can serve game-engine's animation engine (not at run time; possibly as a third contestant in game-engine's brief 13 sprite trial for animated frames, plus two edge rules brief 11 lacks). Not in the library as of 2026-11-20.
 updated: 2026-11-20
 ---
 
@@ -95,32 +95,40 @@ licensing page names is the cheaper source.
 
 ## Could it serve game-engine's animation engine?
 
-What the engine is today (game-engine's wiki, `animation.md` and `asset-pipeline.md`):
-`@engine/core/animation` holds a stateless `AnimationClip` (frames with durations,
-`sampleAt`), easing curves and frame events, sampled on the render side by the wall clock.
-Sprites are code too: each is a `PixelRecipe`, an ASCII grid in the EDG32 palette, baked into
-an atlas. A walk is a four-phase stride built from three frames per facing, and an action is an
-`-a`/`-b` pair. In June the engine turned down a part-based skeletal rig at run time, since
-rotating parts breaks the pixel grid, and closed the 24×24 action-pose pass as won't-do until a
-fresh brief reopens it.
+What the engine is (game-engine's wiki and corpus, read 2026-11-20): `@engine/core/animation`
+holds a stateless `AnimationClip` (frames with durations, `sampleAt`), easing curves and frame
+events, sampled on the render side by the wall clock. Sprites are code too: each is a
+`PixelRecipe`, an ASCII grid in the game's palette, baked into an atlas. A walk is a four-phase
+stride built from three frames per facing, and an action is an `-a`/`-b` pair. On 2026-06-12
+the engine turned down a part-based skeletal rig at run time, since rotating parts breaks the
+pixel grid, and the 24×24 action-pose pass closed as won't-do until a fresh brief reopens it.
+On 2026-11-20 game-engine planned its asset work: brief 11 (recipe checks as tests), brief 13
+(a blind trial of sprite-gen's `pixel-draw` against recipes an agent writes, with a `grid.txt`
+importer), and two todos, animation tags in the atlas manifest and a recipe-to-PNG round trip.
 
 - **As the run-time engine: no.** anidoodle draws every frame from scratch through Canvas 2D,
   at film size, with no atlas, no WebGL and no state per entity. The game draws atlas sprites in
   WebGL2 and samples a clip per entity. Swapping one for the other gains nothing and would not
   fit the frame budget.
-- **As an offline drafter of frames: possible, untested.** Its character pipeline makes what
-  the game's art lacks: distinct walk poses timed from footsteps (contact, down, passing, up)
-  and action swings with every joint in range. Its pixel hand turns the figure into whole cells,
-  with a two-step ramp per part, an outline, and eyes stamped as single pixels. The glue: a
-  farmer as a stylised canon row (big head, short limbs), ramps chosen from EDG32, and a
-  converter from its cell grid to `PixelRecipe` strings. The output is static frames, so the
-  run-time decision stands. At 16 or 24 pixels a hand pass still decides the result: pixel art
-  that small is placed by hand.
-- **Ideas to take without it.** First, a recipe lint built on its pixel-art kit's edge rules:
-  no orphan cells, no doubled corners, even staircase runs along a curve (1-1-2-2-3, never
-  2-1-3). That would check the ASCII recipes as the asset-pipeline page's craft pass asks.
-  Second, a real "down" pose, the walk's lowest point just after contact, which today's stride
-  lacks: it reuses the neutral frame for passing and has no down or up.
+- **As an offline drafter of animated frames: possible, untested.** Its edge over sprite-gen
+  and over an agent writing recipes is motion: one figure posed across frames, walk poses timed
+  from footsteps (contact, down, passing, up), action swings with every joint in range, and an
+  identity check per frame. Its pixel hand turns each pose into whole cells with a two-step ramp
+  per part, an outline, and eyes stamped as single pixels. The glue now has a home: draw with
+  ramps from the game's palette, export PNGs, and read them in through the round-trip todo's
+  `recipe-import` (or brief 13's `grid.txt` importer from a cell grid), which refuses
+  off-palette colours. Its walk plan would also fill the animation-tags todo's frame list and
+  durations. The output is static frames, so the run-time decision stands, and at 16 to 32
+  pixels a hand pass still decides the result.
+- **Where it would slot in:** as a third contestant in brief 13's blind trial, for animated
+  characters only (a walk and one action for one figure), since a single still is what
+  sprite-gen and agents already draw. That needs the trial reopened with a subject that moves.
+- **Ideas to take without it.** Brief 11 already plans lone-pixel, floor-row and safe-area
+  checks. anidoodle's pixel kit adds two edge rules that brief 11 lacks: no doubled corners, and
+  even staircase runs along a curve (1-1-2-2-3, never 2-1-3). It also suggests a real "down"
+  pose, the walk's lowest point just after contact, which today's stride lacks: it reuses the
+  neutral frame for passing and has no down or up.
 
-A trial, if the 24×24 pass reopens: one farmer, one facing, the walk and one action drawn at
-24×24 by anidoodle, converted to recipes, and judged in the game beside the hand-made frames.
+Elsewhere in the estate, "animation engine" also names newspapper's anime.js, which runs its UI
+moments. anidoodle doesn't replace that: its web pieces are drawn illustrations that react to
+input, not a library for animating an interface.

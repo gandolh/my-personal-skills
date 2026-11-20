@@ -142,7 +142,12 @@ frontmatter `name`.
   full sentences, documented exports, dated decisions). house-style is unchanged. Run
   `/no-comments` by choice, on a scope you name, and read its diff before keeping it.
 - **Models:** without `~/.claude/rules/pstack-models.md`, the adapter maps poteto-mode's
-  defaults: Opus at xhigh for code, prose and judgment, Opus at high for small edits.
+  defaults: Opus at xhigh for code, prose and judgment, Opus at high for small edits. It passes
+  an `effort` on every spawn, which this library's rule turns down (decisions.md, "Review runs
+  on Opus": a dispatch names a model, never an effort). The rule governs the library's own
+  skills; inside a `/no-comments` run, pstack's routing applies as vendored.
+- **Not shipped here:** the adapter's Paths row says the plugin ships pstack's `docs/guide/` and
+  `README.md`; neither is vendored, so a pointer to them means the GitHub copy.
 
 **security-audit** (MIT, Cloudflare) - the skill that seeded Cloudflare's vulnerability
 discovery harness, read at `c1c8a8c` (2026-09-14, "Clarify guidance and full audit modes") and

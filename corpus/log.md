@@ -414,7 +414,7 @@ The owner asked whether four outside sources belong in the library. Read at pinn
 
 ## [2026-11-20] answers | The four skill sources: anidoodle kept for later, statechart and EGM dropped
 
-The owner's answers to the morning's research. anidoodle stays out of the library with its own page for a future project, [anidoodle.md](wiki/anidoodle.md), which also answers whether it could serve game-engine's animation engine: not at run time, possibly as an offline drafter of pixel frames, with two ideas to borrow. statechart is dropped; a flow view for brief-board was researched in brief-board's own wiki instead. The three EGM ideas are dropped and none is filed.
+The owner's answers to the morning's research. anidoodle stays out of the library with its own page for a future project, [anidoodle.md](wiki/anidoodle.md), which also answers whether it could serve game-engine's animation engine: not at run time; possibly as a third contestant, for animated frames, in game-engine's brief 13 sprite trial; and two edge rules that its brief 11 lacks. statechart is dropped; a flow view for brief-board was researched in brief-board's own wiki instead. The three EGM ideas are dropped and none is filed.
 
 ## [2026-11-20] done | no-comments vendored with its suite (v0.66.0)
 
