@@ -82,6 +82,9 @@ What the library lacks today, read on 2026-11-23:
    (browser support, time zones, sanitizing, view transitions) are in the web-platform skill.
 8. **decisions.md**: "Vendor modern-web-guidance's guides, not its CLI" with the date, the
    alternatives (install it; fold the guides into base-ui; ideas only) and the reason.
+   A second entry, "The browser policy": Chrome on Android decides what to build; Safari on iPhone,
+   Firefox and desktop Safari must keep working (owner, 2026-11-23; rejected: best effort for desktop
+   Firefox and Safari).
 9. **Version.** A minor bump in both plugin files (both places in the marketplace file), the
    README version line and skill count (34), a README row beside `base-ui`, a paragraph in
    `docs/history.md`, and `web-platform` named in the plugin descriptions where `base-ui` is.
@@ -131,10 +134,11 @@ npm package's `gen/guides.json`.
 
 ## Owner decisions
 
-1. A new skill (about 200 listing tokens) or the files under `base-ui/references/` (none)?
-   Recommendation: the new skill; the next stocktake prunes it if no session calls it.
-2. Do Firefox and desktop Safari count like the iPhone, as the draft's rule 3 says?
-   Recommendation: yes.
+Settled with the owner on 2026-11-23:
+
+1. **A new skill**, not a folder under `base-ui/references/`: the listing cost (about 200 tokens) is accepted so
+   the guides trigger on any web task, React or not. The next stocktake prunes it if no session calls it.
+2. **Firefox and desktop Safari must keep working**, like the iPhone. The draft's rule 3 stands as written.
 
 ## Appendix: the draft SKILL.md
 

@@ -22,7 +22,7 @@ instructions updates itself; each update is a reviewed diff.
 - `skills/stocktake/SKILL.md`: one line in the full mode's mechanical step, and the report
   section it feeds.
 - `README.md`, `docs/history.md`, both plugin files, `corpus/`.
-- Only if the owner picks decision 1: the fetch URL line in
+- The fetch URL line in
   `skills/web-design-guidelines/SKILL.md` and `skills/writing-guidelines/SKILL.md`, and
   their `ATTRIBUTION.md` note.
 
@@ -56,6 +56,9 @@ instructions updates itself; each update is a reviewed diff.
    prints the list; it is not a finding.
 3. Link `docs/vendoring.md` from `ATTRIBUTION.md`'s opening lines and from the
    decisions.md entry on pins (one line each; the entry's text stays).
+4. **Pin the two Vercel fetches** (owner decision 1): in `skills/web-design-guidelines/SKILL.md` and
+   `skills/writing-guidelines/SKILL.md`, replace `main` in the fetch URL with the commit `git ls-remote` reports
+   for each repo's `main` when the brief runs, and add both as pinned rows with local lines in `ATTRIBUTION.md`.
 
 ## Acceptance
 
@@ -63,12 +66,15 @@ instructions updates itself; each update is a reviewed diff.
   and its steps name a check for each.
 - `node skills/stocktake/scripts/measure.mjs` shows stocktake's rules still before the
   5,000-token cut; `node scripts/check-skills.mjs` and `bash corpus/lint.sh` are clean.
-- No pin in `ATTRIBUTION.md` changed.
+- No existing pin in `ATTRIBUTION.md` changed; the two Vercel fetches are pinned, and
+  `grep -rn 'githubusercontent.com/vercel-labs/[^/]*/main/' skills/` prints nothing.
 - The version is bumped in both plugin files, the README and `docs/history.md`.
 
 ## Owner decisions
 
-1. `web-design-guidelines` and `writing-guidelines` fetch their rules from the Vercel repos'
-   `main` on every run, the auto-update pattern this brief rules out. Pin both URLs to a
-   commit in this brief (two local lines, recorded in `ATTRIBUTION.md`), or leave them?
-   Recommendation: pin them here.
+Settled with the owner on 2026-11-23:
+
+1. **Pin both Vercel fetches** in this brief. `web-design-guidelines` and `writing-guidelines` swap `main` in
+   their `raw.githubusercontent.com` URL for the commit each file is at when the brief runs (read it with
+   `git ls-remote`, no API calls), recorded as local lines with the pin and its date in `ATTRIBUTION.md`. From then
+   on they move only through this procedure.
