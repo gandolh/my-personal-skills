@@ -65,3 +65,7 @@ gazette, lantern, mini-projects, newspapper, postern, ro-housing, satchel, shelf
 ## Owner decisions
 
 - None. The owner chose the line and the place on 2026-11-23.
+
+## Outcome (2026-11-24, v0.68.1)
+
+The browser bullet (three lines, after each file's first bullet) is in the `.claude/rules/web.md` of 15 repos, one commit each touching only that file: SocialEvents d05f659, almanac 8369357, atrium b456d07, brief-board 0bad447, comercial-website 30ea298, gazette b1992e3, lantern 2fc7e8d, mini-projects 53b6042, newspapper 8902f83, postern e9ec857, ro-housing c84706f, satchel 56243c1, shelfmark 3687a79, 3D-sandbox d987b65, wicket 40030e6. Skipped: imbatranimOS (the owner paused that repo). No repo had a dirty `web.md`. Repos with web code and no `web.md`, untouched: trips, presentation-sites, the school theme. Line counts after the change: SocialEvents 35, almanac 49, atrium 30, brief-board 45, comercial-website 37, gazette 27, lantern 37, mini-projects 35, newspapper 33, postern 39, ro-housing 25, satchel 38, shelfmark 30, 3D-sandbox 40, wicket 43; almanac, brief-board and wicket are past house-style's 40-line guide, and nothing else was cut. house-style's SKILL.md bullet and adoption.md template carry the line. Checks: grep lists 15 files, `check-skills` 34 skills 0 failing, `corpus/lint.sh` clean. Follow-up: imbatranimOS's file when the owner lifts the pause. Owner step: the plugin update to 0.68.1; the controller pushes the 15 repos.

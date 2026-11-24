@@ -430,7 +430,7 @@ The owner asked whether GoogleChrome/modern-web-guidance helps and how to bring 
 
 ## [2026-11-23] answers | modern-web-guidance grilled: briefs 44 and 45 settled, brief 46
 
-The owner's answers: a new `web-platform` skill (not a base-ui folder); Firefox and desktop Safari must keep working like the iPhone (brief 44 records the browser policy in `wiki/decisions.md`); brief 45 pins the two Vercel guideline fetches. [Brief 46](briefs/todo/46-the-browser-policy-in-every-repos-web-rules.md) adds the browser policy to the sixteen repos' `.claude/rules/web.md` and to house-style's template, after 44.
+The owner's answers: a new `web-platform` skill (not a base-ui folder); Firefox and desktop Safari must keep working like the iPhone (brief 44 records the browser policy in `wiki/decisions.md`); brief 45 pins the two Vercel guideline fetches. [Brief 46](briefs/done/46-the-browser-policy-in-every-repos-web-rules.md) adds the browser policy to the sixteen repos' `.claude/rules/web.md` and to house-style's template, after 44.
 
 ## [2026-11-24] done | Brief 44 - the web-platform skill, 20 guides vendored from modern-web-guidance (v0.67.0)
 
@@ -439,3 +439,7 @@ A new first-party `web-platform` skill: the browser policy as seven rules (Chrom
 ## [2026-11-24] done | Brief 45 - the re-vendoring procedure, pin ages in stocktake, the two Vercel fetches pinned (v0.68.0)
 
 `docs/vendoring.md` says how to vendor a source and how to take a new pin as a reviewed diff (clone in a scratch folder, diff on the vendored paths, read for installs and fetches, licence compare, copy, checks). Stocktake lists each pin with its age. `web-design-guidelines` and `writing-guidelines` now fetch at `434b7f9` and `83e2316`, not `main`. No existing pin moved. Outcome in [the brief](briefs/done/45-a-re-vendoring-procedure-for-pinned-upstreams.md).
+
+## [2026-11-24] done | Brief 46 - the browser policy in every repo's web rules (v0.68.1)
+
+One bullet (Chrome on Android decides what to build; the other browsers must keep working; read `web-platform` before a feature past Baseline Widely available) in the `.claude/rules/web.md` of 15 repos, one commit each, and in house-style's `web.md` bullet and template. imbatranimOS skipped: the owner paused it. Outcome in [the brief](briefs/done/46-the-browser-policy-in-every-repos-web-rules.md).
