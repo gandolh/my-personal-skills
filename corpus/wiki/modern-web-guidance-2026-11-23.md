@@ -170,7 +170,7 @@ The steps: clone at the new commit into an empty scratch folder; `git diff -M` b
 two pins on the kept paths only; read that diff, looking for renames, deletions, new install
 commands, CDN or `@latest` lines and text addressed to the agent; rerun the copy script;
 review the library's own diff; bump the version. A stale copy fails safe: an old support
-line keeps a fallback the browser no longer needs. [Brief 45](../briefs/todo/45-a-re-vendoring-procedure-for-pinned-upstreams.md)
+line keeps a fallback the browser no longer needs. [Brief 45](../briefs/done/45-a-re-vendoring-procedure-for-pinned-upstreams.md)
 writes the steps for every pinned upstream, with a pin-age line in the stocktake that
 skips the ones held on purpose.
 

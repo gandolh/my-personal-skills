@@ -78,3 +78,7 @@ Settled with the owner on 2026-11-23:
    their `raw.githubusercontent.com` URL for the commit each file is at when the brief runs (read it with
    `git ls-remote`, no API calls), recorded as local lines with the pin and its date in `ATTRIBUTION.md`. From then
    on they move only through this procedure.
+
+## Outcome (2026-11-24, v0.68.0)
+
+`docs/vendoring.md` holds Part 1 (six numbered rules for a new source) and Part 2 (nine steps for a new pin, plus held pins), each with its check. Stocktake's full mode lists every pin with its date and age in days (the report prints it; not a finding). `docs/vendoring.md` is linked from `ATTRIBUTION.md`'s opening, the decisions.md pins entry and `web-platform`'s "Taking updates" (the pointer brief 44 left out). The two Vercel fetches read `command.md` at `434b7f9` (web-interface-guidelines) and `83e2316` (writing-guidelines), read with `git ls-remote` on 2026-11-24 and recorded as pinned rows; both URLs return 200. No existing pin moved; the acceptance grep prints nothing. Checks: `check-skills` 34 skills 0 failing, `measure.mjs` (stocktake about 2,173 tokens, before the cut), `corpus/lint.sh` clean, `node --test scripts/*.test.mjs` 21 of 21. The pin dates for the two new rows are the read date, not the commit dates (no API calls). Owner step: update the plugin to 0.68.0.
