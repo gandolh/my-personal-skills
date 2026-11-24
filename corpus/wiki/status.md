@@ -182,3 +182,4 @@ Brief 43 is done with no change to a shipped file: the owner chose no rule for t
 - 2026-11-24: brief 44 done, the `web-platform` skill (the browser policy, 20 guides vendored from GoogleChrome/modern-web-guidance at `2b4aa13` by `scripts/vendor-modern-web-guidance.mjs`), v0.67.0: 34 skills. Owner step: the plugin update to 0.67.0. Briefs 45 and 46 are next.
 - 2026-11-24: brief 45 done, `docs/vendoring.md` (vendoring and re-pinning procedure), pin ages in stocktake's full mode, the two Vercel fetches pinned, v0.68.0. Owner step: the plugin update to 0.68.0. Brief 46 is next.
 - 2026-11-24: brief 46 done, the browser line in 15 repos' web.md and house-style's template, v0.68.1 (imbatranimOS pending the owner's pause). Owner step: the plugin update to 0.68.1.
+- 2026-11-24: v0.68.2, CC BY 4.0 named in the README's licence line and the manifest's `license` (owner's answer). Owner step: the plugin update to 0.68.2.

@@ -8,7 +8,7 @@ A skill library for [Claude Code](https://claude.com/claude-code) that runs a pr
 
 `/orchestrate` makes sure the repo has a `corpus/` workspace, reads `corpus/routing.md`, works out what kind of request this is, shows a plan, and hands off once you approve: capture to `corpus-flow`, build to `plan-split-dispatch`, audits to `improve`, redesigns to Hallmark, questions to the wiki. It routes; it never does the work itself.
 
-**Status:** Personal library, in daily use on the owner's projects. Version 0.68.1, 34 skills.
+**Status:** Personal library, in daily use on the owner's projects. Version 0.68.2, 34 skills.
 
 ## What it does
 
@@ -146,4 +146,4 @@ The skills follow the Agent Skills format (`SKILL.md` with `name` and `descripti
 
 ## License
 
-The plugin's own code is [MIT](LICENSE). Vendored skills keep their original licenses (MIT or Apache-2.0); see [ATTRIBUTION.md](ATTRIBUTION.md).
+The plugin's own code is [MIT](LICENSE). Vendored skills keep their original licenses (MIT, Apache-2.0, or CC BY 4.0 for the modern-web-guidance guides in web-platform); see [ATTRIBUTION.md](ATTRIBUTION.md).
