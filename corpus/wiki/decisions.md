@@ -13,6 +13,7 @@ upstream and the pinned commit. Rejected: first-party only, the rule from
 v0.24.0 to v0.26.0. It left the owner without a design layer, and the upstream
 work was good enough to carry whole. The reason to pin is that an upstream
 change then arrives only when someone updates the pin on purpose.
+How: [docs/vendoring.md](../../docs/vendoring.md).
 
 **Revisited 2026-11-11** (v0.40.0, brief 24), for Hallmark and the taste
 suite. Hallmark (Nutlope/hallmark, `407fa68`, MIT) is vendored as its skill

@@ -63,4 +63,4 @@ guide's fallback. "Floor" needs neither.
 The pin, the list of files and the lines changed from upstream are in the
 library's `ATTRIBUTION.md`. `scripts/vendor-modern-web-guidance.mjs` makes the
 copy from a clone at the new pin. Never edit a file under `references/mwg/` by
-hand.
+hand. The steps for a new pin are in `docs/vendoring.md`, Part 2.

@@ -36,7 +36,10 @@ The measuring facts it relies on, and the rubric itself, are in
      on-invoke figures, which the estimate is calibrated against);
    - `/doctor prompt-audit` when the Claude Code version has it (2.1.283 or later),
      which audits `.claude/` content. Run it first; the rubric adds what it can't see.
-   - `node ${CLAUDE_PLUGIN_ROOT}/skills/stocktake/scripts/check-mcp-pins.mjs`.
+   - `node ${CLAUDE_PLUGIN_ROOT}/skills/stocktake/scripts/check-mcp-pins.mjs`;
+   - the pins list: each row of `ATTRIBUTION.md`'s pins table with its pin date and its age in
+     days, and "held" for held rows. The report prints it, and it is not a finding. The owner
+     picks a pin to move from it, and `docs/vendoring.md` says how.
 2. Split the skills into batches of **five**, in directory order. Start **one
    subagent per batch** (a sonnet-tier agent), one batch at a time. Give each the
    rubric, its five skill folders, and the measure rows. Ask for findings in the

@@ -10,6 +10,8 @@ are vendored — see below).
 
 The plugin's own code is **MIT** — see [LICENSE](LICENSE).
 
+How to vendor a source and how to take a new pin: [docs/vendoring.md](docs/vendoring.md).
+
 Several first-party skills adopt *ideas* from work that is **not** vendored here —
 credited in [Influences](#influences) at the bottom.
 
@@ -27,6 +29,8 @@ credited in [Influences](#influences) at the bottom.
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
 | `web-platform/references/mwg/` (20 guides) | [GoogleChrome/modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance) | CC BY 4.0 | `2b4aa13` (2026-11-23, v1.0.2) |
 | `web-design-guidelines`, `writing-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
+| `web-design-guidelines`' fetch | [vercel-labs/web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) `command.md` | MIT | `434b7f9` (2026-11-24) |
+| `writing-guidelines`' fetch | [vercel-labs/writing-guidelines](https://github.com/vercel-labs/writing-guidelines) `command.md` | MIT | `83e2316` (2026-11-24) |
 
 License texts: [LICENSE-hallmark](LICENSE-hallmark) (also kept as `skills/hallmark/LICENSE`), [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
 [LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-cloudflare](LICENSE-cloudflare), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
@@ -232,7 +236,11 @@ and upstream's `LICENSE` are in [LICENSE-modern-web-guidance](LICENSE-modern-web
 `writing-guidelines`. Neither carries its rules: each is a ~39-line shim that fetches them from
 [web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) and
 [writing-guidelines](https://github.com/vercel-labs/writing-guidelines) on every run, so they
-stay current but need network access. v0.62.0 removed the four self-contained React skills
+need network access. Since v0.68.0 each fetch reads `command.md` at a pinned commit, not `main`
+(the two pins are the last rows of the table; `git ls-remote` gave the commits on 2026-11-24, so
+the dates are the day they were read). **Local line:** the fetch URL in each `SKILL.md` has the
+commit where upstream's shim has `main`. The fetched rules move only through
+[docs/vendoring.md](docs/vendoring.md), Part 2. v0.62.0 removed the four self-contained React skills
 (`composition-patterns`, `react-best-practices`, `react-native-skills`, `react-view-transitions`):
 no session called them. They can be vendored again from upstream.
 
