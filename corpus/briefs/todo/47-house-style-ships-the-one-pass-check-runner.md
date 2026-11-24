@@ -134,8 +134,8 @@ A house-style release follows brief 31's pattern
 
 ## Owner decisions
 
-- Settled 2026-11-25 (owner): promote it ("promote what's possible").
-- The planner's technical calls, 2026-11-25:
+- Settled 2026-11-24 (owner): promote it ("promote what's possible").
+- The planner's technical calls, 2026-11-24:
   - house-style ships imbatranimOS's variant: it is a superset, and a repo that never writes `+` gets the 23 copies'
     behaviour.
   - The Prettier cache folder is the one the 24 repos already use, not the wiki's spelling.

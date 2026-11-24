@@ -444,6 +444,6 @@ A new first-party `web-platform` skill: the browser policy as seven rules (Chrom
 
 One bullet (Chrome on Android decides what to build; the other browsers must keep working; read `web-platform` before a feature past Baseline Widely available) in the `.claude/rules/web.md` of 15 repos, one commit each, and in house-style's `web.md` bullet and template. imbatranimOS skipped: the owner paused it. Outcome in [the brief](briefs/done/46-the-browser-policy-in-every-repos-web-rules.md).
 
-## [2026-11-25] briefs | 47-51 from the open todos (the owner's ask of 2026-11-25)
+## [2026-11-24] briefs | 47-51 from the open todos (the owner's ask of 2026-11-24)
 
 The owner asked to promote what's possible. Five todos became briefs: [47](briefs/todo/47-house-style-ships-the-one-pass-check-runner.md) house-style ships the gate runner (imbatranimOS's variant) and the Prettier and dependency-cruiser caches, and syncs game-engine, the one adopter without it (trips and vps-deploy have no house-style gate, so they're out); [48](briefs/todo/48-the-builder-rhythm-for-the-check-tail.md) the builder rhythm for the check tail, after 47; [49](briefs/todo/49-lint-wiki-pages-older-than-the-code-they-link.md) a stale-page warning for `lint.sh`, measured on three corpora before anything is built; [50](briefs/todo/50-spike-oxlint-for-the-typed-lint-rules.md) and [51](briefs/todo/51-spike-typescript-7-for-tsc.md) the oxlint and TypeScript 7 spikes on imbatranim-apps, in scratch clones, on a quiet machine, never together. The spikes end in an owner question; adoption is a later brief.

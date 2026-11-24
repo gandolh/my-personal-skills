@@ -84,8 +84,8 @@ list.
 
 ## Owner decisions
 
-- Settled 2026-11-25 (owner): promote it ("promote what's possible").
-- The planner's technical calls, 2026-11-25:
+- Settled 2026-11-24 (owner): promote it ("promote what's possible").
+- The planner's technical calls, 2026-11-24:
   - The threshold is the todo's: more than half of the filtered warnings stale.
   - A linked file is any file git tracks outside `corpus/`; `.md` targets are counted apart.
   - The date compared is the committer date, after dropping `.git-blame-ignore-revs` commits and pure renames.

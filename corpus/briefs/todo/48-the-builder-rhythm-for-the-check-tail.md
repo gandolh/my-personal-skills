@@ -101,8 +101,8 @@ notes, outside this repo. Updating it is an owner step below.
 
 ## Owner decisions
 
-- Settled 2026-11-25 (owner): promote it ("promote what's possible").
-- The planner's technical calls, 2026-11-25:
+- Settled 2026-11-24 (owner): promote it ("promote what's possible").
+- The planner's technical calls, 2026-11-24:
   - The bisectability cost is accepted: a knip or dependency-cruiser failure is cheap to place, and the full gate
     runs before every hand-back.
   - No `SubagentStop` hook: the rhythm makes the builder run `check:fast` itself.

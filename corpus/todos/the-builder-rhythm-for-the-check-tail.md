@@ -7,7 +7,7 @@ tags: [agents, harness]
 
 # The builder rhythm for the check tail
 
-Promoted 2026-11-25 to [brief 48](../briefs/todo/48-the-builder-rhythm-for-the-check-tail.md).
+Promoted 2026-11-24 to [brief 48](../briefs/todo/48-the-builder-rhythm-for-the-check-tail.md).
 
 From [check-speed-2026-11-23.md](../wiki/check-speed-2026-11-23.md), recommendation 2. Inner loop after each step:
 `npm run check:fast` and the test file beside each changed source; the full `npm run check` once after the last code

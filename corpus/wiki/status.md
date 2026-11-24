@@ -1,6 +1,6 @@
 ---
 summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38). Then the model-routing review of the same day: review runs on Opus (brief 39, v0.59.0), with the follow-up briefs listed in the last section.
-updated: 2026-11-25
+updated: 2026-11-24
 ---
 
 # Status
@@ -183,4 +183,4 @@ Brief 43 is done with no change to a shipped file: the owner chose no rule for t
 - 2026-11-24: brief 45 done, `docs/vendoring.md` (vendoring and re-pinning procedure), pin ages in stocktake's full mode, the two Vercel fetches pinned, v0.68.0. Owner step: the plugin update to 0.68.0. Brief 46 is next.
 - 2026-11-24: brief 46 done, the browser line in 15 repos' web.md and house-style's template, v0.68.1 (imbatranimOS pending the owner's pause). Owner step: the plugin update to 0.68.1.
 - 2026-11-24: v0.68.2, CC BY 4.0 named in the README's licence line and the manifest's `license` (owner's answer). Owner step: the plugin update to 0.68.2.
-- 2026-11-25: briefs 47-51 filed from the open todos (the owner's ask): the gate runner in house-style, the builder rhythm, a stale-page lint measured first, and the oxlint and TypeScript 7 spikes.
+- 2026-11-24: briefs 47-51 filed from the open todos (the owner's ask): the gate runner in house-style, the builder rhythm, a stale-page lint measured first, and the oxlint and TypeScript 7 spikes.

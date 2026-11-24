@@ -75,8 +75,8 @@ not?
 
 ## Owner decisions
 
-- Settled 2026-11-25 (owner): promote it ("promote what's possible").
-- The planner's technical calls, 2026-11-25:
+- Settled 2026-11-24 (owner): promote it ("promote what's possible").
+- The planner's technical calls, 2026-11-24:
   - The spike runs on imbatranim-apps, where typecheck is about a fifth of the gate; almanac's 2026-11-23 numbers
     stand for a light repo.
   - It runs in a scratch clone, so no adopter's tree changes.
