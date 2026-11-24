@@ -1,6 +1,6 @@
 ---
-summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, and house-style's three calls of 2026-11-10 (on decisions-house-style.md); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13). Also review runs on Opus (2026-11-17), with the advisor and effort answers of the same day, and pstack's no-comments vendored with its suite on the owner's ask (2026-11-20).
-updated: 2026-11-20
+summary: Locked calls for the skills library, each with the date, the alternative and the reason. Vendoring over first-party-only (2026-08), pinned upstreams with licenses kept, ideas adopted but not copied, a prune of unused skills, and blocked work in its own folders; Base UI conventions as a skill instead of a shared component library (2026-11-09); Hallmark as the estate's design skill, and house-style's three calls of 2026-11-10 (on decisions-house-style.md); the code structure's four calls for the Fastify servers: `features/` folders, dependencies as typed plugin options, explicit registration, and zod route schemas through the official provider (2026-11-09); shared domain code in `domain/` under the features (2026-11-13). Also review runs on Opus (2026-11-17), with the advisor and effort answers of the same day, pstack's no-comments vendored with its suite on the owner's ask (2026-11-20), and modern-web-guidance's guides vendored without its CLI, with the browser policy: Chrome on Android first, Safari on iPhone, Firefox and desktop Safari kept working (2026-11-23).
+updated: 2026-11-24
 ---
 
 # Decisions
@@ -168,3 +168,20 @@ available anyway. house-style rule 24 is not revisited: the pass is a deliberate
 choice on a scope someone names, not part of any review gate. The rest of pstack
 (`poteto-agent`, `setup-pstack`, `arena`, the principle skills) stays out until
 something here calls for it.
+
+## Vendor modern-web-guidance's guides, not its CLI
+_2026-11-23_ (v0.67.0, brief 44, the owner's pick) - 20 of upstream's 211 guides
+are copied at `2b4aa13` into a new first-party `web-platform` skill by a script
+that turns the CLI pointers into links and the CDN imports into npm names.
+Rejected: installing it (its skill runs `npx -y modern-web-guidance@latest` on
+every web task, starts a telemetry process and asks for auto-update); the guides
+in a folder under `base-ui/references/` (no listing cost, but base-ui loads for
+Base UI work and these questions come up without it); ideas only (the support
+lines and fallbacks are the value, and CC BY 4.0 allows the copy with credit).
+See [modern-web-guidance-2026-11-23.md](modern-web-guidance-2026-11-23.md).
+
+## The browser policy
+_2026-11-23_ (v0.67.0, brief 44, the owner's answer) - Chrome on Android decides
+what to build; Safari on iPhone, Firefox and desktop Safari must keep working.
+The floor is Baseline Widely available. Rejected: best effort for desktop
+Firefox and Safari. The policy is rule 3 of the `web-platform` skill.

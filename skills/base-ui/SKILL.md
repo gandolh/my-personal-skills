@@ -166,6 +166,7 @@ substitute the app's own.
   differs from the CSS being converted (what Preflight removes, state order,
   `translate`, `grid-cols`, `color-mix`, class hooks in code), and what the
   ten moves measured.
+- Platform features beyond Base UI (browser support, time zones, sanitizing, view transitions) are in the web-platform skill.
 
 The package ships its own docs, one Markdown file per component with the
 full API tables, at `node_modules/@base-ui/react/docs/react/`. Check a prop

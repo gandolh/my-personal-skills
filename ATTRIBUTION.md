@@ -4,8 +4,9 @@ This plugin vendors third-party skills. Each retains its original license.
 
 **Original to this plugin** (no third-party code): `orchestrate`, `corpus-flow`,
 `corpus-docs-site`, `readme-docs`, `plan-split-dispatch`, `improve`, `grill-me`, `codegraph`,
-`ui-test-plans`, `bootstrap-vps-deploy`, and `design-md-library` (the *skill*; its data is
-vendored — see below).
+`ui-test-plans`, `bootstrap-vps-deploy`, `design-md-library` (the *skill*; its data is
+vendored — see below), and `web-platform` (the *skill* and its browser policy; its 20 guides
+are vendored — see below).
 
 The plugin's own code is **MIT** — see [LICENSE](LICENSE).
 
@@ -24,11 +25,12 @@ credited in [Influences](#influences) at the bottom.
 | `security-audit` | [cloudflare/security-audit-skill](https://github.com/cloudflare/security-audit-skill) | MIT | `c1c8a8c1471069fb0e188eeaff69b8e8db6564a8` (2026-09-14) |
 | `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | MIT | `648c2a5` (2026-08-22) |
 | `design-md-library/references/design-md/` (74 `DESIGN.md` files) | [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) | MIT | `8147538` (2026-07-31) |
+| `web-platform/references/mwg/` (20 guides) | [GoogleChrome/modern-web-guidance](https://github.com/GoogleChrome/modern-web-guidance) | CC BY 4.0 | `2b4aa13` (2026-11-23, v1.0.2) |
 | `web-design-guidelines`, `writing-guidelines` | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | MIT | `dd089a8` (2026-08-21) |
 
 License texts: [LICENSE-hallmark](LICENSE-hallmark) (also kept as `skills/hallmark/LICENSE`), [LICENSE-taste-skill](LICENSE-taste-skill), [LICENSE-cursor](LICENSE-cursor),
 [LICENSE-diagram-design](LICENSE-diagram-design), [LICENSE-cloudflare](LICENSE-cloudflare), [LICENSE-awesome-design-md](LICENSE-awesome-design-md),
-and `skills/impeccable/LICENSE` + `skills/impeccable/NOTICE.md` (Apache-2.0 requires both be retained).
+[LICENSE-modern-web-guidance](LICENSE-modern-web-guidance) (the CC BY 4.0 notice and upstream's Apache-2.0 text), and `skills/impeccable/LICENSE` + `skills/impeccable/NOTICE.md` (Apache-2.0 requires both be retained).
 
 ### Notes per source
 
@@ -177,6 +179,54 @@ HTML+SVG. PNG export needs Playwright + Chromium; some scripts need Python 3. It
 per-brand `README.md`, byte-identical to upstream. Each file is the upstream authors' *interpretation* of a public brand, not an
 official design system; the brands are their owners' trademarks. See the skill's own
 boundary section on reference-vs-imitation.
+
+**modern-web-guidance** (CC BY 4.0 for the guides; Apache-2.0 for upstream's code, none of
+which is vendored) - 20 of upstream's 211 web platform guides, copied at `2b4aa13` into the
+first-party `web-platform` skill, whose `SKILL.md` (the browser policy, seven rules and an index
+of the 20) is written fresh. The research and the reasons are on
+[corpus/wiki/modern-web-guidance-2026-11-23.md](corpus/wiki/modern-web-guidance-2026-11-23.md).
+The licence notice, the credit to MDN Web Docs and the W3C, WHATWG and IETF specifications,
+and upstream's `LICENSE` are in [LICENSE-modern-web-guidance](LICENSE-modern-web-guidance).
+
+- **In:** from `skills/modern-web-guidance/guides/`, five in `performance/`
+  (`performance`, `improve-next-page-load-performance`, `break-up-long-tasks`,
+  `identify-inp-causes`, `defer-rendering-heavy-content`), four in `security/` (`security`,
+  `sanitize-untrusted-html`, `trusted-types`, `validate-origins`), three in `forms/`
+  (`ime-safe-enter-submit`, `autofill-sign-in-form`, `autofill-sign-up-form`), three in `js/`
+  (`coordinate-global-events`, `capture-location-agnostic-data`,
+  `calculate-event-differentials`), `accessibility/respect-os-text-scale`, three in
+  `ui-behaviors/` (`same-document-transitions`, `cross-document-transitions`,
+  `search-hidden-content`) and `ui-atoms/responsive-table`. About 190 KB, read one at a time.
+- **Left out:** upstream's own `SKILL.md`, which runs the CLI on every web task; the CLI, its
+  search, `legacy-scan` and the telemetry watchdog (`watchdog/main.js`), all in the npm package;
+  the plugin manifests for nine agents and `policies/`; the `chrome-extensions` skill (no
+  extension work here); and 191 guides. By category: `ui-components` (23, native dialog,
+  popover, menu, select, tabs and toast, where base-ui rule 13 says Base UI), `css` (18,
+  Tailwind and base-ui rule 5 own CSS structure), `visual-design` (22, Hallmark's,
+  impeccable's and base-ui `theme.md`'s ground; the WebGL and canvas guides are gated upstream
+  as origin-trial or volatile), `ui-behaviors` (37 more: dialog and top-layer behaviour is Base
+  UI's, and the scroll, drag, swipe and motion effects were not picked), `forms` (16 more:
+  control styling is Base UI's, validation display is `Field`'s), `performance` (21 more: the
+  analytics and A/B guides have no user here, and image and LCP priority is covered by
+  web-design-guidelines and Hallmark), `security` (13 more: the seven passkey guides wait until
+  Ward wants passkeys), `ui-atoms` (12 more: `single-line-overflow` truncates content, which the
+  design gates forbid), `accessibility` (3 more, covered by web-design-guidelines, impeccable
+  and Hallmark), `js` (3 more, not picked), `built-in-ai` and `webmcp` (8: Chrome-only, and
+  Wicket is the estate's one LLM door), and `html`, `privacy`, `pwa`, `wasm` and
+  `user-experience` (15: web components aren't used, the rest is general or has no user).
+- **Local lines:** `scripts/vendor-modern-web-guidance.mjs` makes the copy and every change. Each
+  file gains a first line, an HTML comment with its upstream path, the commit and the licence.
+  The 12 pointers that ran the CLI (`` `<id>` (via `npx -y modern-web-guidance@latest retrieve
+  "<id>"`) ``) became links on the id: 7 relative links to vendored guides, 5 GitHub URLs at
+  `2b4aa13` (`schedule-tasks-by-priority`, `local-network-access`,
+  `secure-external-subresources`, `single-line-overflow`, `fluid-scaling`). The 3
+  `import('https://esm.sh/temporal-polyfill')` lines in the Temporal guides became
+  `import('temporal-polyfill')`. Nothing else differs from upstream. The script refuses to write
+  when a copied line still holds `npx`, `@latest`, `unpkg.com`, `esm.sh`, `cdn.jsdelivr.net` or a
+  pointer of another shape.
+- **The guard:** never run `npx modern-web-guidance` (any version), never install its plugin or
+  its skill, and never read a guide from upstream's `main`. A new pin is a reviewed diff: clone
+  the commit into an empty scratch folder, read the change on the kept paths, rerun the script.
 
 **vercel-labs/agent-skills** (MIT) — two of the nine skills vendored: `web-design-guidelines` and
 `writing-guidelines`. Neither carries its rules: each is a ~39-line shim that fetches them from
