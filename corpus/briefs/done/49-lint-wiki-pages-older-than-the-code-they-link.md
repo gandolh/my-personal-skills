@@ -143,15 +143,30 @@ except `decisions.md` (2026-11-13); "also" names the other filtered commits sinc
 What the numbers show:
 
 - **1 of 13 filtered warnings is stale**, against a threshold of more than half. A first run at Wicket's `4dfaa0f`,
-  before its brief 20 landed, gave 10 warnings with the same single stale one.
+  before its brief 21 (the answer format) landed, gave 10 warnings with the same single stale one.
 - **Raw equals filtered in all three corpora.** The three Prettier reformats and Wicket's server move are all
   dated 2026-11-11, on or before the date of every page that links code, so the filter had nothing to drop. This
   data can't say how much it would save elsewhere.
-- **The warnings follow link count, not staleness.** Wicket's `architecture.md` links 23 files and gave 11 of the 13
-  warnings, mostly from the 2026-11-13 restyle and the 2026-11-24 server briefs. Its one stale claim is in a
-  paragraph that doesn't link `config.ts`; the `Card` gap sits behind a folder link.
+- **The warnings follow link count, not staleness.** Wicket's `architecture.md` links 21 files (and 2 folders)
+  and gave 11 of the 13 warnings, mostly from the 2026-11-13 restyle and the 2026-11-24 server briefs. Its one
+  stale claim is in a paragraph that doesn't link `config.ts`; the `Card` gap sits behind a folder link.
 - **Two corpora barely link code.** brief-board's wiki links 3 code files and writes 20 code paths in backticks;
   almanac's links none and writes 48. The rule sees only links. brief-board's three code links (all in `tags.md`)
   last changed the same day as that page, which the rule doesn't count.
 
 Decision (step 4): not built. The stale share is 1 of 13, far under half.
+
+## Outcome (2026-11-24, not built)
+
+Measured and closed. Over Wicket, brief-board and almanac, 45 links from a wiki page to a tracked file outside
+`corpus/` gave 13 warnings, raw and filtered alike, all in Wicket: 1 stale, 11 fine, 1 noise. That is 1 of 13
+against a threshold of more than half, so step 6 applies: no skill change, no `lint.sh` change, no version bump,
+and the idea is closed. The §7 sweep keeps finding stale claims by hand. The reasons are in the Measurement section:
+the filter dropped nothing, the warnings follow how many files a page links, and two of the three corpora name code
+in backticks rather than linking it.
+
+For Wicket, not edited here: `corpus/wiki/architecture.md`'s Settings paragraph lacks `WICKET_CLOUD_THINK`, and its
+list of shared pieces under `web/src/components/` lacks `Card` (both still so at `403b94a`). Nothing in the three
+measured repos changed (each `git status` clean at the hashes above). Commits: a7085f3 (the measurement) and this
+closeout. Checks: `node scripts/check-skills.mjs`, `node --test scripts/*.test.mjs` and `bash corpus/lint.sh` pass.
+Owner steps: none.

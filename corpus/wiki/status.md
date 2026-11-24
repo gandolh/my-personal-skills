@@ -184,3 +184,4 @@ Brief 43 is done with no change to a shipped file: the owner chose no rule for t
 - 2026-11-24: brief 46 done, the browser line in 15 repos' web.md and house-style's template, v0.68.1 (imbatranimOS pending the owner's pause). Owner step: the plugin update to 0.68.1.
 - 2026-11-24: v0.68.2, CC BY 4.0 named in the README's licence line and the manifest's `license` (owner's answer). Owner step: the plugin update to 0.68.2.
 - 2026-11-24: briefs 47-51 filed from the open todos (the owner's ask): the gate runner in house-style, the builder rhythm, a stale-page lint measured first, and the oxlint and TypeScript 7 spikes.
+- 2026-11-24: brief 49 done, not built: the stale-page lint measured over Wicket, brief-board and almanac found 1 stale of 13 warnings, under the more-than-half threshold. No version change.
