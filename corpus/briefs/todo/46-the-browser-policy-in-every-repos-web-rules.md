@@ -1,6 +1,6 @@
 # Task 46: the browser policy in every repo's web rules
 
-**Depends on:** [44](44-a-web-platform-skill-vendored-from-modern-web-guidance.md): the line points at the
+**Depends on:** [44](../done/44-a-web-platform-skill-vendored-from-modern-web-guidance.md): the line points at the
 `web-platform` skill, which 44 creates.
 
 ## Context

@@ -1,6 +1,6 @@
 ---
 summary: Whether GoogleChrome/modern-web-guidance (asked 2026-11-23) helps the estate and how to bring it in - what it is (211 guide files, a CLI run through npx, plugins for nine agents), why installing it is risky (the newest npm release runs on every web task, telemetry to Google, output that steers the agent), which 20 guides fit the stack and what our skills already cover, the browser policy it needs, the licence (CC BY 4.0 for the guides), and how to take updates without auto-update. Verdict - vendor 20 guides pinned into a new web-platform skill (briefs 44 and 45).
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # modern-web-guidance, 2026-11-23
@@ -82,7 +82,7 @@ docs sites, the Astro presentation-sites, the WebGL2 game-engine and the Joomla 
 
 20 guides, 190 KB, about 45,000 tokens by upstream's count, read one at a time. None is
 gated upstream as origin-trial or volatile. The paths are in
-[brief 44](../briefs/todo/44-a-web-platform-skill-vendored-from-modern-web-guidance.md); each
+[brief 44](../briefs/done/44-a-web-platform-skill-vendored-from-modern-web-guidance.md); each
 one's support line is in the draft index, in brief 44's appendix.
 
 First uses, from the code:

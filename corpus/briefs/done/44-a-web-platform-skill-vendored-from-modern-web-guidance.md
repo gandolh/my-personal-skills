@@ -214,3 +214,41 @@ library's `ATTRIBUTION.md`. The copy is made by
 a file under `references/mwg/` by hand. `docs/vendoring.md` has the steps for
 a new pin.
 ````
+
+## Outcome (2026-11-24)
+
+**Built, v0.67.0** (commit 4996fed). `skills/web-platform/` holds the SKILL.md from the
+appendix and the 20 guides under `references/mwg/`, copied from the clone at `2b4aa13` by
+`scripts/vendor-modern-web-guidance.mjs` (`node scripts/vendor-modern-web-guidance.mjs <clone>
+<sha> [--out <folder named mwg>]`; exit 1 lists file and line and writes nothing, exit 2 on a
+usage error or a clone not at the sha). The run rewrote 12 pointers (7 relative, 5 GitHub URLs
+at the pin) and 3 imports; the 20 files differ from upstream in those 15 lines and the header
+line. A second run left `git status` clean. The test file has 5 cases on a fixture clone built
+with `git init`. `LICENSE-modern-web-guidance`, the ATTRIBUTION row and note, base-ui's one
+line, both decisions, the version in the four places, `web-platform` in both plugin
+descriptions.
+
+Changed from the appendix, each checked against its source:
+
+- **Rule 7.** React 19.3's docs list `<ViewTransition>` as stable and say React calls
+  `startViewTransition()` itself, so code must never call it and a `flushSync` mid-sequence
+  skips the transition. React 19.3.1 exports it; 19.2.8 doesn't. The rule now keeps `flushSync`
+  inside `document.startViewTransition()` for React 19.2 and names `<ViewTransition>` from 19.3.
+  React's `flushSync` page backs the 19.2 half (browser APIs that read the DOM when their
+  callback ends).
+- **The `content-visibility` row** says "`auto` additive, `hidden` fallback": the guide says
+  `auto` needs no fallback and `hidden` needs feature detection.
+- **The `docs/vendoring.md` sentence** is dropped: brief 45 isn't built.
+- `unslop` rewrote four prose sentences (colons as connectors, two passives). The listing stays
+  at 536 characters; the whole skill is about 2,761 tokens, before the 5,000-token cut.
+
+The other 18 support lines match their guides. `search-hidden-content` stays "additive": the
+guide offers an expand-all fallback, but in Safari the attribute acts as plain `hidden`, the
+collapsed state the control already toggles.
+
+Checks: the script's run and rerun, the acceptance grep (nothing), 7 relative links resolve,
+`node --test scripts/*.test.mjs` 21 of 21, `check-skills` 34 skills with 0 failing and
+`web-platform` first-party, `measure.mjs`, `corpus/lint.sh` clean. Owner step: update the
+plugin to 0.67.0. Left for later: the README's licence sentence and `plugin.json`'s `license`
+field name MIT and Apache-2.0 only; the CC BY 4.0 guides are credited in ATTRIBUTION.md and
+`LICENSE-modern-web-guidance`.
