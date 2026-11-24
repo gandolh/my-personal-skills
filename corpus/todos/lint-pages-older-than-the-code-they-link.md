@@ -1,11 +1,13 @@
 ---
 title: Lint wiki pages older than the code they link
 created: 2026-11-23
-status: open
+status: promoted
 tags: [corpus-flow]
 ---
 
 # Lint wiki pages older than the code they link
+
+Promoted 2026-11-25 to [brief 49](../briefs/todo/49-lint-wiki-pages-older-than-the-code-they-link.md).
 
 From the odysseus research of 2026-11-23, written up in Wicket's corpus (`corpus/wiki/research-odysseus.md`
 there). Odysseus is AGPL-3.0: the idea only, nothing copied.
