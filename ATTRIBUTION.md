@@ -180,7 +180,7 @@ per-brand `README.md`, byte-identical to upstream. Each file is the upstream aut
 official design system; the brands are their owners' trademarks. See the skill's own
 boundary section on reference-vs-imitation.
 
-**modern-web-guidance** (CC BY 4.0 for the guides; Apache-2.0 for upstream's code, none of
+**modern-web-guidance** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) for the guides; Apache-2.0 for upstream's code, none of
 which is vendored) - 20 of upstream's 211 web platform guides, copied at `2b4aa13` into the
 first-party `web-platform` skill, whose `SKILL.md` (the browser policy, seven rules and an index
 of the 20) is written fresh. The research and the reasons are on
