@@ -641,8 +641,16 @@ process.exit(run.status ?? 1);
   ---
   ```
 
-  They carry the base-ui and code-structure rules where they apply. Briefs
-  that change an area rewrite its lines. `web.md` and `server.md` are
+  They carry the base-ui and code-structure rules where they apply. `web.md`
+  also gets this bullet, after its first one:
+
+  ```markdown
+  - Browsers: Chrome on Android decides what to build; Safari on iPhone,
+    Firefox and desktop Safari must keep working. Before you use a platform
+    feature newer than Baseline Widely available, read the `web-platform` skill.
+  ```
+
+  Briefs that change an area rewrite its lines. `web.md` and `server.md` are
   examples: a repo names its rules files after its own folders (public-resource-map's
   `ui` and `backend`, imbatranimOS's `backend.md`, presentation-sites'
   `sites.md`, game-engine's `engine.md`).

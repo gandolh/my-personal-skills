@@ -112,7 +112,10 @@ imbatranimOS's NestJS backend keeps parameter properties and
   rules.
 - `.claude/rules/web.md` and `.claude/rules/server.md`, each with a `paths:`
   glob (`web/src/**`, `server/src/**`), under about 40 lines, carrying the
-  base-ui and code-structure rules where they apply. A `.gitignore` that
+  base-ui and code-structure rules where they apply. `web.md` also carries the
+  browser line (Chrome on Android decides what to build; Safari on iPhone,
+  Firefox and desktop Safari must keep working; read the `web-platform` skill
+  before a feature newer than Baseline Widely available). A `.gitignore` that
   ignores `.claude` or `.claude/*` gets a `!.claude/rules/` line.
 - A repo with two npm projects keeps the tool pins in the `package.json` of the
   folder that holds `vendor/house-style/` (the vendored ESLint config resolves
