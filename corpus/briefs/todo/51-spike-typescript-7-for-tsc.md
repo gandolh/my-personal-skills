@@ -28,16 +28,16 @@ is the owner's call after this spike.
 ## Files you OWN
 
 - `corpus/wiki/typescript-7-spike.md` (new), and this brief's outcome.
-- A scratch clone of imbatranim-apps outside every repo, deleted at the end.
+- A scratch clone of game-engine outside every repo, deleted at the end.
 - `corpus/` (index, log, status).
 
 ## Files you must NOT touch
 
-- `house-style/`, `skills/` and every adopter repo, imbatranim-apps' own checkout included.
+- `house-style/`, `skills/` and every adopter repo, game-engine's own checkout included.
 
 ## What to do
 
-1. **The clone.** Clone imbatranim-apps at its HEAD into a new, empty scratch folder; `npm ci`; run `npm run check`
+1. **The clone.** Clone game-engine at its HEAD into a new, empty scratch folder; `npm ci`; run `npm run check`
    once on TypeScript 6 as the baseline. Record the commit and the versions.
 2. **Who loads the API.** `npm ls typescript`, then read which of the gate's tools import `typescript` at run time
    (typescript-eslint, dependency-cruiser, knip, Vitest and Vite, and any other the list shows). Table: tool, whether
@@ -65,7 +65,7 @@ is the owner's call after this spike.
 - The page has the tool table, the setup diff, parity at HEAD and on the seeded set, the flag list, the timings with
   the load, and a recommendation.
 - `npm run check` passed in the clone with TypeScript 7's `tsc`, or the page says which step could not and why.
-- `git status` shows no change under `house-style/` or `skills/`, and imbatranim-apps' checkout is untouched.
+- `git status` shows no change under `house-style/` or `skills/`, and game-engine's checkout is untouched.
 - `bash corpus/lint.sh` passes.
 
 ## Owner steps
@@ -81,3 +81,8 @@ not?
     stand for a light repo.
   - It runs in a scratch clone, so no adopter's tree changes.
   - It and brief 50 never run together, so neither's timings carry the other's load.
+
+- Changed 2026-11-24 by the controller (the owner's "pick recommended" while away): the spike times a scratch clone of
+  game-engine, not imbatranim-apps, because the owner has paused all imbatranimOS and imbatranim-apps work. game-engine
+  is the heaviest gate outside the paused repos; record its baseline first, since the numbers above are
+  imbatranim-apps' and almanac's.

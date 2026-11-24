@@ -36,17 +36,17 @@ would ship. Adopting it changes house-style, so it is the owner's call after thi
 ## Files you OWN
 
 - `corpus/wiki/oxlint-spike.md` (new), and this brief's outcome.
-- A scratch clone of imbatranim-apps outside every repo, deleted at the end.
+- A scratch clone of game-engine outside every repo, deleted at the end.
 - `corpus/` (index, log, status).
 
 ## Files you must NOT touch
 
-- `house-style/`, `skills/` and every adopter repo, imbatranim-apps' own checkout included: the spike changes
+- `house-style/`, `skills/` and every adopter repo, game-engine's own checkout included: the spike changes
   nothing that ships.
 
 ## What to do
 
-1. **The clone.** Clone imbatranim-apps at its HEAD into a new, empty scratch folder; `npm ci`. Record its commit,
+1. **The clone.** Clone game-engine at its HEAD into a new, empty scratch folder; `npm ci`. Record its commit,
    ESLint and typescript-eslint versions, and the exact oxlint and tsgolint versions you install there.
 2. **Two configurations, same commit.**
    - **A:** today's (`npm run lint`).
@@ -56,7 +56,7 @@ would ship. Adopting it changes house-style, so it is the owner's call after thi
    - at HEAD;
    - on a seeded probe set: for each rule a case that must fire and one that must not, the two options exercised,
      and an `eslint-disable-next-line` naming each rule;
-   - on up to five past commits, in imbatranim-apps or another adopter, whose diff fixed one of these rules'
+   - on up to five past commits, in game-engine or another adopter, whose diff fixed one of these rules'
      findings (search `git log` for the rule names and `void` additions); run both on each fix's parent.
    Record every difference, with its file and line.
 4. **Timing,** on the quiet machine: A and B, cold and warm, three runs each, the median; B's ESLint with `--cache`
@@ -75,7 +75,7 @@ would ship. Adopting it changes house-style, so it is the owner's call after thi
 
 - The page has parity at HEAD, on the seeded set and on the past fixes; the timings with the load; both caveat
   results; and a recommendation.
-- `git status` shows no change under `house-style/` or `skills/`, and imbatranim-apps' checkout is untouched.
+- `git status` shows no change under `house-style/` or `skills/`, and game-engine's checkout is untouched.
 - `bash corpus/lint.sh` passes.
 
 ## Owner steps
@@ -91,3 +91,8 @@ recommends, or not?
     from 2026-11-23 already stand for a light repo.
   - It runs in a scratch clone, so no adopter's tree changes.
   - Parity is checked three ways, because HEAD alone had no findings in the almanac run.
+
+- Changed 2026-11-24 by the controller (the owner's "pick recommended" while away): the spike times a scratch clone of
+  game-engine, not imbatranim-apps, because the owner has paused all imbatranimOS and imbatranim-apps work. game-engine
+  is the heaviest gate outside the paused repos; record its baseline first, since the numbers above are
+  imbatranim-apps' and almanac's.
