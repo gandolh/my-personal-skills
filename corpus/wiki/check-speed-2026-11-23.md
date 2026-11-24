@@ -166,13 +166,10 @@ alone, since it also makes `clearMocks` default to true.
 
 ## Candidate briefs
 
-Small, one repo each, none filed: house-style, the two cache flags and the one-pass report,
+Small, one repo each, filed as todos on 2026-11-24 (6 was fixed the day before): house-style, the two cache flags and the one-pass report,
 synced to one repo and timed against today's gate (1, 4); library, the builder rhythm in
 `agent-sources/brief-builder.md` and the build instructions (2); one repo, the oxlint spike
 (3); one repo, the TypeScript 7 spike (5); imbatranimOS, the add-on turbo hash check (6).
-Filed as todos on 2026-11-24 (the owner's word): house-style-carries-the-one-pass-check-runner,
-the-builder-rhythm-for-the-check-tail, spike-oxlint-for-the-five-typed-rules, spike-typescript-7-for-tsc, and
-shelfmark's the-one-pass-check-runner. (6) was fixed the same day.
 
 ## Applied the same day
 
