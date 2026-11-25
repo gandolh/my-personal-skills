@@ -465,3 +465,8 @@ one-time carry-over, and check-base-ui gets a rule 14 error (house-style 1.4.0).
 ## [2026-11-25] done | Brief 48 - the builder rhythm for the check tail (v0.70.0)
 
 `brief-builder` now runs `check:fast` and the touched tests after each step and the full gate once, after its last code change; after a failure it re-runs the failing step, then the gate once more; it reads `node_modules/.cache/check/last.log` instead of re-running, and never wraps the gate in a short `timeout`. plan-split-dispatch's heavy-checks bullet, corpus-flow's brief template and house-style's gate row and `CLAUDE.md` template say the same; the two front-door `SKILL.md` files are untouched (token counts unchanged). The board was not updated because brief-board was not available in this session. See [the brief](briefs/done/48-the-builder-rhythm-for-the-check-tail.md).
+
+## [2026-11-25] done | Brief 52 - each app keeps its own theme key (v0.71.0, house-style 1.5.0)
+
+`theme.md` and rule 14 now use `<app>.theme`, with a one-time carry-over from the bare `theme` key (never written or deleted). `check-base-ui` reports a bare `"theme"` key in `getItem`, `setItem` or a `KEY` constant as a rule 14 error; a legacy-named function or constant may read it, tests are skipped, and 269 house-style tests pass. The release is house-style 1.5.0 because 1.4.0 was the gate runner; the tag `house-style-v1.5.0` is local. Apps rename in their own briefs, with no sync needed first. The board was not updated because brief-board was not available in this session. See [the brief](briefs/done/52-each-app-keeps-its-own-theme-key.md).
+
