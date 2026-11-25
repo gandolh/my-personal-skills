@@ -144,15 +144,34 @@ A house-style release follows brief 31's pattern
     same change.
   - The gate is timed once before and twice after (cold, warm), not as a series.
 
-## Progress (2026-11-25, v0.69.0)
+## Outcome (2026-11-25, v0.69.0)
 
-Steps 1-4 are done: `house-style/bin/check.mjs` (imbatranimOS's runner, header comment changed only), its
-`node:test` suite (7 tests), the README row and section, the skill's scripts table, `adoption.md` §3 and §7, house-style
-1.4.0 with its CHANGELOG upgrade note, the tag `house-style-v1.4.0`, and the plugin at 0.69.0. One edit outside the
-owned list: `house-style/bin/sync.mjs` gained a line in its description table for `bin/check.mjs`, because its test
-fails for a shipped file without one. The skill's cut line moved from 151 to 146, still after the scripts table.
+`house-style/bin/check.mjs` is imbatranimOS's runner with only its header comment changed, tested by
+`house-style/test/check.test.mjs` (7 tests; `npm test` in `house-style/` passes, 266). The README, the skill's scripts
+table (its cut line moved from 151 to 146, still after the table), `adoption.md` §3 and §7 and the CHANGELOG's 1.4.0
+upgrade note give `check`, `format:check` and `check:conventions` as the repos run them. One edit outside the owned
+list: `bin/sync.mjs` gained a description line for `bin/check.mjs`, which its test requires for every shipped file.
+house-style 1.4.0 is in `package.json`, the lockfile and the CHANGELOG heading, with the annotated tag
+`house-style-v1.4.0` on the release commit (not pushed); the plugin is 0.69.0 in both files, the README and
+`docs/history.md`.
 
-Steps 5-7 are not done. The session that built the release had no game-engine or almanac checkout and no brief-board,
-so it could not check that game-engine is free, time today's gate, sync game-engine or time the new gate. Left for a
-session with `gandolh/game-engine` (and `gandolh/almanac` for the fallback timing) cloned; this brief moves to done
-then, with the three gate times and the load in its outcome note.
+game-engine was synced: clean tree, but `git pull --ff-only` had nothing to pull (the branch is local) and brief-board
+was not available, so "no ticket In Progress" could not be checked. The sync ran from the local checkout
+(`PROJECTS_DIR`, since the tag is not on GitHub yet): `sync --check` exits 0, `npm run check` runs through
+`vendor/house-style/bin/check.mjs` and writes `node_modules/.cache/check/last.log`. One commit there, `check`,
+`format:check`, `check:conventions` and the `CLAUDE.md` gate line changed, `gates` untouched.
+
+Gate times, all in game-engine on a 4-core container, `npm run check` in full:
+
+| Run | Time | Load at start |
+|---|---|---|
+| Before (the `&&` chain) | 4 min 06 s | 0.97 |
+| After, cold (no prettier, dependency-cruiser or turbo cache) | 4 min 07 s | 2.14 |
+| After, warm | 1 min 00 s | 2.42 |
+
+The cold run shows no gain (the two caches only help a second run), and the last two started a little above the load
+limit of 2, left over from the run before. The warm run's typecheck and test steps took 0.2 s and 0.3 s because turbo
+replayed them; lint (53 s) is what is left. Almanac was not needed.
+
+Owner steps: push `house-style-v1.4.0` before game-engine's commit, whose vendored header names that tag's commit
+(`dfaddc4`); push game-engine and the library; update the plugin to 0.69.0.

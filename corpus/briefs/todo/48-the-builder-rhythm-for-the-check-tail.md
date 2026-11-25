@@ -1,6 +1,6 @@
 # Task 48: the builder rhythm for the check tail
 
-**Depends on:** [47](47-house-style-ships-the-one-pass-check-runner.md): the rhythm points at the gate runner's log,
+**Depends on:** [47](../done/47-house-style-ships-the-one-pass-check-runner.md): the rhythm points at the gate runner's log,
 which 47 documents in house-style, and both briefs edit `skills/house-style/SKILL.md` and `adoption.md`.
 
 **Builder:** sonnet. Prose in one agent file and four references.
