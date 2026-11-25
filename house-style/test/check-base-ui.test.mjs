@@ -62,6 +62,11 @@ const CASES = [
     pass: ["app/src/components/ui/rule-10.pass.tsx"],
   },
   { rule: 11, fail: [{ file: "app/src/rule-11.fail.tsx", count: 3 }], pass: ["app/src/rule-11.pass.tsx"] },
+  {
+    rule: 14,
+    fail: [{ file: "app/src/rule-14.fail.tsx", count: 4 }],
+    pass: ["app/src/rule-14.pass.tsx", "app/src/rule-14.pass.test.tsx"],
+  },
 ];
 
 /** Fixtures that support the others and must report nothing themselves. */
@@ -81,7 +86,7 @@ describe("check-base-ui, rule by rule", () => {
   it("exits 1, because errors are left", () => assert.equal(run.status, 1, run.stdout + run.stderr));
   it("prints each finding as file:line rule-N severity: message", () => {
     assert.ok(run.findings.length > 0);
-    assert.match(run.stdout, /^check-base-ui: 13 errors, 4 warnings \(/m);
+    assert.match(run.stdout, /^check-base-ui: 17 errors, 4 warnings \(/m);
   });
   checkCases({ it, root: ROOT, findings: run.findings, cases: CASES, support: SUPPORT });
 });
@@ -96,7 +101,7 @@ describe("check-base-ui's flags", () => {
       strict.findings.map(({ file, line, rule }) => `${file}:${line}:${rule}`),
     );
     assert.ok(warnOnly.findings.every((f) => f.severity === "warning"));
-    assert.match(warnOnly.stdout, /13 of the warnings are errors, shown as warnings by --warn-only/);
+    assert.match(warnOnly.stdout, /17 of the warnings are errors, shown as warnings by --warn-only/);
   });
 
   it("--version sets the pin rule 1 wants", () => {
@@ -107,7 +112,7 @@ describe("check-base-ui's flags", () => {
 
   it("runs from the repo root when no root is given", () => {
     const run = runChecker("check-base-ui", [], { cwd: ROOT });
-    assert.equal(run.findings.length, 17, run.stdout);
+    assert.equal(run.findings.length, 21, run.stdout);
   });
 
   it("exits 2 on an unknown flag or a version that isn't exact", () => {

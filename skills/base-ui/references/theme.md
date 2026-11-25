@@ -1,7 +1,8 @@
 # The theme switch
 
 Rule 14: every app offers Light, Dark and System, shows light on a first
-visit, and keeps the choice on the device (Q18, 2026-11-10). This page is
+visit, and keeps the choice on the device under its own key, `<app>.theme`
+(Q18, 2026-11-10; the key, 2026-11-25). This page is
 the mechanism, copied from Postern: `data-theme` on `<html>`, `color-scheme`
 picking each `light-dark()` token, and `dark:` keyed off the attribute.
 
@@ -29,6 +30,29 @@ The attribute must sit on `<html>`: popups are portalled under `<body>`,
 outside every element of the app, and a theme scoped to an inner wrapper
 doesn't reach them.
 
+## The storage key
+
+The key is `<app>.theme`, where `<app>` is the app's path name on the shared
+domain (`lantern.theme`, `piataro.theme`); an app on its own host uses its
+name the same way. Every app served under a path of one domain shares one
+`localStorage`, because storage is per origin, so a bare `theme` key is one
+setting for all of them: picking Dark in one app turns the others dark.
+`check-base-ui` reports a bare `"theme"` key as a rule 14 error. Use one
+rule for every app, so nobody has to know where an app is served.
+
+**Carrying over an old choice.** An app that used the bare key reads it once
+when `<app>.theme` is empty: if `theme` holds `light`, `dark` or `system`, the
+app writes that value to its own key and uses it. It never writes or deletes
+the bare key, since an app not yet renamed may still read it. The boot script
+and the store below both do this, so they agree. The bare read sits in a
+function or constant whose name says legacy (`readLegacyTheme`,
+`LEGACY_KEY`), which is how `check-base-ui` tells it from a key the app
+owns. Replace `app` in the snippets with the app's name.
+
+The carry-over comes out when no deployed build of the app still writes the
+bare key; until then it is harmless, because it only runs while the app's own
+key is empty.
+
 ## The boot script
 
 In `index.html`'s `<head>`, before the stylesheet:
@@ -36,8 +60,14 @@ In `index.html`'s `<head>`, before the stylesheet:
 ```html
 <script>
   // The saved theme before the first paint; light on a first visit.
+  // "app" is the app's name. The bare "theme" is read once, never written.
   try {
-    var theme = localStorage.getItem("theme");
+    var theme = localStorage.getItem("app.theme");
+    if (theme !== "light" && theme !== "dark" && theme !== "system") {
+      var legacy = localStorage.getItem("theme");
+      theme = legacy === "light" || legacy === "dark" || legacy === "system" ? legacy : null;
+      if (theme) localStorage.setItem("app.theme", theme);
+    }
     document.documentElement.dataset.theme = theme === "dark" || theme === "system" ? theme : "light";
   } catch (error) {
     document.documentElement.dataset.theme = "light";
@@ -60,16 +90,28 @@ import { useSyncExternalStore } from "react";
 /** The theme the user picked. `system` follows the operating system, live. */
 export type Theme = "light" | "dark" | "system";
 
-const KEY = "theme";
+/** The app's own key: one localStorage serves every app on the domain, so the name carries the app's. */
+const KEY = "app.theme";
+/** The bare key older builds used, read once to carry the choice over and never written. */
+const LEGACY_KEY = "theme";
 
 function isTheme(value: unknown): value is Theme {
   return value === "light" || value === "dark" || value === "system";
 }
 
+function readLegacyTheme(): Theme | null {
+  const value = localStorage.getItem(LEGACY_KEY);
+  return isTheme(value) ? value : null;
+}
+
 function saved(): Theme {
   try {
     const value = localStorage.getItem(KEY);
-    return isTheme(value) ? value : "light";
+    if (isTheme(value)) return value;
+    const legacy = readLegacyTheme();
+    if (legacy === null) return "light";
+    localStorage.setItem(KEY, legacy);
+    return legacy;
   } catch {
     return "light";
   }
@@ -211,7 +253,8 @@ reviewer finds it:
 
 ## Adapt to the app
 
-- The storage key (`theme`) is the app's; an app with other display
+- The storage key is `<app>.theme`, never the bare `theme` (see
+  [The storage key](#the-storage-key)); an app with other display
   settings keeps them together, as Postern does.
 - The labels read Light, Dark and System everywhere, so the estate's apps
   agree.
@@ -223,3 +266,7 @@ reviewer finds it:
 - A first visit with the system in dark mode shows light.
 - A stored choice survives a reload with no flash (Playwright: the first
   screenshot after load already has the stored theme).
+- A stored bare `theme` of `dark` and an empty `<app>.theme` comes back as
+  Dark, the value now sits under `<app>.theme`, and the bare key is
+  untouched. A stored `<app>.theme` wins over the bare key.
+- Picking a theme writes `<app>.theme` and leaves the bare key alone.

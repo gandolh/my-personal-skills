@@ -163,6 +163,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`, and not an icon: a name imported from `lucide-react`, `react-icons`, `@phosphor-icons/react`, `@heroicons/react`, `@tabler/icons-react` or `@radix-ui/react-icons`, or one named `Icon` or `…Icon`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
 | | 10 | A `<Select.Root>` without `items` (a warning) |
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
+| | 14 | A bare `"theme"` storage key: `localStorage.getItem` or `setItem` with the literal, or a `…KEY` constant set to it, which every app on a shared domain would share. The key is `<app>.theme`. A function or constant whose name contains `legacy` may read the bare key for the one-time carry-over; tests are skipped |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
 | | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
 | | 3 | `process.env` outside the env reader (the `config.ts` at the top of each server or shared root, or the files `"env"` names in `conventions.json`), and any read of `NODE_ENV` (the name in code, or a string that is the name alone, `process.env["NODE_ENV"]`), in server and shared roots (tests excepted). A `config.ts` further down gets its own message |

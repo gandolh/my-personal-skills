@@ -4,6 +4,37 @@ house-style's versions, newest first. Each section is the upgrade note for a
 repo moving to that version: what changed, and what to fix before syncing it.
 Tags are `house-style-v<version>`.
 
+## 1.5.0 (2026-11-25)
+
+One new error, from the owner's report that picking Dark in one app turned the others dark. Apps served under a path of
+the shared domain share one `localStorage`, and seven of them kept the colour mode under the same bare key, `theme`,
+copied from the base-ui skill's `theme.md`: brief-board, Mercatus (comercial-website), Gazette, Lantern, ro-housing,
+Wicket and Solstice (3D-sandbox). Satchel and Ward are on their own hosts, so nothing collides there, but Satchel keeps
+the bare key and Ward may; the rule is one for every app, so both rename. No pin, `houseStyle()` default,
+`tsconfig.base.json` flag or preset rule changed.
+
+- **`check-base-ui` rule 14, as an error.** A bare `"theme"` storage key in source: `localStorage.getItem` or
+  `setItem` called with the literal `"theme"` (single, double or backtick quotes), or a constant whose name ends in
+  `KEY` set to it. The message is `rule 14: a bare "theme" storage key is shared by every app on the domain; use
+  "<app>.theme"`. Test files are skipped, as for the other rules.
+- **The legacy read passes.** The literal is allowed inside a function or constant whose name contains `legacy`
+  (`readLegacyTheme`, `LEGACY_THEME_KEY`, `LEGACY_KEY`), which is the one-time carry-over from the bare key. A read
+  through a constant (`getItem(LEGACY_KEY)`) never carries the literal. The check reads only code files (`.ts`, `.tsx`, `.js`,
+  `.jsx` and the module variants) under the web roots, so the boot script in `index.html` is not scanned.
+- **The base-ui skill's rule 14 and `references/theme.md`** now say the key is `<app>.theme`, with the carry-over in the
+  boot script and the store.
+
+To move a repo from 1.4.0:
+
+1. `npm run house-style:sync -- house-style-v1.5.0`.
+2. `npm run check:conventions`. A repo with a rule 14 error renames its key in the same change: `<app>.theme`, where
+   `<app>` is the app's path name on the shared domain (the app's name on its own host), with the carry-over from the
+   bare key shown in `skills/base-ui/references/theme.md`.
+3. A repo that keeps a bare key on purpose lists it as a `conventions.json` exception with its reason.
+
+An app does not need 1.5.0 to do its own rename: the rename passes the check on 1.4.0 and on 1.5.0. Syncing first only
+makes the error appear, so an unrenamed app that syncs first fails `check:conventions` until it renames.
+
 ## 1.4.0 (2026-11-25)
 
 Ships the one-pass gate runner and the two cache flags that 24 repos already run from their own copies, so the next
