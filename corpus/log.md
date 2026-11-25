@@ -451,3 +451,9 @@ The owner asked to promote what's possible. Five todos became briefs: [47](brief
 ## [2026-11-24] done | Brief 49 - the stale-page lint, measured and not built
 
 The check (a wiki page's linked files with a commit dated after its `updated:`, dropping reformats and pure renames) ran as a throwaway script over Wicket, brief-board and almanac: 45 links, 13 warnings raw and filtered, all in Wicket, and 1 of them stale (`architecture.md`'s settings list lacks `WICKET_CLOUD_THINK`), 11 fine, 1 noise (a lint clean-up). Far under the more-than-half threshold, so no skill change and the idea is closed. The filter dropped nothing, the warnings follow link count, and brief-board and almanac name code in backticks rather than linking it. Per-warning verdicts and the Wicket notes are in [the brief](briefs/done/49-lint-wiki-pages-older-than-the-code-they-link.md).
+
+## [2026-11-25] todo | Brief 52 - each app keeps its own theme key
+
+Filed from the owner's report that the colour-mode picker acts across apps. Seven apps on the shared domain keep the
+choice under the bare `theme` key, copied from base-ui's `theme.md`. The reference moves to `<app>.theme` with a
+one-time carry-over, and check-base-ui gets a rule 14 error (house-style 1.4.0). Each app's rename is its own brief.
