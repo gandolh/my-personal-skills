@@ -143,3 +143,16 @@ A house-style release follows brief 31's pattern
   - The 23 repos with a runner switch at their next sync, by the CHANGELOG note, so no repo is touched twice for the
     same change.
   - The gate is timed once before and twice after (cold, warm), not as a series.
+
+## Progress (2026-11-25, v0.69.0)
+
+Steps 1-4 are done: `house-style/bin/check.mjs` (imbatranimOS's runner, header comment changed only), its
+`node:test` suite (7 tests), the README row and section, the skill's scripts table, `adoption.md` §3 and §7, house-style
+1.4.0 with its CHANGELOG upgrade note, the tag `house-style-v1.4.0`, and the plugin at 0.69.0. One edit outside the
+owned list: `house-style/bin/sync.mjs` gained a line in its description table for `bin/check.mjs`, because its test
+fails for a shipped file without one. The skill's cut line moved from 151 to 146, still after the scripts table.
+
+Steps 5-7 are not done. The session that built the release had no game-engine or almanac checkout and no brief-board,
+so it could not check that game-engine is free, time today's gate, sync game-engine or time the new gate. Left for a
+session with `gandolh/game-engine` (and `gandolh/almanac` for the fallback timing) cloned; this brief moves to done
+then, with the three gate times and the load in its outcome note.

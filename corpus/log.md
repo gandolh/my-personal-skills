@@ -457,3 +457,8 @@ The check (a wiki page's linked files with a commit dated after its `updated:`, 
 Filed from the owner's report that the colour-mode picker acts across apps. Seven apps on the shared domain keep the
 choice under the bare `theme` key, copied from base-ui's `theme.md`. The reference moves to `<app>.theme` with a
 one-time carry-over, and check-base-ui gets a rule 14 error (house-style 1.4.0). Each app's rename is its own brief.
+
+## [2026-11-25] progress | Brief 47 - house-style 1.4.0 ships the gate runner and the cache flags (v0.69.0)
+
+`house-style/bin/check.mjs` is imbatranimOS's runner (every step runs after one fails, a line per step, the log in `node_modules/.cache/check/last.log`, `+` for steps side by side), with seven `node:test` tests. The skill's scripts table, `adoption.md` §3 and §7 and the house-style README give `check`, `format:check` and `check:conventions` as the 24 repos run them, with Prettier's own cache folder and `depcruise --cache`. House-style 1.4.0 has a CHANGELOG upgrade note and the tag `house-style-v1.4.0` (not pushed). Not done: game-engine's sync and the three gate timings (brief steps 5-7), because no game-engine or almanac checkout was in the session; [the brief](briefs/todo/47-house-style-ships-the-one-pass-check-runner.md) stays in `todo/` with a progress note. The board was not updated because brief-board was not available in this session.
+
