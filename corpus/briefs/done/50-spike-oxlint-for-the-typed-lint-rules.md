@@ -96,3 +96,22 @@ recommends, or not?
   game-engine, not imbatranim-apps, because the owner has paused all imbatranimOS and imbatranim-apps work. game-engine
   is the heaviest gate outside the paused repos; record its baseline first, since the numbers above are
   imbatranim-apps' and almanac's.
+
+## Outcome (2026-11-25, adopt with conditions, the owner's call)
+
+Run on a game-engine scratch clone at `a0aefdb`, its baseline recorded first, with oxlint 1.95.0 and
+oxlint-tsgolint 7.0.2008. The findings are on [oxlint-spike.md](../../wiki/oxlint-spike.md). Parity held at HEAD (0
+and 0), on the 41-case probe set (19 and 19, the same with both options flipped) and on four past fixes: three in
+game-engine and almanac's `c5b902b`, which added a floating-promise case. The exception is two
+`no-unnecessary-type-assertion` shapes oxlint misses, an assertion on the right of a property assignment and one used
+as an element-access key (3 of 313 at game-engine's fix). Lint took 55.4 s warm for A, against 16.3 s for B
+(13.4 s ESLint, 2.8 s oxlint), and 4.3 s with B's ESLint cache warm; every series started under load 1. Caveats:
+renaming an import missed nothing, since no ESLint rule left reads another file, but removing a Tailwind token
+missed 7 findings on a cached run until the stylesheet's hash went into the config (tested in an almanac clone).
+Further conditions found on the way: `.astro` files get no type-aware rules, a test tsconfig that no `tsconfig.json`
+references is invisible to tsgolint, and `eslint-disable` comments naming the five rules become `oxlint-disable`.
+
+Nothing under `house-style/` or `skills/` changed, game-engine's checkout is untouched, and the scratch clones are
+deleted. Brief-board was not updated because brief-board was not available in this session, so the owner question is
+here instead: **adopt oxlint for the typed rules in house-style (2.0.0), as the page recommends, or not?** Commit:
+this one.
