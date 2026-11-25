@@ -107,3 +107,17 @@ notes, outside this repo. Updating it is an owner step below.
     runs before every hand-back.
   - No `SubagentStop` hook: the rhythm makes the builder run `check:fast` itself.
   - The rhythm lives in the references and the builder agent, not in the front-door `SKILL.md` files.
+
+## Outcome (2026-11-25, v0.70.0)
+
+- `agent-sources/brief-builder.md` has five bullets in "How you work" (the per-step `check:fast` and touched tests, the
+  full gate once after the last code change, the failing step alone after a failure, `last.log` before a re-run, no
+  short `timeout`, and what a per-commit check means), and "Honest reports" says the passed-check rule is about the
+  closing gate.
+- The "Heavy checks stay out by default" bullet in plan-split-dispatch's reference, the Acceptance line of corpus-flow's
+  brief template, the `check` row of house-style's `SKILL.md` and `adoption.md` §8 carry the same rhythm.
+- `measure.mjs`: plan-split-dispatch 4,856 and corpus-flow 3,663 tokens on invoke, unchanged. house-style's table still
+  ends at its cut (line 146), 5,988 tokens against 5,984 before.
+- `check-skills`, the script tests and `corpus/lint.sh` pass.
+- Owner steps stand as written: update the plugin and re-run `scripts/install-agents.mjs`, run the paid evals for the two
+  front-door skills by hand, and copy the rhythm into the estate run's common build file.

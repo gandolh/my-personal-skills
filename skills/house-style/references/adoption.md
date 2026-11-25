@@ -638,7 +638,9 @@ process.exit(run.status ?? 1);
 
 - **Root `CLAUDE.md`**, under about 60 lines: one line on what the repo is;
   "read `corpus/index.md` first"; the commands (`npm run check` before every
-  hand-back, `npm run check:fast`, one test file, dev); the places that
+  hand-back, once, after the last change; `npm run check:fast`; one test file; dev). Say
+  "While you work, `npm run check:fast` and any test file you touched are enough; run the full gate once, after your
+  last change", and "read the gate's log (`node_modules/.cache/check/last.log`) rather than running it again"; the places that
   mislead (ports, where `.env` lives, a two-run typecheck, a separate docs
   package); the hard rules that apply outside the corpus, moved out of
   `corpus/CLAUDE.md`.
