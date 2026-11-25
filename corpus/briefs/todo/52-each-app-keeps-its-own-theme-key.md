@@ -68,8 +68,8 @@ All settled. None of them is open.
 ## Acceptance
 
 - [ ] `npm test` in `house-style/` passes, with the new cases.
-- [ ] Run against a scratch copy of Lantern's web app, the check fires on its `theme.ts`; against Almanac's it stays
-      quiet.
+- [ ] Run against a scratch copy of Satchel's web app (it keeps the bare key and has no rename brief), the check fires
+      on its `settings/theme.ts`; against Almanac's it stays quiet.
 - [ ] The reference's boot script and store agree on the key and the carry-over, and its code still runs: paste both
       into a scratch Vite app and check that a stored bare `dark` comes back as `dark` under `<app>.theme`.
 - [ ] `bash corpus/lint.sh` passes.
