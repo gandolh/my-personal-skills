@@ -86,3 +86,19 @@ not?
   game-engine, not imbatranim-apps, because the owner has paused all imbatranimOS and imbatranim-apps work. game-engine
   is the heaviest gate outside the paused repos; record its baseline first, since the numbers above are
   imbatranim-apps' and almanac's.
+
+## Outcome (2026-11-25, adopt with conditions, the owner's call)
+
+Run on a game-engine scratch clone at `a0aefdb` (TypeScript 6.0.3 against 7.0.2), its baseline recorded first. The findings
+are on [typescript-7-spike.md](../../wiki/typescript-7-spike.md). Three packages load the TypeScript API
+(typescript-eslint, eslint-plugin-n, dependency-cruiser); knip, Vitest, Vite, Prettier, turbo and Docusaurus do not. The
+brief's idea of `typescript` 7 plus per-tool overrides does not install on npm 10.9.9, so the setup keeps `typescript`
+6.0.3 and adds `"ts7": "npm:typescript@7.0.2"`; npm links the alphabetically first package's `tsc` bin, which makes
+`tsc` 7, an order the adoption must check. `npm run check` passed on both versions after one fix, `baseUrl: null` in
+`docs/tsconfig.json`. Diagnostics matched at HEAD and on 38 seeded errors, bar one unused-import column; TypeScript 7
+exits 1 where 6 exits 2. Typecheck fell from 32.5 s to 7.2 s, a changed leaf package from 3.2 s to 0.9 s, and the whole
+gate from 233 s to 213 s (load under 1 before each series).
+
+Nothing under `house-style/` or `skills/` changed, game-engine's checkout is untouched, and the scratch clone is deleted.
+Brief-board was not updated because brief-board was not available in this session, so the owner question is here
+instead: **move house-style's `tsc` to TypeScript 7, as the page recommends, or not?** Commit: this one.

@@ -7,7 +7,7 @@ tags: [house-style, harness]
 
 # house-style carries the one-pass check runner and the two cache flags
 
-Promoted 2026-11-24 to [brief 47](../briefs/todo/47-house-style-ships-the-one-pass-check-runner.md).
+Promoted 2026-11-24 to [brief 47](../briefs/done/47-house-style-ships-the-one-pass-check-runner.md).
 
 From [check-speed-2026-11-23.md](../wiki/check-speed-2026-11-23.md), recommendations 1 and 4. On 2026-11-23 the
 21 app repos got a `scripts/check.mjs` runner (every step runs even after one fails, one line per step, the log kept

@@ -7,7 +7,7 @@ tags: [house-style, spike]
 
 # Spike oxlint for the five typed rules
 
-Promoted 2026-11-24 to [brief 50](../briefs/todo/50-spike-oxlint-for-the-typed-lint-rules.md).
+Promoted 2026-11-24 to [brief 50](../briefs/done/50-spike-oxlint-for-the-typed-lint-rules.md), run on a game-engine clone on 2026-11-25: adopt with conditions, the owner's call ([oxlint-spike.md](../wiki/oxlint-spike.md)).
 
 From [check-speed-2026-11-23.md](../wiki/check-speed-2026-11-23.md), recommendation 3. ESLint is about half of every
 gate. In an almanac clone on 2026-11-23: typed ESLint 46 s, against 18 s for ESLint without types plus 3-5 s for

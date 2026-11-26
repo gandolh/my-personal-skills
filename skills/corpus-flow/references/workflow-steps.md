@@ -87,7 +87,9 @@ When the user is ready to actually build a todo (or files a brief directly).
    <The plan, concrete enough to act on. Numbered steps if multi-part.>
 
    ## Acceptance
-   <Observable "done" — tests pass, behavior X, typecheck clean, etc.>
+   <Observable "done" — tests pass, behavior X, typecheck clean, etc. Ask for
+   the full gate once, at the end; a per-commit check is the fast check and the
+   touched tests, unless the brief says why a commit needs more.>
    ```
 
 3. If promoting from a todo, mark the source todo `status: promoted` (add a line

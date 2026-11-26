@@ -143,3 +143,35 @@ A house-style release follows brief 31's pattern
   - The 23 repos with a runner switch at their next sync, by the CHANGELOG note, so no repo is touched twice for the
     same change.
   - The gate is timed once before and twice after (cold, warm), not as a series.
+
+## Outcome (2026-11-25, v0.69.0)
+
+`house-style/bin/check.mjs` is imbatranimOS's runner with only its header comment changed, tested by
+`house-style/test/check.test.mjs` (7 tests; `npm test` in `house-style/` passes, 266). The README, the skill's scripts
+table (its cut line moved from 151 to 146, still after the table), `adoption.md` §3 and §7 and the CHANGELOG's 1.4.0
+upgrade note give `check`, `format:check` and `check:conventions` as the repos run them. One edit outside the owned
+list: `bin/sync.mjs` gained a description line for `bin/check.mjs`, which its test requires for every shipped file.
+house-style 1.4.0 is in `package.json`, the lockfile and the CHANGELOG heading, with the annotated tag
+`house-style-v1.4.0` on the release commit (not pushed); the plugin is 0.69.0 in both files, the README and
+`docs/history.md`.
+
+game-engine was synced: clean tree, but `git pull --ff-only` had nothing to pull (the branch is local) and brief-board
+was not available, so "no ticket In Progress" could not be checked. The sync ran from the local checkout
+(`PROJECTS_DIR`, since the tag is not on GitHub yet): `sync --check` exits 0, `npm run check` runs through
+`vendor/house-style/bin/check.mjs` and writes `node_modules/.cache/check/last.log`. One commit there, `check`,
+`format:check`, `check:conventions` and the `CLAUDE.md` gate line changed, `gates` untouched.
+
+Gate times, all in game-engine on a 4-core container, `npm run check` in full:
+
+| Run | Time | Load at start |
+|---|---|---|
+| Before (the `&&` chain) | 4 min 06 s | 0.97 |
+| After, cold (no prettier, dependency-cruiser or turbo cache) | 4 min 07 s | 2.14 |
+| After, warm | 1 min 00 s | 2.42 |
+
+The cold run shows no gain (the two caches only help a second run), and the last two started a little above the load
+limit of 2, left over from the run before. The warm run's typecheck and test steps took 0.2 s and 0.3 s because turbo
+replayed them; lint (53 s) is what is left. Almanac was not needed.
+
+Owner steps: push `house-style-v1.4.0` before game-engine's commit, whose vendored header names that tag's commit
+(`dfaddc4`); push game-engine and the library; update the plugin to 0.69.0.

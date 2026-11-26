@@ -28,6 +28,7 @@ here.
 | `bin/check-structure.mjs` | The code-structure checker, rules numbered as the `code-structure` skill's |
 | `bin/conventions.mjs` | What the two checkers share: reading `conventions.json`, walking the roots, the report |
 | `conventions.schema.json` | The JSON Schema of `conventions.json`, for editors |
+| `bin/check.mjs` | The one-pass gate runner: every step of `npm run check` runs, with a log to read |
 | `bin/sync.mjs` | The sync, run as `npm run house-style:sync` |
 | `CHANGELOG.md` | The upgrade notes |
 | `LICENSE` | MIT |
@@ -49,6 +50,30 @@ In the copy, `README.md` is a generated header in place of this page.
 - **The checkers:** `bin/check-base-ui.mjs` and `bin/check-structure.mjs`,
   run as `node vendor/house-style/bin/<name>.mjs` from `check:conventions`,
   with the repo's roots and exceptions in its `conventions.json`.
+
+## The gate runner
+
+`bin/check.mjs` is what a repo's `check` script calls, with the repo's own steps:
+
+```json
+"check": "node vendor/house-style/bin/check.mjs typecheck lint format:check check:conventions test"
+```
+
+- It runs each named npm script, one after another, and keeps going after a failure. It prints a line per step with
+  its time as the step finishes, then the last 40 lines of each failure and `check passed` or `check failed: <steps>`.
+- The whole output stays in `node_modules/.cache/check/last.log`, one block per step. After a failed run, read that
+  log; running the gate again to see the error costs the whole gate twice.
+- Exit 0 when every step passed, 1 when one failed, 2 for an unknown or missing step name (nothing runs). Each step
+  runs in its own process group, so a timeout or Ctrl-C stops the whole step.
+- Steps joined by `+` run side by side and the groups one after another: `typecheck+lint test`. A repo uses it only
+  after timing it on a quiet machine: game-engine's suites flake when they overlap, and an almanac test failed under
+  load on 2026-11-23.
+- The runner needs no install. Its test is `test/check.test.mjs`.
+
+Two cache flags go with it. `format:check` is
+`prettier --check . --cache --cache-location node_modules/.cache/prettier-check/.prettier-cache`: Prettier's default
+cache dies on every save, because the formatter hook runs Prettier without `--cache`, which deletes it. And
+`check:conventions` runs `depcruise <roots> --cache node_modules/.cache/dependency-cruiser`.
 
 ## The sync
 
@@ -138,6 +163,7 @@ node vendor/house-style/bin/check-structure.mjs [--warn-only] [repo-root]
 | | 9 | A `<X.Trigger>` whose first child is a component (not one of X's own parts, such as `<Select.Value>`, and not an icon: a name imported from `lucide-react`, `react-icons`, `@phosphor-icons/react`, `@heroicons/react`, `@tabler/icons-react` or `@radix-ui/react-icons`, or one named `Icon` or `…Icon`) and has no `render`, or whose `render` wraps its content in a `span` or `div` (a warning) |
 | | 10 | A `<Select.Root>` without `items` (a warning) |
 | | 11 | `window.confirm`, `alert` or `prompt`, or the bare call |
+| | 14 | A bare `"theme"` storage key: `localStorage.getItem` or `setItem` with the literal, or a `…KEY` constant set to it, which every app on a shared domain would share. The key is `<app>.theme`. A function or constant whose name contains `legacy` may read the bare key for the one-time carry-over; tests are skipped |
 | `check-structure` | 1 | `listen(` in a server root outside `server.ts` (tests excepted) |
 | | 2 | A server root whose `app.ts` exports no `buildApp`, or that has no `app.ts` |
 | | 3 | `process.env` outside the env reader (the `config.ts` at the top of each server or shared root, or the files `"env"` names in `conventions.json`), and any read of `NODE_ENV` (the name in code, or a string that is the name alone, `process.env["NODE_ENV"]`), in server and shared roots (tests excepted). A `config.ts` further down gets its own message |

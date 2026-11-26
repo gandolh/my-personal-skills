@@ -100,10 +100,10 @@ imbatranimOS's NestJS backend keeps parameter properties and
 
 | Script | What it runs |
 |---|---|
-| `check` | `typecheck`, `lint`, `format:check`, `check:conventions`, `test`. Run before every hand-back |
+| `check` | `node vendor/house-style/bin/check.mjs typecheck lint format:check check:conventions test`: every step runs, the output is in `node_modules/.cache/check/last.log`. Run once, after the last code change |
 | `check:fast` | `npm run typecheck`, then ESLint on the changed and untracked files, from a small Node script in `scripts/` (`npm run typecheck && node scripts/check-fast.mjs`: `tsc -b` alone misses web type errors when the web project sits outside its graph). Never tests. Target 15 s, up to about 30 s |
-| `format`, `format:check` | `prettier --write .`, `prettier --check .` |
-| `check:conventions` | knip, `depcruise` on the source folders, then `node vendor/house-style/bin/check-base-ui.mjs` and `node vendor/house-style/bin/check-structure.mjs`, each `--warn-only` until the repo's own Base UI or server brief drops it. Roots come from `conventions.json` |
+| `format`, `format:check` | `prettier --write .`, `prettier --check . --cache --cache-location node_modules/.cache/prettier-check/.prettier-cache` (the formatter hook deletes the default cache) |
+| `check:conventions` | knip, `depcruise <roots> --cache node_modules/.cache/dependency-cruiser`, then `node vendor/house-style/bin/check-base-ui.mjs` and `node vendor/house-style/bin/check-structure.mjs`, each `--warn-only` until the repo's own Base UI or server brief drops it. Roots come from `conventions.json` |
 | `house-style:sync` | `node vendor/house-style/bin/sync.mjs` |
 | `test:clean` | Only where the tests would read a production `.env`: the tests, in a copy without `.env*`. `check` calls it instead of `test` |
 

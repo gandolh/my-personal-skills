@@ -20,6 +20,11 @@
  *            An icon child (from an icon package, or named Icon or …Icon) is skipped
  *   rule 10  a <Select.Root> without items (a warning)
  *   rule 11  a native dialog: window.confirm, alert or prompt, bare or not
+ *   rule 14  a bare "theme" storage key: localStorage.getItem or setItem with the
+ *            literal "theme", or a constant named ...KEY set to it. Every app on a
+ *            shared domain shares one localStorage, so the key is "<app>.theme". A
+ *            function or constant whose name says legacy (readLegacyTheme,
+ *            LEGACY_THEME_KEY) may read the bare key, for the one-time carry-over
  *
  * Each finding prints as `file:line rule-N severity: message`. Warnings never fail
  * the run; an error exits 1, and --warn-only shows errors as warnings. A finding a
@@ -161,6 +166,10 @@ function checkStylesheets(repo, root, stylesheet, report) {
 const IMPORT = /\b(from|import|require)\s*\(?\s*(["'])(@base-ui\/react(?:\/[^"'\n]*)?)\2/g;
 const ARBITRARY_COLOUR =
   /(?<![\w-])(?:[\w-]+:)*!?-?[a-z][a-z0-9-]*-\[(?:#[0-9a-fA-F]{3,8}(?![0-9a-zA-Z])|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\()[^\]\s]*\]?/g;
+const BARE_THEME_CALL = /\b(?:getItem|setItem)\s*\(\s*(["'`])theme\1/g;
+const BARE_THEME_KEY = /\b(?:const|let|var)\s+([A-Za-z_$][\w$]*KEY|KEY)\b\s*(?::[^=;]+)?=\s*(["'`])theme\2/gi;
+const LEGACY_FUNCTION =
+  /\b(?:function\s*\*?\s*([\w$]*legacy[\w$]*)|(?:const|let|var)\s+([\w$]*legacy[\w$]*)\s*(?::[^=]+)?=)/gi;
 const TRIGGER = /<((?:[A-Za-z_$][\w$]*\.)*[A-Za-z_$][\w$]*)\.Trigger(?=[\s/>])/g;
 
 function checkSource(repo, file, { inUi, uiNames, test }, report) {
@@ -251,6 +260,19 @@ function checkSource(repo, file, { inUi, uiNames, test }, report) {
     }
   }
 
+  // Rule 14: the bare "theme" storage key, which every app on the domain would share.
+  const legacy = legacyBodies(code);
+  const bareTheme = (index, message) => {
+    if (legacy.some(([from, to]) => index >= from && index < to)) return;
+    report.add({ file, line: lineOf(index), rule: 14, message });
+  };
+  const MESSAGE = 'a bare "theme" storage key is shared by every app on the domain; use "<app>.theme"';
+  for (const match of code.matchAll(BARE_THEME_CALL)) bareTheme(match.index, MESSAGE);
+  for (const match of code.matchAll(BARE_THEME_KEY)) {
+    if (/legacy/i.test(match[1])) continue;
+    bareTheme(match.index, MESSAGE);
+  }
+
   // Rule 11: native dialogs.
   const local = localDialogNames(bare);
   for (const match of bare.matchAll(/(?<![\w$.])(?:(window|globalThis|self)\s*\.\s*)?(confirm|alert|prompt)\s*\(/g)) {
@@ -270,6 +292,29 @@ function checkSource(repo, file, { inUi, uiNames, test }, report) {
       message: `${owner ? `${owner}.` : ""}${name}() is a native dialog: use the confirm pattern (an AlertDialog) or an inline message`,
     });
   }
+}
+
+/**
+ * The source ranges of the functions and constants whose name says legacy: the
+ * statement or body that follows the name. A bare theme key read there is the
+ * one-time carry-over, not a key the app owns.
+ */
+function legacyBodies(code) {
+  const ranges = [];
+  for (const match of code.matchAll(LEGACY_FUNCTION)) {
+    const start = match.index + match[0].length;
+    const brace = code.indexOf("{", start);
+    const semicolon = code.indexOf(";", start);
+    // A function's body is its braces; a constant's value runs to the end of its statement.
+    const isBody = match[1] !== undefined || (brace !== -1 && (semicolon === -1 || brace < semicolon));
+    let end;
+    if (isBody && brace !== -1) {
+      const close = closingBracket(code, brace);
+      end = close === -1 ? code.length : close;
+    } else end = semicolon === -1 ? code.length : semicolon;
+    ranges.push([match.index, end]);
+  }
+  return ranges;
 }
 
 /**

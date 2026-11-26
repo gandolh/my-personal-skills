@@ -146,6 +146,8 @@ dependents** section.
   runs, long end-to-end runs and full-site crawls wait for the user's word, and
   never two at once. A brief whose acceptance needs one closes on the rest, and
   its outcome says what was skipped. Don't give a slow test a time budget; skip it.
+  A builder runs the fast check and the touched tests after each step and the full
+  gate once, after its last code change; the controller's verify gate is unchanged.
 - **Status lines**: one line at every dispatch and every hand-back, in plain
   words: what finished, what is running, what is next. During a long wait with
   nothing new, say what the run is waiting for. A quiet run reads as a stuck one.

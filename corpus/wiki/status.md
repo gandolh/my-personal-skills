@@ -1,6 +1,6 @@
 ---
 summary: Snapshot of the skills library - on 2026-11-09 version 0.35.0 and the 26 briefs filed that day (02-27) with what each is for; after the grilling of 2026-11-10, the trackers, brief 27's library half at version 0.36.0 (the house-style skill and the plugin's hooks), brief 02's base-ui skill at version 0.37.0, brief 03's code-structure skill at version 0.38.0, house-style 1.0.0 at version 0.39.0, brief 24's Hallmark at version 0.40.0 (2026-11-11), the server wave's lessons folded into code-structure at version 0.43.0, and the UI wave's lessons folded into base-ui at version 0.44.0 with trackers 15 and 16 closed (2026-11-12), and the four history-driven releases of 2026-11-17 (briefs 32-35, v0.55.0 to v0.58.0) with three briefs waiting on the owner's pick (36-38). Then the model-routing review of the same day: review runs on Opus (brief 39, v0.59.0), with the follow-up briefs listed in the last section.
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Status
@@ -185,3 +185,6 @@ Brief 43 is done with no change to a shipped file: the owner chose no rule for t
 - 2026-11-24: v0.68.2, CC BY 4.0 named in the README's licence line and the manifest's `license` (owner's answer). Owner step: the plugin update to 0.68.2.
 - 2026-11-24: briefs 47-51 filed from the open todos (the owner's ask): the gate runner in house-style, the builder rhythm, a stale-page lint measured first, and the oxlint and TypeScript 7 spikes.
 - 2026-11-24: brief 49 done, not built: the stale-page lint measured over Wicket, brief-board and almanac found 1 stale of 13 warnings, under the more-than-half threshold. No version change.
+- 2026-11-25: brief 52 done, each app keeps its own theme key: `theme.md` and rule 14 use `<app>.theme` with a one-time carry-over, `check-base-ui` reports a bare `"theme"` key (house-style 1.5.0, since 1.4.0 was the gate runner), v0.71.0. The seven apps' renames are their own briefs. Owner steps: the plugin update to 0.71.0, the push with the tag `house-style-v1.5.0`.
+- 2026-11-25: brief 50 done, the oxlint spike on a game-engine clone: parity on the promise and switch rules, two assertion shapes missed, lint 55 s to 16 s (4.3 s cached). Recommendation: adopt with conditions as house-style 2.0.0 ([oxlint-spike.md](oxlint-spike.md)). Owner step: the adopt-or-not answer. No version change.
+- 2026-11-25: brief 51 done, the TypeScript 7 spike on a game-engine clone: the gate passes with `tsc` on 7 (one docs tsconfig fix), typecheck 32.5 s to 7.2 s, gate 233 s to 213 s. Recommendation: adopt with conditions, TypeScript 7 as a `ts7` alias beside 6 ([typescript-7-spike.md](typescript-7-spike.md)). Owner step: the adopt-or-not answer. No version change.

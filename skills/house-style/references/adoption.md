@@ -128,7 +128,8 @@ Measure on a scratch copy (`git clone --local`), never in the checkout.
   `src/uploads/`.
 - Prettier may be undeclared, present only as a hoisted transitive dependency
   behind a `format` script. Declare it and pin it.
-- `format` is `prettier --write .`, `format:check` is `prettier --check .`.
+- `format` is `prettier --write .`, `format:check` is
+  `prettier --check . --cache --cache-location node_modules/.cache/prettier-check/.prettier-cache`.
   Commit the config and the scripts alone.
 
 ## 4. The reformat
@@ -435,10 +436,19 @@ Traps the repo briefs hit:
 ## 7. The gate
 
 ```json
-"check": "npm run typecheck && npm run lint && npm run format:check && npm run check:conventions && npm test",
+"check": "node vendor/house-style/bin/check.mjs typecheck lint format:check check:conventions test",
+"format:check": "prettier --check . --cache --cache-location node_modules/.cache/prettier-check/.prettier-cache",
 "check:fast": "npm run typecheck && node scripts/check-fast.mjs",
-"check:conventions": "knip && depcruise server/src web/src shared/src && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
+"check:conventions": "knip && depcruise server/src web/src shared/src --cache node_modules/.cache/dependency-cruiser && node vendor/house-style/bin/check-base-ui.mjs --warn-only && node vendor/house-style/bin/check-structure.mjs --warn-only"
 ```
+
+- **The runner.** `bin/check.mjs` runs every step even after one fails, prints one line per step with its time and
+  the last lines of each failure, and keeps the whole output in `node_modules/.cache/check/last.log`. Read that log
+  instead of running the gate again. It exits 0, 1 for a failed step, or 2 for an unknown step name. A repo keeps no
+  runner of its own. `a+b` runs two steps side by side; use it only after timing it on a quiet machine, since
+  suites that overlap can flake.
+- **Prettier's cache** has its own folder because the formatter hook runs Prettier without `--cache`, which deletes
+  the default cache. **dependency-cruiser's cache** invalidates when the files, arguments or filters change.
 
 `check:conventions` runs four tools, each failing on its own errors: knip,
 dependency-cruiser on the repo's source folders, and the two checkers that ship
@@ -628,7 +638,9 @@ process.exit(run.status ?? 1);
 
 - **Root `CLAUDE.md`**, under about 60 lines: one line on what the repo is;
   "read `corpus/index.md` first"; the commands (`npm run check` before every
-  hand-back, `npm run check:fast`, one test file, dev); the places that
+  hand-back, once, after the last change; `npm run check:fast`; one test file; dev). Say
+  "While you work, `npm run check:fast` and any test file you touched are enough; run the full gate once, after your
+  last change", and "read the gate's log (`node_modules/.cache/check/last.log`) rather than running it again"; the places that
   mislead (ports, where `.env` lives, a two-run typecheck, a separate docs
   package); the hard rules that apply outside the corpus, moved out of
   `corpus/CLAUDE.md`.

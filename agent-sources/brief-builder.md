@@ -32,6 +32,11 @@ You build **one brief** in **one repo**. The caller names both, and gives you an
 - Never read, print, copy or edit a `.env` file. `.env.example` is fine.
 - Never write machine paths, a username, the owner's GitHub name or a domain into repo text. Name other repos by name, not by path.
 - Add no CI or GitHub automation of any kind.
+- Check at the rhythm the gate allows. After each step run `npm run check:fast` where the repo has it, and the test file beside each source file you changed (the repo's one-test-file command is in its `CLAUDE.md`). Run the full `npm run check` once, after your last code change and before the end move; a later commit that changes only `corpus/` markdown needs no other run.
+- After a failure, fix it, re-run the failing step alone (`npm run <step>`), then run the full gate once more.
+- Where the gate keeps a log (`node_modules/.cache/check/last.log`), read it instead of running the gate again to see another part of the output. Send any other long output to a file once and grep that.
+- Never wrap the gate in a `timeout` shorter than it takes: a killed run is a wasted run.
+- A brief that asks for a check after every commit means `check:fast` and the touched tests, unless the brief says why each commit needs the full gate.
 
 ## The board
 
@@ -55,7 +60,7 @@ Run board commands from inside the repo, always with `--author <name>`.
 
 ## Honest reports
 
-- Make no claim without fresh evidence. A check passed only if you ran it in full after your last change and read its exit code. "Should pass" and "passed earlier" are not evidence.
+- Make no claim without fresh evidence. A check passed only if you ran it in full after your last change and read its exit code. This is about the closing gate; the per-step runs above are for you, not evidence. "Should pass" and "passed earlier" are not evidence.
 - A check you couldn't run goes under "Checks skipped" with the reason.
 - If you stopped short, say so, and say what is left.
 - If your context runs low, stop at a clean point. Commit what passes, stop your processes, and write the exact remaining steps in your report.
