@@ -446,7 +446,7 @@ One bullet (Chrome on Android decides what to build; the other browsers must kee
 
 ## [2026-11-24] briefs | 47-51 from the open todos (the owner's ask of 2026-11-24)
 
-The owner asked to promote what's possible. Five todos became briefs: [47](briefs/done/47-house-style-ships-the-one-pass-check-runner.md) house-style ships the gate runner (imbatranimOS's variant) and the Prettier and dependency-cruiser caches, and syncs game-engine, the one adopter without it (trips and vps-deploy have no house-style gate, so they're out); [48](briefs/done/48-the-builder-rhythm-for-the-check-tail.md) the builder rhythm for the check tail, after 47; [49](briefs/done/49-lint-wiki-pages-older-than-the-code-they-link.md) a stale-page warning for `lint.sh`, measured on three corpora before anything is built; [50](briefs/done/50-spike-oxlint-for-the-typed-lint-rules.md) and [51](briefs/todo/51-spike-typescript-7-for-tsc.md) the oxlint and TypeScript 7 spikes on imbatranim-apps, in scratch clones, on a quiet machine, never together. The spikes end in an owner question; adoption is a later brief.
+The owner asked to promote what's possible. Five todos became briefs: [47](briefs/done/47-house-style-ships-the-one-pass-check-runner.md) house-style ships the gate runner (imbatranimOS's variant) and the Prettier and dependency-cruiser caches, and syncs game-engine, the one adopter without it (trips and vps-deploy have no house-style gate, so they're out); [48](briefs/done/48-the-builder-rhythm-for-the-check-tail.md) the builder rhythm for the check tail, after 47; [49](briefs/done/49-lint-wiki-pages-older-than-the-code-they-link.md) a stale-page warning for `lint.sh`, measured on three corpora before anything is built; [50](briefs/done/50-spike-oxlint-for-the-typed-lint-rules.md) and [51](briefs/done/51-spike-typescript-7-for-tsc.md) the oxlint and TypeScript 7 spikes on imbatranim-apps, in scratch clones, on a quiet machine, never together. The spikes end in an owner question; adoption is a later brief.
 
 ## [2026-11-24] done | Brief 49 - the stale-page lint, measured and not built
 
@@ -481,3 +481,12 @@ fixed by hashing the stylesheet into the config. The page, [oxlint-spike.md](wik
 house-style 2.0.0 change, each adopter's steps (Astro and stray test tsconfigs among them) and the recommendation.
 Owner question: adopt it in house-style or not? Nothing that ships changed. The board was not updated because
 brief-board was not available in this session. See [the brief](briefs/done/50-spike-oxlint-for-the-typed-lint-rules.md).
+
+## [2026-11-25] done | Brief 51 - the TypeScript 7 spike, adopt with conditions
+
+On a game-engine scratch clone (`a0aefdb`, TypeScript 7.0.2 beside 6.0.3), `npm run check` passed with `tsc` on 7 after one
+fix (`baseUrl: null` in the docs tsconfig). Diagnostics matched at HEAD and on 38 seeded errors, bar one column. Typecheck
+fell from 32.5 s to 7.2 s and the gate from 233 s to 213 s. Only typescript-eslint, eslint-plugin-n and
+dependency-cruiser load the API, so they stay on 6; TypeScript 7 goes in as an `ts7` alias, and npm's bin-link order decides
+that `tsc` is 7, which adoption must check. Owner question: move house-style's `tsc` to 7 or not? Nothing that ships
+changed. The board was not updated because brief-board was not available in this session. See [the brief](briefs/done/51-spike-typescript-7-for-tsc.md).
